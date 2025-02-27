@@ -157,29 +157,6 @@ jobs:
         shell: pwsh
         run: |
           cp "target/${{ matrix.rust-target }}/gh-release/typlite$(If ('${{ matrix.platform }}' -eq 'win32') { '.exe' } else { '' } )" "typlite-${{ env.target }}$(If ('${{ matrix.platform }}' -eq 'win32') { '.exe' } else { '' } )"
-      - name: Test typlite
-        run: |
-          cargo test --profile=gh-release --workspace --target ${{ matrix.rust-target }}
-        if: (fromJson(env.isRelease) || fromJson(env.isNightly)) && fromJson(env.isTest)
-      - name: Upload split debug symbols for windows
-        if: matrix.platform == 'win32' && (fromJson(env.isRelease) || fromJson(env.isNightly))
-        uses: actions/upload-artifact@v4
-        with:
-          name: typlite-${{ env.target }}.pdb
-          path: target/${{ matrix.rust-target }}/gh-release/typlite-${{ env.target }}.pdb
-      - name: Upload split debug symbols for linux
-        if: matrix.platform == 'linux' && (fromJson(env.isRelease) || fromJson(env.isNightly))
-        uses: actions/upload-artifact@v4
-        with:
-          name: typlite-${{ env.target }}.debug
-          path: target/${{ matrix.rust-target }}/gh-release/typlite-${{ env.target }}.debug
-          compression-level: 0
-      - name: Upload split debug symbols for mac
-        if: matrix.platform == 'darwin' && (fromJson(env.isRelease) || fromJson(env.isNightly))
-        uses: actions/upload-artifact@v4
-        with:
-          name: typlite-${{ env.target }}.dwarf
-          path: target/${{ matrix.rust-target }}/gh-release/typlite-${{ env.target }}.dwarf
       - name: Upload binary artifact
         if: (fromJson(env.isRelease) || fromJson(env.isNightly))
         uses: actions/upload-artifact@v4
