@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
+import { IContext } from "../context";
 
-export function devKitFeatureActivate(context: vscode.ExtensionContext) {
+export function devKitActivate(context: IContext) {
   vscode.commands.executeCommand("setContext", "ext.tinymistDevKit", true);
   context.subscriptions.push({
     dispose: () => {
@@ -30,9 +31,14 @@ class DevKitViewProvider implements vscode.TreeDataProvider<DevKitItem> {
 
     return Promise.resolve([
       new DevKitItem({
-        title: "Run Preview Dev",
+        title: "Runs Preview Dev",
         command: "tinymist.previewDev",
-        tooltip: `Run Preview in Developing Mode. It sets data plane port to the fix default value.`,
+        tooltip: `Runs Preview in Developing Mode. It sets data plane port to the fix default value.`,
+      }),
+      new DevKitItem({
+        title: "Runs Default Preview",
+        command: "tinymist.startDefaultPreview",
+        tooltip: `Runs Default Preview.`,
       }),
     ]);
   }

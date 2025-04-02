@@ -58,9 +58,30 @@ type CompResponse = vscode.CompletionList | vscode.CompletionItem[];
 export class Context {
   expect!: typeof import("chai").expect;
 
-  public async suite(name: string, f: (ctx: Suite) => void): Promise<void> {
+  enabled: boolean = !vscode.workspace.workspaceFolders;
+
+  public workspaceCtx(workspace: string): Context {
+    this.enabled = !!vscode.workspace.workspaceFolders;
+    if (this.enabled) {
+      const filePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
+      const fileName = path.basename(filePath);
+      if (fileName !== workspace) {
+        console.log(`Skipping workspace ${workspace}`);
+        this.enabled = false;
+      } else {
+        console.log(`Continue workspace ${workspace}`);
+      }
+    }
+    return this;
+  }
+
+  public async suite(name: string, f: (ctx: Suite) => Promise<void>): Promise<void> {
+    if (!this.enabled) {
+      return;
+    }
+
     const ctx = new Suite();
-    f(ctx);
+    await f(ctx);
     try {
       ok(`⌛︎ ${name}`);
       await ctx.run();
@@ -88,6 +109,7 @@ export class Context {
     assert.ok(
       vscode.workspace.workspaceFolders?.length === 1 &&
         vscode.workspace.workspaceFolders[0].uri.toString() == resolved.toString(),
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `Expected workspace folder to be ${resolved.toString()}, got ${vscode.workspace.workspaceFolders}`,
     );
   }
@@ -123,22 +145,24 @@ export class Context {
     cnt: number,
     f: () => Promise<any> = Promise.resolve,
     timeout = 5000,
-  ): Promise<[vscode.DiagnosticChangeEvent, [vscode.Uri, vscode.Diagnostic[]][]]> {
-    let diagNow = performance.now();
+  ): Promise<
+    [vscode.DiagnosticChangeEvent, [vscode.Uri, vscode.Diagnostic[]][], vscode.Diagnostic[]]
+  > {
+    const diagNow = performance.now();
 
     this.diagTick += 1;
     const tick = this.diagTick;
 
     const received: any[] = [];
-    return new Promise(async (resolve, reject) => {
-      const doReject = (reason: string) => (err: any) => {
+    return new Promise((resolve, reject) => {
+      const doReject = (reason: string) => (err?: Error) => {
         console.error(
           `diagnostics[${tick}] ${reason}, expect ${cnt}, got ${JSON.stringify(received, undefined, 1)}`,
           err,
         );
         diagnosticsHandler.dispose();
         clearTimeout(t);
-        reject();
+        reject(err || new Error(`diagnostics[${tick}] ${reason}`));
       };
       const t = setTimeout(doReject("timeout"), timeout);
       const diagnosticsHandler = vscode.languages.onDidChangeDiagnostics((e) => {
@@ -158,7 +182,7 @@ export class Context {
           console.log(`diagnostics[${tick}] took`, performance.now() - diagNow, "ms");
           diagnosticsHandler.dispose();
           clearTimeout(t);
-          resolve([e, d]);
+          resolve([e, d, diagnostics]);
         }
       });
       f().catch(doReject("error"));
@@ -195,6 +219,7 @@ export async function run(): Promise<void> {
         continue;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const testModule = require(path.resolve(__dirname, testFile));
       await testModule.getTests(context);
     } catch (e) {
@@ -205,12 +230,10 @@ export async function run(): Promise<void> {
 }
 
 function ok(message: string): void {
-  // eslint-disable-next-line no-console
   console.log(`\x1b[32m${message}\x1b[0m`);
 }
 
 function error(message: string): void {
-  // eslint-disable-next-line no-console
   console.error(`\x1b[31m${message}\x1b[0m`);
 }
 

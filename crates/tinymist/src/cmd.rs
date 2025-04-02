@@ -1,12 +1,12 @@
 //! Tinymist LSP commands
 
-use std::ops::Deref;
+use std::ops::{Deref, Range};
 use std::path::PathBuf;
 
-use lsp_server::RequestId;
-use lsp_types::*;
+use lsp_types::TextDocumentIdentifier;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
+use sync_ls::RequestId;
 use task::TraceParams;
 use tinymist_assets::TYPST_PREVIEW_HTML;
 use tinymist_project::{
@@ -14,26 +14,31 @@ use tinymist_project::{
     ExportTextTask, ExportTransform, PageSelection, Pages, ProjectTask, QueryTask,
 };
 use tinymist_query::package::PackageInfo;
-use tinymist_query::LocalContextGuard;
+use tinymist_query::{LocalContextGuard, LspRange};
 use tinymist_std::error::prelude::*;
 use typst::diag::{eco_format, EcoString, StrResult};
 use typst::syntax::package::{PackageSpec, VersionlessPackageSpec};
+use typst::syntax::{LinkedNode, Source};
 use world::TaskInputs;
 
 use super::*;
-use crate::lsp_query::{run_query, LspClientExt};
+use crate::lsp::query::{run_query, LspClientExt};
+use crate::tool::ast::AstRepr;
 use crate::tool::package::InitTask;
 
 /// See [`ProjectTask`].
 #[derive(Debug, Clone, Default, Deserialize)]
 struct ExportOpts {
-    creation_timestamp: Option<String>,
     fill: Option<String>,
     ppi: Option<f32>,
     #[serde(default)]
     page: PageSelection,
     /// Whether to open the exported file(s) after the export is done.
     open: Option<bool>,
+    /// The creation timestamp for various outputs (in seconds).
+    creation_timestamp: Option<String>,
+    /// A PDF standard that Typst can enforce conformance with.
+    pdf_standard: Option<Vec<PdfStandard>>,
 }
 
 /// See [`ProjectTask`].
@@ -53,8 +58,8 @@ struct QueryOpts {
 
 #[derive(Debug, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct HighlightRangeOpts {
-    range: Option<Range>,
+struct ExportSyntaxRangeOpts {
+    range: Option<LspRange>,
 }
 
 /// Here are implemented the handlers for each command.
@@ -69,14 +74,16 @@ impl ServerState {
                     .map_err(|e| invalid_params(format!("Cannot parse creation timestamp: {e}")))?,
             )
         } else {
-            self.config.compile.determine_creation_timestamp()
+            self.config.creation_timestamp()
         };
+        let pdf_standards = opts.pdf_standard.or_else(|| self.config.pdf_standards());
 
+        let export = self.config.export_task();
         self.export(
             req_id,
             ProjectTask::ExportPdf(ExportPdfTask {
-                export: ExportTask::default(),
-                pdf_standards: vec![],
+                export,
+                pdf_standards: pdf_standards.unwrap_or_default(),
                 creation_timestamp,
             }),
             opts.open.unwrap_or_default(),
@@ -87,11 +94,10 @@ impl ServerState {
     /// Export the current document as HTML file(s).
     pub fn export_html(&mut self, req_id: RequestId, mut args: Vec<JsonValue>) -> ScheduledResult {
         let opts = get_arg_or_default!(args[1] as ExportOpts);
+        let export = self.config.export_task();
         self.export(
             req_id,
-            ProjectTask::ExportHtml(ExportHtmlTask {
-                export: ExportTask::default(),
-            }),
+            ProjectTask::ExportHtml(ExportHtmlTask { export }),
             opts.open.unwrap_or_default(),
             args,
         )
@@ -104,11 +110,10 @@ impl ServerState {
         mut args: Vec<JsonValue>,
     ) -> ScheduledResult {
         let opts = get_arg_or_default!(args[1] as ExportOpts);
+        let export = self.config.export_task();
         self.export(
             req_id,
-            ProjectTask::ExportMd(ExportMarkdownTask {
-                export: ExportTask::default(),
-            }),
+            ProjectTask::ExportMd(ExportMarkdownTask { export }),
             opts.open.unwrap_or_default(),
             args,
         )
@@ -117,11 +122,10 @@ impl ServerState {
     /// Export the current document as Text file(s).
     pub fn export_text(&mut self, req_id: RequestId, mut args: Vec<JsonValue>) -> ScheduledResult {
         let opts = get_arg_or_default!(args[1] as ExportOpts);
+        let export = self.config.export_task();
         self.export(
             req_id,
-            ProjectTask::ExportText(ExportTextTask {
-                export: ExportTask::default(),
-            }),
+            ProjectTask::ExportText(ExportTextTask { export }),
             opts.open.unwrap_or_default(),
             args,
         )
@@ -133,7 +137,7 @@ impl ServerState {
         // todo: deprecate it
         let _ = opts.strict;
 
-        let mut export = ExportTask::default();
+        let mut export = self.config.export_task();
         if opts.pretty.unwrap_or(true) {
             export.apply_pretty();
         }
@@ -157,7 +161,7 @@ impl ServerState {
     pub fn export_svg(&mut self, req_id: RequestId, mut args: Vec<JsonValue>) -> ScheduledResult {
         let opts = get_arg_or_default!(args[1] as ExportOpts);
 
-        let mut export = ExportTask::default();
+        let mut export = self.config.export_task();
         select_page(&mut export, opts.page).map_err(invalid_params)?;
 
         self.export(
@@ -178,7 +182,7 @@ impl ServerState {
             .context("cannot convert ppi")
             .map_err(invalid_params)?;
 
-        let mut export = ExportTask::default();
+        let mut export = self.config.export_task();
         select_page(&mut export, opts.page).map_err(invalid_params)?;
 
         self.export(
@@ -210,8 +214,45 @@ impl ServerState {
     /// Export a range of the current document as Ansi highlighted text.
     pub fn export_ansi_hl(&mut self, mut args: Vec<JsonValue>) -> AnySchedulableResponse {
         let path = get_arg!(args[0] as PathBuf);
-        let opts = get_arg_or_default!(args[1] as HighlightRangeOpts);
+        let opts = get_arg_or_default!(args[1] as ExportSyntaxRangeOpts);
 
+        let output = self.select_range(path, opts.range, |source, range| {
+            let mut text_in_range = source.text();
+            if let Some(range) = range {
+                text_in_range = text_in_range
+                    .get(range)
+                    .ok_or_else(|| internal_error("cannot get text in range"))?;
+            }
+
+            typst_ansi_hl::Highlighter::default()
+                .for_discord()
+                .with_soft_limit(2000)
+                .highlight(text_in_range)
+                .map_err(|e| internal_error(format!("cannot highlight: {e}")))
+        })?;
+
+        just_ok(JsonValue::String(output))
+    }
+
+    /// Export a range of the current file's AST.
+    pub fn export_ast(&mut self, mut args: Vec<JsonValue>) -> AnySchedulableResponse {
+        let path = get_arg!(args[0] as PathBuf);
+        let opts = get_arg_or_default!(args[1] as ExportSyntaxRangeOpts);
+
+        let output = self.select_range(path, opts.range, |source, range| {
+            let linked_node = LinkedNode::new(source.root());
+            Ok(format!("{}", AstRepr(linked_node, range)))
+        })?;
+
+        just_ok(JsonValue::String(output))
+    }
+
+    fn select_range<T>(
+        &mut self,
+        path: PathBuf,
+        range: Option<LspRange>,
+        f: impl Fn(Source, Option<Range<usize>>) -> LspResult<T>,
+    ) -> LspResult<T> {
         let s = self
             .query_source(path.into(), Ok)
             .map_err(|e| internal_error(format!("cannot find source: {e}")))?;
@@ -219,28 +260,14 @@ impl ServerState {
         // todo: cannot select syntax-sensitive data well
         // let node = LinkedNode::new(s.root());
 
-        let range = opts
-            .range
+        let range = range
             .map(|r| {
                 tinymist_query::to_typst_range(r, self.const_config().position_encoding, &s)
                     .ok_or_else(|| internal_error("cannoet convert range"))
             })
             .transpose()?;
 
-        let mut text_in_range = s.text();
-        if let Some(range) = range {
-            text_in_range = text_in_range
-                .get(range)
-                .ok_or_else(|| internal_error("cannot get text in range"))?;
-        }
-
-        let output = typst_ansi_hl::Highlighter::default()
-            .for_discord()
-            .with_soft_limit(2000)
-            .highlight(text_in_range)
-            .map_err(|e| internal_error(format!("cannot highlight: {e}")))?;
-
-        just_ok(JsonValue::String(output))
+        f(s, range)
     }
 
     /// Clear all cached resources.
@@ -279,95 +306,52 @@ impl ServerState {
         just_ok(JsonValue::Null)
     }
 
-    /// Start a preview instance.
+    /// Starts a preview instance.
     #[cfg(feature = "preview")]
-    pub fn start_preview(
+    pub fn do_start_preview(
         &mut self,
-        args: Vec<JsonValue>,
+        mut args: Vec<JsonValue>,
     ) -> SchedulableResponse<crate::tool::preview::StartPreviewResponse> {
-        self.start_preview_inner(args, false)
+        let cli_args = get_arg_or_default!(args[0] as Vec<String>);
+        self.start_preview(cli_args, crate::tool::preview::PreviewKind::Regular)
     }
 
-    /// Start a preview instance for browsing.
+    /// Starts a preview instance for browsing.
     #[cfg(feature = "preview")]
     pub fn browse_preview(
         &mut self,
-        args: Vec<JsonValue>,
+        mut args: Vec<JsonValue>,
     ) -> SchedulableResponse<crate::tool::preview::StartPreviewResponse> {
-        self.start_preview_inner(args, true)
+        let cli_args = get_arg_or_default!(args[0] as Vec<String>);
+        self.start_preview(cli_args, crate::tool::preview::PreviewKind::Browsing)
     }
 
-    /// Start a preview instance.
+    /// Starts a preview instance but without arguments. This is used for the
+    /// case where a client cannot pass arguments to the preview command. It
+    /// is also an example of how to use the `preview` command.
+    ///
+    /// Behaviors:
+    /// - The preview server listens on a random port.
+    /// - The colors are inverted according to the user's system settings.
+    /// - The preview follows an inferred focused file from the requests from
+    ///   the client.
+    /// - The preview is opened in the default browser.
     #[cfg(feature = "preview")]
-    pub fn start_preview_inner(
+    pub fn default_preview(
         &mut self,
-        mut args: Vec<JsonValue>,
-        browsing_preview: bool,
+        mut _args: Vec<JsonValue>,
     ) -> SchedulableResponse<crate::tool::preview::StartPreviewResponse> {
-        use std::path::Path;
-
-        use crate::tool::preview::PreviewCliArgs;
-        use clap::Parser;
-
-        let cli_args = get_arg_or_default!(args[0] as Vec<String>);
-        // clap parse
-        let cli_args = ["preview"]
-            .into_iter()
-            .chain(cli_args.iter().map(|e| e.as_str()));
-        let cli_args =
-            PreviewCliArgs::try_parse_from(cli_args).map_err(|e| invalid_params(e.to_string()))?;
-
-        // todo: preview specific arguments are not used
-        let entry = cli_args.compile.input.as_ref();
-        let entry = entry
-            .map(|input| {
-                let input = Path::new(&input);
-                if !input.is_absolute() {
-                    // std::env::current_dir().unwrap().join(input)
-                    return Err(invalid_params("entry file must be absolute path"));
-                };
-
-                Ok(input.into())
-            })
-            .transpose()?;
-
-        let task_id = cli_args.preview.task_id.clone();
-        if task_id == "primary" {
-            return Err(invalid_params("task id 'primary' is reserved"));
-        }
-
-        let previewer = typst_preview::PreviewBuilder::new(cli_args.preview.clone());
-        let watcher = previewer.compile_watcher();
-
-        let primary = &mut self.project.compiler.primary;
-        // todo: recover pin status reliably
-        if !cli_args.not_as_primary
-            && (browsing_preview || entry.is_some())
-            && self.preview.watchers.register(&primary.id, watcher)
-        {
-            let id = primary.id.clone();
-
-            if let Some(entry) = entry {
-                self.change_main_file(Some(entry)).map_err(internal_error)?;
-            }
-            self.set_pin_by_preview(true, browsing_preview);
-
-            self.preview.start(cli_args, previewer, id, true)
-        } else if let Some(entry) = entry {
-            let id = self
-                .restart_dedicate(&task_id, Some(entry))
-                .map_err(internal_error)?;
-
-            if !self.project.preview.register(&id, watcher) {
-                return Err(invalid_params(
-                    "cannot register preview to the compiler instance",
-                ));
-            }
-
-            self.preview.start(cli_args, previewer, id, false)
-        } else {
-            return Err(internal_error("entry file must be provided"));
-        }
+        let cli_args = self.config.preview.browsing.args.clone();
+        let cli_args = cli_args.unwrap_or_else(|| {
+            let default_args = [
+                "--data-plane-host=127.0.0.1:0",
+                "--control-plane-host=127.0.0.1:0",
+                "--invert-colors=auto",
+                "--open",
+            ];
+            default_args.map(ToString::to_string).to_vec()
+        });
+        self.start_preview(cli_args, crate::tool::preview::PreviewKind::Browsing)
     }
 
     /// Kill a preview instance.
@@ -414,7 +398,7 @@ impl ServerState {
                     // Try to parse without version, but prefer the error message of the
                     // normal package spec parsing if it fails.
                     let spec: VersionlessPackageSpec = from_source.parse().map_err(|_| err)?;
-                    let version = snap.world.registry.determine_latest_version(&spec)?;
+                    let version = snap.registry().determine_latest_version(&spec)?;
                     StrResult::Ok(spec.at(version))
                 })
                 .map_err(map_string_err("failed to parse package spec"))
@@ -423,7 +407,7 @@ impl ServerState {
             let from_source = TemplateSource::Package(spec);
 
             let entry_path = package::init(
-                &snap.world,
+                snap.world(),
                 InitTask {
                     tmpl: from_source.clone(),
                     dir: to_path.clone(),
@@ -457,7 +441,7 @@ impl ServerState {
                     // Try to parse without version, but prefer the error message of the
                     // normal package spec parsing if it fails.
                     let spec: VersionlessPackageSpec = from_source.parse().map_err(|_| err)?;
-                    let version = snap.world.registry.determine_latest_version(&spec)?;
+                    let version = snap.registry().determine_latest_version(&spec)?;
                     StrResult::Ok(spec.at(version))
                 })
                 .map_err(map_string_err("failed to parse package spec"))
@@ -465,7 +449,7 @@ impl ServerState {
 
             let from_source = TemplateSource::Package(spec);
 
-            let entry = package::get_entry(&snap.world, from_source)
+            let entry = package::get_entry(snap.world(), from_source)
                 .map_err(map_string_err("failed to get template entry"))
                 .map_err(internal_error)?;
 
@@ -535,8 +519,8 @@ impl ServerState {
                 compiler_program: self_path,
                 root: root.as_ref().to_owned(),
                 main,
-                inputs: snap.world.inputs().as_ref().deref().clone(),
-                font_paths: snap.world.font_resolver.font_paths().to_owned(),
+                inputs: snap.world().inputs().as_ref().deref().clone(),
+                font_paths: snap.world().font_resolver.font_paths().to_owned(),
                 rpc_kind: "http".into(),
             })?;
 
@@ -603,7 +587,7 @@ impl ServerState {
     pub fn resource_package_dirs(&mut self, _arguments: Vec<JsonValue>) -> AnySchedulableResponse {
         let snap = self.snapshot().map_err(internal_error)?;
         just_future(async move {
-            let paths = snap.world.registry.paths();
+            let paths = snap.registry().paths();
             let paths = paths.iter().map(|p| p.as_ref()).collect::<Vec<_>>();
             serde_json::to_value(paths).map_err(|e| internal_error(e.to_string()))
         })
@@ -616,7 +600,7 @@ impl ServerState {
     ) -> AnySchedulableResponse {
         let snap = self.snapshot().map_err(internal_error)?;
         just_future(async move {
-            let paths = snap.world.registry.local_path();
+            let paths = snap.registry().local_path();
             let paths = paths.as_deref().into_iter().collect::<Vec<_>>();
             serde_json::to_value(paths).map_err(|e| internal_error(e.to_string()))
         })
@@ -631,11 +615,10 @@ impl ServerState {
 
         let snap = self.snapshot().map_err(internal_error)?;
         just_future(async move {
-            let packages =
-                tinymist_query::package::list_package_by_namespace(&snap.world.registry, ns)
-                    .into_iter()
-                    .map(PackageInfo::from)
-                    .collect::<Vec<_>>();
+            let packages = tinymist_query::package::list_package_by_namespace(snap.registry(), ns)
+                .into_iter()
+                .map(PackageInfo::from)
+                .collect::<Vec<_>>();
 
             serde_json::to_value(packages).map_err(|e| internal_error(e.to_string()))
         })
@@ -707,7 +690,7 @@ impl ServerState {
         let snap = self.query_snapshot().map_err(internal_error)?;
 
         Ok(async move {
-            let world = &snap.world;
+            let world = snap.world();
 
             let entry: StrResult<EntryState> = Ok(()).and_then(|_| {
                 let toml_id = tinymist_query::package::get_manifest_id(&info)?;

@@ -41,11 +41,7 @@ pub struct CompletionRequest {
 impl StatefulRequest for CompletionRequest {
     type Response = CompletionList;
 
-    fn request(
-        self,
-        ctx: &mut LocalContext,
-        doc: Option<VersionedDocument>,
-    ) -> Option<Self::Response> {
+    fn request(self, ctx: &mut LocalContext, graph: LspComputeGraph) -> Option<Self::Response> {
         // These trigger characters are for completion on positional arguments,
         // which follows the configuration item
         // `tinymist.completion.triggerOnSnippetPlaceholders`.
@@ -54,6 +50,10 @@ impl StatefulRequest for CompletionRequest {
         {
             return None;
         }
+
+        let document = graph.snap.success_doc.as_ref();
+        let source = ctx.source_by_path(&self.path).ok()?;
+        let cursor = ctx.to_typst_pos_offset(&source, self.position, 0)?;
 
         // Please see <https://github.com/nvarner/typst-lsp/commit/2d66f26fb96ceb8e485f492e5b81e9db25c3e8ec>
         //
@@ -68,11 +68,14 @@ impl StatefulRequest for CompletionRequest {
         //
         // Hence, we cannot distinguish between the two cases. Conservatively, we
         // assume that the completion is not explicit.
+        //
+        // Second try: According to VSCode:
+        // - <https://github.com/microsoft/vscode/issues/130953>
+        // - <https://github.com/microsoft/vscode/commit/0984071fe0d8a3c157a1ba810c244752d69e5689>
+        // Checks the previous text to filter out letter explicit completions.
+        //
+        // Second try is failed.
         let explicit = false;
-
-        let document = doc.as_ref().map(|doc| &doc.document);
-        let source = ctx.source_by_path(&self.path).ok()?;
-        let cursor = ctx.to_typst_pos_offset(&source, self.position, 0)?;
         let mut cursor = CompletionCursor::new(ctx.shared_(), &source, cursor)?;
 
         let mut worker = CompletionWorker::new(ctx, document, explicit, self.trigger_character)?;
@@ -109,7 +112,7 @@ mod tests {
     fn run(config: TestConfig) -> impl Fn(&mut LocalContext, PathBuf) {
         fn test(ctx: &mut LocalContext, id: TypstFileId) {
             let source = ctx.source_by_id(id).unwrap();
-            let rng = find_test_range(&source);
+            let rng = find_test_range_(&source);
             let text = source.text()[rng.clone()].to_string();
 
             let docs = find_module_level_docs(&source).unwrap_or_default();
@@ -118,11 +121,16 @@ mod tests {
             let trigger_character = properties
                 .get("trigger_character")
                 .map(|v| v.chars().next().unwrap());
+            let explicit = match properties.get("explicit").copied().map(str::trim) {
+                Some("true") => true,
+                Some("false") | None => false,
+                Some(v) => panic!("invalid value for 'explicit' property: {v}"),
+            };
 
             let mut includes = HashSet::new();
             let mut excludes = HashSet::new();
 
-            let doc = compile_doc_for_test(ctx, &properties);
+            let graph = compile_doc_for_test(ctx, &properties);
 
             for kk in properties.get("contains").iter().flat_map(|v| v.split(',')) {
                 // split first char
@@ -153,6 +161,7 @@ mod tests {
                         sort_text: item.sort_text,
                         kind: item.kind,
                         text_edit: item.text_edit,
+                        command: item.command,
                         ..Default::default()
                     })
                     .collect();
@@ -171,11 +180,11 @@ mod tests {
                 let request = CompletionRequest {
                     path: ctx.path_for_id(id).unwrap().as_path().to_owned(),
                     position: ctx.to_lsp_pos(s, &source),
-                    explicit: false,
+                    explicit,
                     trigger_character,
                 };
                 let result = request
-                    .request(ctx, doc.clone())
+                    .request(ctx, graph.clone())
                     .map(|list| CompletionList {
                         is_incomplete: list.is_incomplete,
                         items: get_items(list.items),

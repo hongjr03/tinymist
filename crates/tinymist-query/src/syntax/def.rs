@@ -23,11 +23,11 @@ pub enum Expr {
     /// A sequence of expressions
     Block(Interned<Vec<Expr>>),
     /// An array literal
-    Array(Interned<Vec<ArgExpr>>),
+    Array(Interned<ArgsExpr>),
     /// A dict literal
-    Dict(Interned<Vec<ArgExpr>>),
+    Dict(Interned<ArgsExpr>),
     /// An args literal
-    Args(Interned<Vec<ArgExpr>>),
+    Args(Interned<ArgsExpr>),
     /// A pattern
     Pattern(Interned<Pattern>),
     /// An element literal
@@ -115,6 +115,15 @@ pub enum ExprScope {
 impl ExprScope {
     pub fn empty() -> Self {
         ExprScope::Lexical(LexicalScope::default())
+    }
+
+    pub fn is_empty(&self) -> bool {
+        match self {
+            ExprScope::Lexical(scope) => scope.is_empty(),
+            ExprScope::Module(module) => is_empty_scope(module.scope()),
+            ExprScope::Func(func) => func.scope().is_none_or(is_empty_scope),
+            ExprScope::Type(ty) => is_empty_scope(ty.scope()),
+        }
     }
 
     pub fn get(&self, name: &Interned<str>) -> (Option<Expr>, Option<Ty>) {
@@ -748,6 +757,18 @@ impl SelectExpr {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ArgsExpr {
+    pub args: Vec<ArgExpr>,
+    pub span: Span,
+}
+
+impl ArgsExpr {
+    pub fn new(span: Span, args: Vec<ArgExpr>) -> Interned<Self> {
+        Interned::new(Self { args, span })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ElementExpr {
     pub elem: Element,
     pub content: EcoVec<Expr>,
@@ -934,8 +955,13 @@ impl<T> BinInst<T> {
     }
 }
 
+fn is_empty_scope(scope: &typst::foundations::Scope) -> bool {
+    scope.iter().next().is_none()
+}
+
 impl_internable!(
     Expr,
+    ArgsExpr,
     ElementExpr,
     ContentSeqExpr,
     RefExpr,

@@ -45,7 +45,6 @@ lsp-types.workspace = true
 if_chain.workspace = true
 percent-encoding.workspace = true
 unscanny.workspace = true
-pathdiff.workspace = true
 ttf-parser.workspace = true
 rust_iso639.workspace = true
 rust_iso3166.workspace = true
@@ -60,6 +59,7 @@ tinymist-project = { workspace = true, features = ["lsp"] }
 tinymist-analysis.workspace = true
 tinymist-derive.workspace = true
 tinymist-std.workspace = true
+tinymist-l10n.workspace = true
 
 [dev-dependencies]
 once_cell.workspace = true

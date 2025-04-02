@@ -3,15 +3,13 @@ use std::{collections::HashMap, sync::Arc};
 use lsp_types::notification::Notification;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use sync_lsp::{internal_error, LspClient, LspResult};
+use sync_ls::{internal_error, LspClient, LspResult};
 use tinymist_std::error::IgnoreLogging;
 use tokio::sync::{mpsc, oneshot};
 use typst_preview::{ControlPlaneMessage, Previewer};
 
-use crate::{
-    project::ProjectPreviewState,
-    tool::preview::{HttpServer, PreviewProjectHandler},
-};
+use crate::project::ProjectPreviewState;
+use crate::tool::preview::{HttpServer, ProjectPreviewHandler};
 
 pub struct PreviewTab {
     /// Task ID
@@ -23,9 +21,11 @@ pub struct PreviewTab {
     /// Control plane message sender
     pub ctl_tx: mpsc::UnboundedSender<ControlPlaneMessage>,
     /// Compile handler
-    pub compile_handler: Arc<PreviewProjectHandler>,
+    pub compile_handler: Arc<ProjectPreviewHandler>,
     /// Whether this tab is primary
     pub is_primary: bool,
+    /// Whether this tab is background
+    pub is_background: bool,
 }
 
 pub enum PreviewRequest {
@@ -51,6 +51,15 @@ impl PreviewActor {
                 }
                 PreviewRequest::Kill(task_id, tx) => {
                     log::info!("PreviewTask({task_id}): killing");
+
+                    if self.tabs.get(&task_id).is_some_and(|tab| tab.is_background) {
+                        // todo: eliminate this warning in log in future
+                        log::warn!("PreviewTask({task_id}): cannot kill a background preview");
+
+                        let _ = tx.send(Ok(JsonValue::Null));
+                        continue;
+                    }
+
                     let Some(mut tab) = self.tabs.remove(&task_id) else {
                         let _ = tx.send(Err(internal_error("task not found")));
                         continue;

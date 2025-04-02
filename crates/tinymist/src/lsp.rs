@@ -4,11 +4,15 @@ use once_cell::sync::OnceCell;
 use reflexo::ImmutPath;
 use request::{RegisterCapability, UnregisterCapability};
 use serde_json::{Map, Value as JsonValue};
-use sync_lsp::*;
+use sync_ls::*;
 use tinymist_std::error::{prelude::*, IgnoreLogging};
 
+pub mod init;
+pub(crate) mod query;
+
+use crate::actor::editor::{EditorActorConfig, EditorRequest};
 use crate::task::FormatterConfig;
-use crate::{init::*, *};
+use crate::*;
 
 /// Trait implemented by language server backends.
 ///
@@ -80,7 +84,7 @@ impl ServerState {
 /// LSP Document Synchronization
 impl ServerState {
     pub(crate) fn did_open(&mut self, params: DidOpenTextDocumentParams) -> LspResult<()> {
-        log::info!("did open {:?}", params.text_document.uri);
+        log::info!("did open {}", params.text_document.uri);
         let path: ImmutPath = as_path_(params.text_document.uri).as_path().into();
         let text = params.text_document.text;
 
@@ -136,8 +140,16 @@ impl ServerState {
             self.change_export_config(new_export_config);
         }
 
-        if old_config.compile.primary_opts() != self.config.compile.primary_opts() {
-            self.config.compile.fonts = OnceCell::new(); // todo: don't reload fonts if not changed
+        if old_config.notify_status != self.config.notify_status {
+            self.editor_tx
+                .send(EditorRequest::Config(EditorActorConfig {
+                    notify_status: self.config.notify_status,
+                }))
+                .log_error("could not change editor actor configuration");
+        }
+
+        if old_config.primary_opts() != self.config.primary_opts() {
+            self.config.fonts = OnceCell::new(); // todo: don't reload fonts if not changed
             self.reload_projects()
                 .log_error("could not restart primary");
         }
@@ -170,7 +182,7 @@ impl ServerState {
             return self.on_changed_configuration(settings);
         };
 
-        self.client.send_request::<WorkspaceConfiguration>(
+        self.client.send_lsp_request::<WorkspaceConfiguration>(
             ConfigurationParams {
                 items: Config::get_items(),
             },
@@ -179,7 +191,7 @@ impl ServerState {
         Ok(())
     }
 
-    fn workspace_configuration_callback(this: &mut ServerState, resp: lsp_server::Response) {
+    fn workspace_configuration_callback(this: &mut ServerState, resp: sync_ls::lsp::Response) {
         if let Some(err) = resp.error {
             log::error!("failed to request configuration: {err:?}");
             return;
@@ -196,13 +208,17 @@ impl ServerState {
             return;
         };
         let _ = this.on_changed_configuration(Config::values_to_map(resp));
+
+        if !this.config.warnings.is_empty() {
+            this.show_config_warnings();
+        }
     }
 }
 
 impl ServerState {
     // todo: handle error
     pub(crate) fn register_capability(&self, registrations: Vec<Registration>) -> Result<()> {
-        self.client.send_request_::<RegisterCapability>(
+        self.client.send_lsp_request_::<RegisterCapability>(
             RegistrationParams { registrations },
             |_, resp| {
                 if let Some(err) = resp.error {
@@ -217,7 +233,7 @@ impl ServerState {
         &self,
         unregisterations: Vec<Unregistration>,
     ) -> Result<()> {
-        self.client.send_request_::<UnregisterCapability>(
+        self.client.send_lsp_request_::<UnregisterCapability>(
             UnregistrationParams { unregisterations },
             |_, resp| {
                 if let Some(err) = resp.error {
