@@ -6,15 +6,14 @@ use std::{
     sync::{Arc, LazyLock, OnceLock},
 };
 
-use chrono::{DateTime, Datelike, Local};
 use tinymist_std::error::prelude::*;
 use tinymist_vfs::{
-    FsProvider, PathResolution, RevisingVfs, SourceCache, TypstFileId, Vfs, WorkspaceResolver,
+    FileId, FsProvider, PathResolution, RevisingVfs, SourceCache, Vfs, WorkspaceResolver,
 };
 use typst::{
     diag::{eco_format, At, EcoString, FileError, FileResult, SourceResult},
     foundations::{Bytes, Datetime, Dict},
-    syntax::{FileId, Source, Span, VirtualPath},
+    syntax::{Source, Span, VirtualPath},
     text::{Font, FontBook},
     utils::LazyHash,
     Features, Library, World,
@@ -280,7 +279,7 @@ impl<F: CompilerFeat> ShadowApi for CompilerUniverse<F> {
         self.vfs.shadow_paths()
     }
 
-    fn shadow_ids(&self) -> Vec<TypstFileId> {
+    fn shadow_ids(&self) -> Vec<FileId> {
         self.vfs.shadow_ids()
     }
 
@@ -401,7 +400,7 @@ impl<F: CompilerFeat> RevisingUniverse<'_, F> {
         self.view_changed = true;
 
         // Resets the cache if the workspace root has changed.
-        let root_changed = self.inner.entry.workspace_root() == state.workspace_root();
+        let root_changed = self.inner.entry.workspace_root() != state.workspace_root();
         if root_changed {
             log::info!("resetting shadow root_changed");
             self.vfs().reset_cache();
@@ -432,6 +431,11 @@ fn is_revision_changed(a: Option<NonZeroUsize>, b: Option<NonZeroUsize>) -> bool
     a.is_none() || b.is_none() || a != b
 }
 
+#[cfg(any(feature = "web", feature = "system"))]
+type NowStorage = chrono::DateTime<chrono::Local>;
+#[cfg(not(any(feature = "web", feature = "system")))]
+type NowStorage = tinymist_std::time::UtcDateTime;
+
 pub struct CompilerWorld<F: CompilerFeat> {
     /// State for the *root & entry* of compilation.
     /// The world forbids direct access to files outside this directory.
@@ -455,7 +459,7 @@ pub struct CompilerWorld<F: CompilerFeat> {
     source_db: SourceDb,
     /// The current datetime if requested. This is stored here to ensure it is
     /// always the same within one compilation. Reset between compilations.
-    now: OnceLock<DateTime<Local>>,
+    now: OnceLock<NowStorage>,
 }
 
 impl<F: CompilerFeat> Clone for CompilerWorld<F> {
@@ -605,7 +609,7 @@ impl<F: CompilerFeat> CompilerWorld<F> {
 
 impl<F: CompilerFeat> ShadowApi for CompilerWorld<F> {
     #[inline]
-    fn shadow_ids(&self) -> Vec<TypstFileId> {
+    fn shadow_ids(&self) -> Vec<FileId> {
         self.vfs.shadow_ids()
     }
 
@@ -630,29 +634,29 @@ impl<F: CompilerFeat> ShadowApi for CompilerWorld<F> {
     }
 
     #[inline]
-    fn map_shadow_by_id(&mut self, file_id: TypstFileId, content: Bytes) -> FileResult<()> {
+    fn map_shadow_by_id(&mut self, file_id: FileId, content: Bytes) -> FileResult<()> {
         self.vfs
             .revise()
             .map_shadow_by_id(file_id, Ok(content).into())
     }
 
     #[inline]
-    fn unmap_shadow_by_id(&mut self, file_id: TypstFileId) -> FileResult<()> {
+    fn unmap_shadow_by_id(&mut self, file_id: FileId) -> FileResult<()> {
         self.vfs.revise().remove_shadow_by_id(file_id);
         Ok(())
     }
 }
 
 impl<F: CompilerFeat> FsProvider for CompilerWorld<F> {
-    fn file_path(&self, file_id: TypstFileId) -> FileResult<PathResolution> {
+    fn file_path(&self, file_id: FileId) -> FileResult<PathResolution> {
         self.vfs.file_path(file_id)
     }
 
-    fn read(&self, file_id: TypstFileId) -> FileResult<Bytes> {
+    fn read(&self, file_id: FileId) -> FileResult<Bytes> {
         self.vfs.read(file_id)
     }
 
-    fn read_source(&self, file_id: TypstFileId) -> FileResult<Source> {
+    fn read_source(&self, file_id: FileId) -> FileResult<Source> {
         self.vfs.source(file_id)
     }
 }
@@ -707,12 +711,15 @@ impl<F: CompilerFeat> World for CompilerWorld<F> {
     ///
     /// If this function returns `None`, Typst's `datetime` function will
     /// return an error.
+    #[cfg(any(feature = "web", feature = "system"))]
     fn today(&self, offset: Option<i64>) -> Option<Datetime> {
+        use chrono::{Datelike, Duration};
+        // todo: typst respects creation_timestamp, but we don't...
         let now = self.now.get_or_init(|| tinymist_std::time::now().into());
 
         let naive = match offset {
             None => now.naive_local(),
-            Some(o) => now.naive_utc() + chrono::Duration::try_hours(o)?,
+            Some(o) => now.naive_utc() + Duration::try_hours(o)?,
         };
 
         Datetime::from_ymd(
@@ -720,6 +727,31 @@ impl<F: CompilerFeat> World for CompilerWorld<F> {
             naive.month().try_into().ok()?,
             naive.day().try_into().ok()?,
         )
+    }
+
+    /// Get the current date.
+    ///
+    /// If no offset is specified, the local date should be chosen. Otherwise,
+    /// the UTC date should be chosen with the corresponding offset in hours.
+    ///
+    /// If this function returns `None`, Typst's `datetime` function will
+    /// return an error.
+    #[cfg(not(any(feature = "web", feature = "system")))]
+    fn today(&self, offset: Option<i64>) -> Option<Datetime> {
+        use tinymist_std::time::{now, to_typst_time, Duration};
+        // todo: typst respects creation_timestamp, but we don't...
+        let now = self.now.get_or_init(|| now().into());
+
+        let now = offset
+            .and_then(|offset| {
+                let dur = Duration::from_secs(offset.checked_mul(3600)? as u64)
+                    .try_into()
+                    .ok()?;
+                now.checked_add(dur)
+            })
+            .unwrap_or(*now);
+
+        Some(to_typst_time(now))
     }
 }
 
@@ -731,7 +763,7 @@ impl<F: CompilerFeat> EntryReader for CompilerWorld<F> {
 
 impl<F: CompilerFeat> WorldDeps for CompilerWorld<F> {
     #[inline]
-    fn iter_dependencies(&self, f: &mut dyn FnMut(TypstFileId)) {
+    fn iter_dependencies(&self, f: &mut dyn FnMut(FileId)) {
         self.source_db.iter_dependencies_dyn(f)
     }
 }

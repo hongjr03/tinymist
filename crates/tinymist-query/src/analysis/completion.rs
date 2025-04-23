@@ -7,10 +7,10 @@ use std::ops::Range;
 use ecow::{eco_format, EcoString};
 use if_chain::if_chain;
 use lsp_types::InsertTextFormat;
-use once_cell::sync::Lazy;
 use regex::{Captures, Regex};
 use serde::{Deserialize, Serialize};
 use tinymist_analysis::syntax::{bad_completion_cursor, BadCompletionCursor};
+use tinymist_analysis::{analyze_labels, func_signature, DynLabel};
 use tinymist_derive::BindTyCtx;
 use tinymist_project::LspWorld;
 use tinymist_std::path::unix_slash;
@@ -28,9 +28,7 @@ use typst_shim::{syntax::LinkedNodeExt, utils::hash128};
 use unscanny::Scanner;
 
 use crate::adt::interner::Interned;
-use crate::analysis::{
-    analyze_labels, func_signature, BuiltinTy, DynLabel, LocalContext, PathPreference, Ty,
-};
+use crate::analysis::{BuiltinTy, LocalContext, PathPreference, Ty};
 use crate::completion::{
     Completion, CompletionCommand, CompletionContextKey, CompletionItem, CompletionKind,
     EcoTextEdit, ParsedSnippet, PostfixSnippet, PostfixSnippetScope, PrefixSnippet,
@@ -85,6 +83,9 @@ pub struct CompletionFeat {
     #[serde(default)]
     pub trigger_suggest_and_parameter_hints: bool,
 
+    /// The Way to complete symbols.
+    pub symbol: Option<SymbolCompletionWay>,
+
     /// Whether to enable postfix completion.
     pub postfix: Option<bool>,
     /// Whether to enable ufcs completion.
@@ -129,6 +130,22 @@ impl CompletionFeat {
             .as_ref()
             .unwrap_or(&DEFAULT_POSTFIX_SNIPPET)
     }
+
+    pub(crate) fn is_stepless(&self) -> bool {
+        matches!(self.symbol, Some(SymbolCompletionWay::Stepless))
+    }
+}
+
+/// Whether to make symbol completion stepless. For example, `$ar|$` will be
+/// completed to `$arrow.r$`. Hint: Restarting the editor is required to change
+/// this setting.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum SymbolCompletionWay {
+    /// Complete symbols step by step
+    Step,
+    /// Complete symbols steplessly
+    Stepless,
 }
 
 /// The struct describing how a completion worker views the editor's cursor.
@@ -890,8 +907,8 @@ fn slice_at(s: &str, mut rng: Range<usize>) -> &str {
     &s[rng]
 }
 
-static TYPST_SNIPPET_PLACEHOLDER_RE: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"\$\{(.*?)\}").unwrap());
+static TYPST_SNIPPET_PLACEHOLDER_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\$\{(.*?)\}").unwrap());
 
 /// Adds numbering to placeholders in snippets
 fn to_lsp_snippet(typst_snippet: &str) -> EcoString {

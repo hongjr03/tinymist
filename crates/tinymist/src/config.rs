@@ -1,11 +1,10 @@
 use core::fmt;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock, OnceLock};
 
 use clap::Parser;
 use itertools::Itertools;
 use lsp_types::*;
-use once_cell::sync::{Lazy, OnceCell};
 use reflexo::error::IgnoreLogging;
 use reflexo::CowStr;
 use reflexo_typst::{ImmutPath, TypstDict};
@@ -24,11 +23,11 @@ use typst::Features;
 use typst_shim::utils::LazyHash;
 
 use super::*;
-use crate::project::font::TinymistFontResolver;
 use crate::project::{
     EntryResolver, ExportPdfTask, ExportTask, ImmutDict, PathPattern, ProjectResolutionKind,
     ProjectTask, TaskWhen,
 };
+use crate::world::font::FontResolverImpl;
 
 // region Configuration Items
 const CONFIG_ITEMS: &[&str] = &[
@@ -91,13 +90,15 @@ pub struct Config {
     pub completion: CompletionFeat,
     /// Tinymist's preview features.
     pub preview: PreviewFeat,
+    /// When to trigger the lint checks.
+    pub lint: LintFeat,
 
     /// Specifies the cli font options
     pub font_opts: CompileFontArgs,
     /// Specifies the font paths
     pub font_paths: Vec<PathBuf>,
     /// Computed fonts based on configuration.
-    pub fonts: OnceCell<Derived<Arc<TinymistFontResolver>>>,
+    pub fonts: OnceLock<Derived<Arc<FontResolverImpl>>>,
     /// Whether to use system fonts.
     pub system_fonts: Option<bool>,
 
@@ -319,6 +320,7 @@ impl Config {
         assign_config!(formatter_indent_size := "formatterIndentSize"?: Option<u32>);
         assign_config!(output_path := "outputPath"?: PathPattern);
         assign_config!(preview := "preview"?: PreviewFeat);
+        assign_config!(lint := "preview"?: LintFeat);
         assign_config!(semantic_tokens := "semanticTokens"?: SemanticTokensMode);
         assign_config!(support_html_in_markdown := "supportHtmlInMarkdown"?: bool);
         assign_config!(system_fonts := "systemFonts"?: Option<bool>);
@@ -533,7 +535,7 @@ impl Config {
             opts.font_paths.clone_from(paths);
         }
 
-        let root = OnceCell::new();
+        let root = OnceLock::new();
         for path in opts.font_paths.iter_mut() {
             if path.is_relative() {
                 if let Some(root) = root.get_or_init(|| self.entry_resolver.root(None)) {
@@ -555,7 +557,7 @@ impl Config {
     }
 
     /// Determines the font resolver.
-    pub fn fonts(&self) -> Arc<TinymistFontResolver> {
+    pub fn fonts(&self) -> Arc<FontResolverImpl> {
         // todo: on font resolving failure, downgrade to a fake font book
         let font = || {
             let opts = self.font_opts();
@@ -586,7 +588,7 @@ impl Config {
     }
 
     fn user_inputs(&self) -> ImmutDict {
-        static EMPTY: Lazy<ImmutDict> = Lazy::new(ImmutDict::default);
+        static EMPTY: LazyLock<ImmutDict> = LazyLock::new(ImmutDict::default);
 
         if let Some(extras) = &self.typst_extra_args {
             return extras.inputs.clone();
@@ -789,6 +791,26 @@ pub struct PreviewFeat {
     pub background: BackgroundPreviewOpts,
 }
 
+/// The lint features.
+#[derive(Debug, Default, Clone, Deserialize)]
+pub struct LintFeat {
+    /// Whether to enable linting.
+    pub enabled: Option<bool>,
+    /// When to trigger the lint checks.
+    pub when: Option<TaskWhen>,
+}
+
+impl LintFeat {
+    /// When to trigger the lint checks.
+    pub fn when(&self) -> TaskWhen {
+        if matches!(self.enabled, Some(false)) {
+            return TaskWhen::Never;
+        }
+
+        self.when.unwrap_or(TaskWhen::OnSave)
+    }
+}
+
 /// Options for browsing preview.
 #[derive(Debug, Default, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -852,7 +874,6 @@ pub(crate) fn get_semantic_tokens_options() -> SemanticTokensOptions {
 mod tests {
     use super::*;
     use serde_json::json;
-    use tinymist_project::PathPattern;
 
     fn update_config(config: &mut Config, update: &JsonValue) -> Result<()> {
         temp_env::with_vars_unset(Vec::<String>::new(), || config.update(update))

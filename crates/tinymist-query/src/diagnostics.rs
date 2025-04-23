@@ -1,11 +1,11 @@
 use std::borrow::Cow;
 
 use tinymist_project::LspWorld;
+use tinymist_world::vfs::WorkspaceResolver;
 use typst::syntax::Span;
 
-use crate::{prelude::*, LspWorldExt};
+use crate::{analysis::Analysis, prelude::*, LspWorldExt};
 
-use once_cell::sync::Lazy;
 use regex::RegexSet;
 
 /// Stores diagnostics for files.
@@ -14,22 +14,6 @@ pub type DiagnosticsMap = HashMap<Url, EcoVec<Diagnostic>>;
 type TypstDiagnostic = typst::diag::SourceDiagnostic;
 type TypstSeverity = typst::diag::Severity;
 
-/// Context for converting Typst diagnostics to LSP diagnostics.
-struct LocalDiagContext<'a> {
-    /// The world surface for Typst compiler.
-    pub world: &'a LspWorld,
-    /// The position encoding for the source.
-    pub position_encoding: PositionEncoding,
-}
-
-impl std::ops::Deref for LocalDiagContext<'_> {
-    type Target = LspWorld;
-
-    fn deref(&self) -> &Self::Target {
-        self.world
-    }
-}
-
 /// Converts a list of Typst diagnostics to LSP diagnostics,
 /// with potential refinements on the error messages.
 pub fn convert_diagnostics<'a>(
@@ -37,141 +21,159 @@ pub fn convert_diagnostics<'a>(
     errors: impl IntoIterator<Item = &'a TypstDiagnostic>,
     position_encoding: PositionEncoding,
 ) -> DiagnosticsMap {
-    let ctx = LocalDiagContext {
-        world,
+    let analysis = Analysis {
         position_encoding,
+        ..Analysis::default()
     };
-
-    let kvs = errors
-        .into_iter()
-        .flat_map(|error| {
-            convert_diagnostic(&ctx, error)
-                .map_err(move |conversion_err| {
-                    log::error!("could not convert Typst error to diagnostic: {conversion_err:?} error to convert: {error:?}");
-                })
-        });
-
-    let mut lookup = HashMap::new();
-    for (key, val) in kvs {
-        lookup.entry(key).or_insert_with(EcoVec::new).push(val);
-    }
-
-    lookup
+    let mut ctx = analysis.enter(world.clone());
+    DiagWorker::new(&mut ctx).convert_all(errors)
 }
 
-fn convert_diagnostic(
-    ctx: &LocalDiagContext,
-    typst_diagnostic: &TypstDiagnostic,
-) -> anyhow::Result<(Url, Diagnostic)> {
-    let typst_diagnostic = {
-        let mut diag = Cow::Borrowed(typst_diagnostic);
+/// The worker for collecting diagnostics.
+pub(crate) struct DiagWorker<'a> {
+    /// The world surface for Typst compiler.
+    pub ctx: &'a mut LocalContext,
+    /// Results
+    pub results: DiagnosticsMap,
+}
 
-        // Extend more refiners here by adding their instances.
-        let refiners: &[&dyn DiagnosticRefiner] =
-            &[&DeprecationRefiner::<13> {}, &OutOfRootHintRefiner {}];
+impl<'w> DiagWorker<'w> {
+    /// Creates a new `CheckDocWorker` instance.
+    pub fn new(ctx: &'w mut LocalContext) -> Self {
+        Self {
+            ctx,
+            results: DiagnosticsMap::default(),
+        }
+    }
 
-        // NOTE: It would be nice to have caching here.
-        for refiner in refiners {
-            if refiner.matches(&diag) {
-                diag = Cow::Owned(refiner.refine(diag.into_owned()));
+    /// Runs code check on the document.
+    pub fn check(mut self) -> Self {
+        for dep in self.ctx.world.depended_files() {
+            if WorkspaceResolver::is_package_file(dep) {
+                continue;
+            }
+
+            let Ok(source) = self.ctx.world.source(dep) else {
+                continue;
+            };
+
+            for diag in self.ctx.lint(&source) {
+                self.handle(&diag);
             }
         }
-        diag
-    };
 
-    let (id, span) = diagnostic_span_id(ctx, &typst_diagnostic);
-    let uri = ctx.uri_for_id(id)?;
-    let source = ctx.source(id)?;
-    let lsp_range = diagnostic_range(&source, span, ctx.position_encoding);
+        self
+    }
 
-    let lsp_severity = diagnostic_severity(typst_diagnostic.severity);
-    let lsp_message = diagnostic_message(&typst_diagnostic);
+    /// Converts a list of Typst diagnostics to LSP diagnostics.
+    pub fn convert_all<'a>(
+        mut self,
+        errors: impl IntoIterator<Item = &'a TypstDiagnostic>,
+    ) -> DiagnosticsMap {
+        for diag in errors {
+            self.handle(diag);
+        }
 
-    let tracepoints =
-        diagnostic_related_information(ctx, &typst_diagnostic, ctx.position_encoding)?;
+        self.results
+    }
 
-    let diagnostic = Diagnostic {
-        range: lsp_range,
-        severity: Some(lsp_severity),
-        message: lsp_message,
-        source: Some("typst".to_owned()),
-        related_information: Some(tracepoints),
-        ..Default::default()
-    };
-
-    Ok((uri, diagnostic))
-}
-
-fn tracepoint_to_relatedinformation(
-    ctx: &LocalDiagContext,
-    tracepoint: &Spanned<Tracepoint>,
-    position_encoding: PositionEncoding,
-) -> anyhow::Result<Option<DiagnosticRelatedInformation>> {
-    if let Some(id) = tracepoint.span.id() {
-        let uri = ctx.uri_for_id(id)?;
-        let source = ctx.source(id)?;
-
-        if let Some(typst_range) = source.range(tracepoint.span) {
-            let lsp_range = to_lsp_range(typst_range, &source, position_encoding);
-
-            return Ok(Some(DiagnosticRelatedInformation {
-                location: LspLocation {
-                    uri,
-                    range: lsp_range,
-                },
-                message: tracepoint.v.to_string(),
-            }));
+    /// Converts a list of Typst diagnostics to LSP diagnostics.
+    pub fn handle(&mut self, diag: &TypstDiagnostic) {
+        match self.convert_diagnostic(diag) {
+            Ok((uri, diagnostic)) => {
+                self.results.entry(uri).or_default().push(diagnostic);
+            }
+            Err(error) => {
+                log::error!("Failed to convert Typst diagnostic: {error:?}");
+            }
         }
     }
 
-    Ok(None)
-}
+    fn convert_diagnostic(
+        &self,
+        typst_diagnostic: &TypstDiagnostic,
+    ) -> anyhow::Result<(Url, Diagnostic)> {
+        let typst_diagnostic = {
+            let mut diag = Cow::Borrowed(typst_diagnostic);
 
-fn diagnostic_related_information(
-    project: &LocalDiagContext,
-    typst_diagnostic: &TypstDiagnostic,
-    position_encoding: PositionEncoding,
-) -> anyhow::Result<Vec<DiagnosticRelatedInformation>> {
-    let mut tracepoints = vec![];
+            // Extend more refiners here by adding their instances.
+            let refiners: &[&dyn DiagnosticRefiner] =
+                &[&DeprecationRefiner::<13> {}, &OutOfRootHintRefiner {}];
 
-    for tracepoint in &typst_diagnostic.trace {
-        if let Some(info) =
-            tracepoint_to_relatedinformation(project, tracepoint, position_encoding)?
-        {
-            tracepoints.push(info);
-        }
+            // NOTE: It would be nice to have caching here.
+            for refiner in refiners {
+                if refiner.matches(&diag) {
+                    diag = Cow::Owned(refiner.refine(diag.into_owned()));
+                }
+            }
+            diag
+        };
+
+        let (id, span) = self.diagnostic_span_id(&typst_diagnostic);
+        let uri = self.ctx.uri_for_id(id)?;
+        let source = self.ctx.source_by_id(id)?;
+        let lsp_range = self.diagnostic_range(&source, span);
+
+        let lsp_severity = diagnostic_severity(typst_diagnostic.severity);
+        let lsp_message = diagnostic_message(&typst_diagnostic);
+
+        let diagnostic = Diagnostic {
+            range: lsp_range,
+            severity: Some(lsp_severity),
+            message: lsp_message,
+            source: Some("typst".to_owned()),
+            related_information: (!typst_diagnostic.trace.is_empty()).then(|| {
+                typst_diagnostic
+                    .trace
+                    .iter()
+                    .flat_map(|tracepoint| self.to_related_info(tracepoint))
+                    .collect()
+            }),
+            ..Default::default()
+        };
+
+        Ok((uri, diagnostic))
     }
 
-    Ok(tracepoints)
-}
+    fn to_related_info(
+        &self,
+        tracepoint: &Spanned<Tracepoint>,
+    ) -> Option<DiagnosticRelatedInformation> {
+        let id = tracepoint.span.id()?;
+        // todo: expensive uri_for_id
+        let uri = self.ctx.uri_for_id(id).ok()?;
+        let source = self.ctx.source_by_id(id).ok()?;
 
-fn diagnostic_span_id(
-    ctx: &LocalDiagContext,
-    typst_diagnostic: &TypstDiagnostic,
-) -> (TypstFileId, Span) {
-    iter::once(typst_diagnostic.span)
-        .chain(typst_diagnostic.trace.iter().map(|trace| trace.span))
-        .find_map(|span| Some((span.id()?, span)))
-        .unwrap_or_else(|| (ctx.main(), Span::detached()))
-}
+        let typst_range = source.range(tracepoint.span)?;
+        let lsp_range = self.ctx.to_lsp_range(typst_range, &source);
 
-fn diagnostic_range(
-    source: &Source,
-    typst_span: Span,
-    position_encoding: PositionEncoding,
-) -> LspRange {
-    // Due to nvaner/typst-lsp#241 and maybe typst/typst#2035, we sometimes fail to
-    // find the span. In that case, we use a default span as a better
-    // alternative to panicking.
-    //
-    // This may have been fixed after Typst 0.7.0, but it's still nice to avoid
-    // panics in case something similar reappears.
-    match source.find(typst_span) {
-        Some(node) => {
-            let typst_range = node.range();
-            to_lsp_range(typst_range, source, position_encoding)
+        Some(DiagnosticRelatedInformation {
+            location: LspLocation {
+                uri,
+                range: lsp_range,
+            },
+            message: tracepoint.v.to_string(),
+        })
+    }
+
+    fn diagnostic_span_id(&self, typst_diagnostic: &TypstDiagnostic) -> (TypstFileId, Span) {
+        iter::once(typst_diagnostic.span)
+            .chain(typst_diagnostic.trace.iter().map(|trace| trace.span))
+            .find_map(|span| Some((span.id()?, span)))
+            .unwrap_or_else(|| (self.ctx.world.main(), Span::detached()))
+    }
+
+    fn diagnostic_range(&self, source: &Source, typst_span: Span) -> LspRange {
+        // Due to nvaner/typst-lsp#241 and maybe typst/typst#2035, we sometimes fail to
+        // find the span. In that case, we use a default span as a better
+        // alternative to panicking.
+        //
+        // This may have been fixed after Typst 0.7.0, but it's still nice to avoid
+        // panics in case something similar reappears.
+        match source.find(typst_span) {
+            Some(node) => self.ctx.to_lsp_range(node.range(), source),
+            None => LspRange::new(LspPosition::new(0, 0), LspPosition::new(0, 0)),
         }
-        None => LspRange::new(LspPosition::new(0, 0), LspPosition::new(0, 0)),
     }
 }
 
@@ -198,7 +200,7 @@ trait DiagnosticRefiner {
 
 struct DeprecationRefiner<const MINOR: usize>();
 
-static DEPRECATION_PATTERNS: Lazy<RegexSet> = Lazy::new(|| {
+static DEPRECATION_PATTERNS: LazyLock<RegexSet> = LazyLock::new(|| {
     RegexSet::new([
         r"unknown variable: style",
         r"unexpected argument: fill",

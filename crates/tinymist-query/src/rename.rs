@@ -9,13 +9,13 @@ use typst::{
     syntax::Span,
 };
 
+use crate::adt::interner::Interned;
 use crate::{
     analysis::{get_link_exprs, LinkObject, LinkTarget},
     find_references,
     prelude::*,
     prepare_renaming,
     syntax::{first_ancestor_expr, get_index_info, node_ancestors, Decl, RefExpr, SyntaxClass},
-    ty::Interned,
 };
 
 /// The [`textDocument/rename`] request is sent from the client to the server to
@@ -44,7 +44,7 @@ impl StatefulRequest for RenameRequest {
 
         let def = ctx.def_of_syntax(&source, doc, syntax.clone())?;
 
-        prepare_renaming(ctx, &syntax, &def)?;
+        prepare_renaming(&syntax, &def)?;
 
         match syntax {
             // todo: abs path
@@ -56,7 +56,7 @@ impl StatefulRequest for RenameRequest {
                     self.new_name
                 };
 
-                let def_fid = def.location(ctx.shared())?.0;
+                let def_fid = def.file_id()?;
                 // todo: rename in untitled files
                 let old_path = ctx.path_for_id(def_fid).ok()?.to_err().ok()?;
 
