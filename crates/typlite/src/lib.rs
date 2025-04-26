@@ -60,7 +60,12 @@ impl MarkdownDocument {
 
     /// Convert the content to a DOCX document
     pub fn to_docx(&self) -> Result<Vec<u8>> {
-        let mut converter = DocxConverter::new(self.feat.clone());
+        let mut converter = if let Some(style_path) = &self.feat.docx_style_path {
+            DocxConverter::from_config_file(self.feat.clone(), style_path)?
+        } else {
+            DocxConverter::new(self.feat.clone())
+        };
+        
         converter.convert(&self.base.root)
     }
 }
@@ -89,6 +94,8 @@ pub struct TypliteFeat {
     pub soft_error: bool,
     /// Remove HTML tags from the output.
     pub remove_html: bool,
+    /// Path to DOCX style configuration file
+    pub docx_style_path: Option<PathBuf>,
 }
 
 /// Task builder for converting a typst document to Markdown.

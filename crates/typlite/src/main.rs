@@ -32,6 +32,10 @@ pub struct CompileArgs {
     #[clap(long, default_value = None, value_name = "ASSETS_SRC_PATH")]
     pub assets_src_path: Option<String>,
 
+    /// Path to custom DOCX style configuration file in TOML format
+    #[clap(long, default_value = None, value_name = "DOCX_STYLE_PATH")]
+    pub docx_style_path: Option<String>,
+
     /// Print debug information of the document.
     #[clap(long)]
     pub debug_doc: bool,
@@ -79,6 +83,18 @@ fn main() -> typlite::Result<()> {
         }
         None => None,
     };
+    
+    // Parse DOCX style path if provided
+    let docx_style_path = match args.docx_style_path {
+        Some(style_path) => {
+            let path = PathBuf::from(style_path);
+            if !path.exists() {
+                return Err(format!("DOCX style file not found: {}", path.display()).into());
+            }
+            Some(path)
+        }
+        None => None,
+    };
 
     let universe = args.compile.resolve().map_err(|err| format!("{err:?}"))?;
     let world = universe.snapshot();
@@ -98,6 +114,7 @@ fn main() -> typlite::Result<()> {
         .with_feature(TypliteFeat {
             assets_path,
             assets_src_path,
+            docx_style_path,
             ..Default::default()
         })
         .with_format(format);

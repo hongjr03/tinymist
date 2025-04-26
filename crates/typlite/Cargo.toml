@@ -39,6 +39,8 @@ regex.workspace = true
 resvg = "0.45.1"
 md5 = "0.7.0"
 cmark-writer = "0.4.0"
+serde.workspace = true
+toml.workspace = true
 
 [dev-dependencies]
 insta.workspace = true

@@ -5,8 +5,10 @@
 //! - Writer: Functionality for rendering intermediate DocxNode structure to DOCX format
 //! - Styles: Document style management
 //! - Numbering: List numbering management
+//! - Config: Configuration for styles and numbering customization
 //! - Node structures: DocxNode and DocxInline representing document structure
 
+mod config;
 mod converter;
 mod image_processor;
 mod numbering;

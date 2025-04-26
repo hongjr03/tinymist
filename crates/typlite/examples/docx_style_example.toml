@@ -1,0 +1,230 @@
+# DOCX Style and Numbering Custom Configuration Example
+# This file demonstrates how to configure DOCX document styles and numbering formats through a TOML file
+
+#----------------------------------------------------------------------------
+# Document Style Configuration
+#----------------------------------------------------------------------------
+[styles]
+
+#----------------------------------------------------------------------------
+# Heading Style Configuration
+#----------------------------------------------------------------------------
+[styles.headings]
+# Level 1 Heading Style
+[styles.headings.heading1]
+size = 36            # Font size (36 = 18pt)
+font = "Arial"       # Font name
+bold = true          # Bold or not
+italic = false       # Italic or not
+color = "000080"     # Font color, blue (RGB format)
+# Line Spacing Configuration
+[styles.headings.heading1.line_spacing]
+rule = "auto"        # Line spacing rule: "auto", "exact", "atLeast"
+value = 360          # Line spacing value: 360 = 1.5x line spacing
+before = 240         # Space before paragraph: 240 = 12pt (unit: twips, 1pt = 20twips)
+after = 160          # Space after paragraph: 160 = 8pt
+# Indent Configuration
+[styles.headings.heading1.indent]
+left = 0             # Left indent (0 = no indent)
+right = 0            # Right indent (0 = no indent)
+
+# Level 2 Heading Style
+[styles.headings.heading2]
+size = 28
+font = "Arial"
+bold = true
+italic = false
+color = "800000"     # Dark red
+# Line Spacing Configuration
+[styles.headings.heading2.line_spacing]
+rule = "auto"
+value = 312          # 1.3x line spacing
+before = 200
+after = 120
+# Indent Configuration
+[styles.headings.heading2.indent]
+left = 240           # Left indent (240 = 12pt)
+special = "firstLine" # Special indent type: "firstLine", "hanging"
+special_value = 480  # Special indent value (480 = 24pt)
+
+# Level 3 Heading Style
+[styles.headings.heading3]
+size = 26
+font = "Arial"
+bold = true
+color = "008000"     # Green
+# Line Spacing Configuration
+[styles.headings.heading3.line_spacing]
+rule = "auto"
+value = 288          # 1.2x line spacing
+before = 160
+after = 80
+# Indent Configuration
+[styles.headings.heading3.indent]
+left = 480           # Left indent (480 = 24pt)
+first_line_chars = 4 # First line indent character count
+
+#----------------------------------------------------------------------------
+# Paragraph Style Configuration
+#----------------------------------------------------------------------------
+[styles.paragraphs]
+# Code Block Style
+[styles.paragraphs.code_block]
+size = 20            # Font size (20 = 10pt)
+font = "Consolas"    # Monospaced font
+bold = false
+italic = false
+color = "404040"     # Dark gray
+# Indent Configuration
+[styles.paragraphs.code_block.indent]
+left = 720           # Left indent size (720 = 36pt)
+right = 720          # Right indent size (720 = 36pt)
+# Line Spacing Configuration
+[styles.paragraphs.code_block.line_spacing]
+rule = "exact"       # Fixed line spacing
+value = 288          # Fixed value 288 = 14.4pt
+before = 120         # 6pt before paragraph
+after = 120          # 6pt after paragraph
+
+# Block Quote Style
+[styles.paragraphs.blockquote]
+size = 22
+font = "Georgia"
+italic = true
+color = "555555"     # Gray
+# Indent Configuration
+[styles.paragraphs.blockquote.indent]
+left = 1440          # Left indent size (1440 = 72pt)
+right = 720          # Right indent size (720 = 36pt)
+special = "firstLine" # First line indent
+special_value = 240  # First line indent value (240 = 12pt)
+# Line Spacing Configuration
+[styles.paragraphs.blockquote.line_spacing]
+rule = "atLeast"     # Minimum line spacing
+value = 312          # Minimum value 312 = 15.6pt
+before = 160         # 8pt before paragraph
+after = 160          # 8pt after paragraph
+
+# Image Caption Style
+[styles.paragraphs.caption]
+size = 18
+font = "Calibri"
+bold = false
+italic = true
+color = "4A4A4A"     # Gray
+alignment = "center" # Alignment: "left", "center", "right", "justify"
+# Line Spacing Configuration
+[styles.paragraphs.caption.line_spacing]
+rule = "auto"
+value = 240          # Normal line spacing (1x)
+before = 120         # 6pt before paragraph
+after = 240          # 12pt after paragraph
+
+# Math Formula Block Style
+[styles.paragraphs.math_block]
+size = 24
+alignment = "center" # Center alignment
+# Indent Configuration
+[styles.paragraphs.math_block.indent]
+left = 0             # No left indent
+right = 0            # No right indent
+# Line Spacing Configuration
+[styles.paragraphs.math_block.line_spacing]
+rule = "auto"
+value = 288          # 1.2x line spacing
+before = 200         # 10pt before paragraph
+after = 200          # 10pt after paragraph
+
+#----------------------------------------------------------------------------
+# Inline Element Style Configuration
+#----------------------------------------------------------------------------
+[styles.characters]
+# Inline Code Style
+[styles.characters.code_inline]
+size = 20
+font = "Consolas"
+color = "800080"     # Purple
+highlight_color = "F0F0F0" # Light gray background
+
+# Emphasis Style (typically italic)
+[styles.characters.emphasis]
+italic = true
+color = "0000FF"     # Blue
+
+# Strong Style (typically bold)
+[styles.characters.strong]
+bold = true
+color = "FF0000"     # Red
+
+# Highlight Style
+[styles.characters.highlight]
+highlight_color = "FFFF00" # Yellow highlight
+
+# Hyperlink Style
+[styles.characters.hyperlink]
+color = "0000FF"     # Blue
+underline = "single" # Single underline
+
+#----------------------------------------------------------------------------
+# Table Style Configuration
+#----------------------------------------------------------------------------
+[styles.tables]
+alignment = "center" # Table alignment: "left", "center", "right"
+
+#----------------------------------------------------------------------------
+# List Numbering Configuration
+#----------------------------------------------------------------------------
+[numbering]
+
+#----------------------------------------------------------------------------
+# Ordered List Configuration
+#----------------------------------------------------------------------------
+[numbering.ordered]
+# Ordered List Levels Configuration
+[numbering.ordered.levels]
+
+# First Level Ordered List
+[numbering.ordered.levels.0]
+format = "decimal"     # Number format: "decimal", "lowerLetter", "upperLetter", "lowerRoman", "upperRoman"
+text = "%1."           # Display format
+indent = 720           # Indent size
+hanging_indent = 360   # Hanging indent size
+
+# Second Level Ordered List
+[numbering.ordered.levels.1]
+format = "lowerLetter" # Lowercase letters: a, b, c...
+text = "%2)"
+indent = 1440
+hanging_indent = 360
+
+# Third Level Ordered List
+[numbering.ordered.levels.2]
+format = "lowerRoman"  # Lowercase Roman numerals: i, ii, iii...
+text = "%3."
+indent = 2160
+hanging_indent = 360
+
+#----------------------------------------------------------------------------
+# Unordered List Configuration
+#----------------------------------------------------------------------------
+[numbering.unordered]
+# Unordered List Levels Configuration
+[numbering.unordered.levels]
+
+# First Level Unordered List
+[numbering.unordered.levels.0]
+bullet = "•"          # Bullet symbol
+indent = 720          # Indent size
+hanging_indent = 360  # Hanging indent size
+
+# Second Level Unordered List
+[numbering.unordered.levels.1]
+bullet = "○"          # Empty circle symbol
+indent = 1440
+hanging_indent = 360
+
+# Third Level Unordered List
+[numbering.unordered.levels.2]
+bullet = "▪"          # Small square symbol
+indent = 2160
+hanging_indent = 360

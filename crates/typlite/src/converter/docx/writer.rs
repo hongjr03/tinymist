@@ -6,6 +6,7 @@ use ecow::EcoString;
 use std::fs;
 use std::io::Cursor;
 
+use crate::converter::docx::config::DocxConfig;
 use crate::converter::{FigureNode, FormatWriter};
 use crate::Result;
 use crate::TypliteFeat;
@@ -30,6 +31,18 @@ impl DocxWriter {
             _feat: feat,
             styles: DocxStyles::new(),
             numbering: DocxNumbering::new(),
+            list_level: 0,
+            list_numbering_count: 0,
+            image_processor: DocxImageProcessor::new(),
+        }
+    }
+    
+    /// Create a new writer with custom configuration
+    pub fn with_config(feat: TypliteFeat, config: DocxConfig) -> Self {
+        Self {
+            _feat: feat,
+            styles: DocxStyles::with_config(config.clone()),
+            numbering: DocxNumbering::with_config(config),
             list_level: 0,
             list_numbering_count: 0,
             image_processor: DocxImageProcessor::new(),

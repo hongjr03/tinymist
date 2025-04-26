@@ -1,0 +1,314 @@
+# Academic Paper DOCX Style Configuration
+# This configuration file contains standard formatting settings for formal academic papers
+
+#----------------------------------------------------------------------------
+# Document Style Configuration
+#----------------------------------------------------------------------------
+[styles]
+
+#----------------------------------------------------------------------------
+# Heading Style Configuration
+#----------------------------------------------------------------------------
+[styles.headings]
+# Paper Title
+[styles.headings.heading1]
+size = 32                # 16pt
+font = "Times New Roman"
+bold = true
+italic = false
+color = "000000"         # Black
+alignment = "center"     # Center aligned
+# Line Spacing Configuration
+[styles.headings.heading1.line_spacing]
+rule = "auto"
+value = 480   # 2.0 line spacing
+before = 200  # 10pt before paragraph
+after = 240   # 12pt after paragraph
+# Indent Configuration
+[styles.headings.heading1.indent]
+left = 0
+right = 0
+
+# Chapter Title
+[styles.headings.heading2]
+size = 28                # 14pt
+font = "Times New Roman"
+bold = true
+italic = false
+color = "000000"
+# Line Spacing Configuration
+[styles.headings.heading2.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 240  # 12pt before paragraph
+after = 120   # 6pt after paragraph
+# Indent Configuration
+[styles.headings.heading2.indent]
+left = 0
+right = 0
+
+# Section Title
+[styles.headings.heading3]
+size = 26                # 13pt
+font = "Times New Roman"
+bold = true
+italic = false
+color = "000000"
+# Line Spacing Configuration
+[styles.headings.heading3.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 160  # 8pt before paragraph
+after = 80    # 4pt after paragraph
+# Indent Configuration
+[styles.headings.heading3.indent]
+left = 0
+right = 0
+
+# Subsection Title
+[styles.headings.heading4]
+size = 24                # 12pt
+font = "Times New Roman"
+bold = true
+italic = false
+color = "000000"
+# Line Spacing Configuration
+[styles.headings.heading4.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 120  # 6pt before paragraph
+after = 60    # 3pt after paragraph
+
+# Sub-subsection Title
+[styles.headings.heading5]
+size = 24                # 12pt
+font = "Times New Roman"
+bold = false
+italic = true
+color = "000000"
+# Line Spacing Configuration
+[styles.headings.heading5.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 100  # 5pt before paragraph
+after = 40    # 2pt after paragraph
+
+#----------------------------------------------------------------------------
+# Paragraph Style Configuration
+#----------------------------------------------------------------------------
+[styles.paragraphs]
+# Body Paragraph
+[styles.paragraphs.normal]
+size = 24                # 12pt
+font = "Times New Roman"
+bold = false
+italic = false
+color = "000000"
+alignment = "justify"    # Justify alignment
+# Indent Configuration
+[styles.paragraphs.normal.indent]
+left = 0
+right = 0
+special = "firstLine"
+special_value = 480   # First line indent 24pt (2 characters)
+# Line Spacing Configuration
+[styles.paragraphs.normal.line_spacing]
+rule = "auto"
+value = 480   # 2.0 line spacing
+before = 0
+after = 0
+
+# Abstract Paragraph
+[styles.paragraphs.abstract]
+size = 24                # 12pt
+font = "Times New Roman"
+bold = false
+italic = false
+color = "000000"
+alignment = "justify"    # Justify alignment
+# Indent Configuration
+[styles.paragraphs.abstract.indent]
+left = 480  # Left indent 24pt
+right = 480 # Right indent 24pt
+# Line Spacing Configuration
+[styles.paragraphs.abstract.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 0
+after = 240   # 12pt after paragraph
+
+# Code Block Style
+[styles.paragraphs.code_block]
+size = 20            # 10pt
+font = "Courier New" # Monospace font
+bold = false
+italic = false
+color = "000000"
+# Indent Configuration
+[styles.paragraphs.code_block.indent]
+left = 720  # Left indent 36pt
+right = 720 # Right indent 36pt
+# Line Spacing Configuration
+[styles.paragraphs.code_block.line_spacing]
+rule = "exact"
+value = 300    # Fixed value 15pt
+before = 120   # 6pt before paragraph
+after = 120    # 6pt after paragraph
+
+# Block Quote Style
+[styles.paragraphs.blockquote]
+size = 22                # 11pt
+font = "Times New Roman"
+italic = true
+color = "000000"
+# Indent Configuration
+[styles.paragraphs.blockquote.indent]
+left = 720  # Left indent 36pt
+right = 720 # Right indent 36pt
+# Line Spacing Configuration
+[styles.paragraphs.blockquote.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 120  # 6pt before paragraph
+after = 120   # 6pt after paragraph
+
+# Figure Caption
+[styles.paragraphs.caption]
+size = 20                # 10pt
+font = "Times New Roman"
+bold = false
+italic = true
+color = "000000"
+alignment = "center"     # Center alignment
+# Line Spacing Configuration
+[styles.paragraphs.caption.line_spacing]
+rule = "auto"
+value = 300   # 1.25 line spacing
+before = 120  # 6pt before paragraph
+after = 240   # 12pt after paragraph
+
+# Math Block Style
+[styles.paragraphs.math_block]
+size = 24             # 12pt
+font = "Cambria Math" # Math formula font
+alignment = "center"  # Center alignment
+# Indent Configuration
+[styles.paragraphs.math_block.indent]
+left = 0
+right = 0
+# Line Spacing Configuration
+[styles.paragraphs.math_block.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 120  # 6pt before paragraph
+after = 120   # 6pt after paragraph
+
+# References Style
+[styles.paragraphs.reference]
+size = 22                # 11pt
+font = "Times New Roman"
+bold = false
+italic = false
+color = "000000"
+# Indent Configuration
+[styles.paragraphs.reference.indent]
+left = 0
+right = 0
+special = "hanging" # Hanging indent
+special_value = 480 # Hanging indent 24pt
+# Line Spacing Configuration
+[styles.paragraphs.reference.line_spacing]
+rule = "auto"
+value = 360   # 1.5 line spacing
+before = 0
+after = 60    # 3pt after paragraph
+
+#----------------------------------------------------------------------------
+# Inline Element Style Configuration
+#----------------------------------------------------------------------------
+[styles.characters]
+# Inline Code Style
+[styles.characters.code_inline]
+size = 22                  # 11pt
+font = "Courier New"
+color = "000000"
+highlight_color = "F2F2F2" # Light gray background
+
+# Emphasis Style (typically italic)
+[styles.characters.emphasis]
+italic = true
+color = "000000"
+
+# Strong Style (typically bold)
+[styles.characters.strong]
+bold = true
+color = "000000"
+
+# Hyperlink Style
+[styles.characters.hyperlink]
+color = "0563C1"     # Academic blue
+underline = "single" # Underline
+
+#----------------------------------------------------------------------------
+# Table Style Configuration
+#----------------------------------------------------------------------------
+[styles.tables]
+alignment = "center" # Center table alignment
+
+#----------------------------------------------------------------------------
+# List Numbering Configuration
+#----------------------------------------------------------------------------
+[numbering]
+
+#----------------------------------------------------------------------------
+# Ordered List Configuration
+#----------------------------------------------------------------------------
+[numbering.ordered]
+# Ordered List Levels Configuration
+[numbering.ordered.levels]
+
+# First Level Ordered List
+[numbering.ordered.levels."0"]
+format = "decimal"     # Number format: 1, 2, 3...
+text = "%1."
+indent = 720           # Indent 36pt
+hanging_indent = 360   # Hanging indent 18pt
+
+# Second Level Ordered List
+[numbering.ordered.levels."1"]
+format = "lowerLetter" # Lowercase letters: a, b, c...
+text = "%2)"
+indent = 1080
+hanging_indent = 360
+
+# Third Level Ordered List
+[numbering.ordered.levels."2"]
+format = "lowerRoman"  # Lowercase Roman numerals: i, ii, iii...
+text = "%3."
+indent = 1440
+hanging_indent = 360
+
+#----------------------------------------------------------------------------
+# Unordered List Configuration
+#----------------------------------------------------------------------------
+[numbering.unordered]
+# Unordered List Levels Configuration
+[numbering.unordered.levels]
+
+# First Level Unordered List
+[numbering.unordered.levels."0"]
+bullet = "•"           # Bullet symbol
+indent = 720           # Indent 36pt
+hanging_indent = 360   # Hanging indent 18pt
+
+# Second Level Unordered List
+[numbering.unordered.levels."1"]
+bullet = "○"           # Empty circle symbol
+indent = 1080
+hanging_indent = 360
+
+# Third Level Unordered List
+[numbering.unordered.levels."2"]
+bullet = "▪"           # Small square symbol
+indent = 1440
+hanging_indent = 360
