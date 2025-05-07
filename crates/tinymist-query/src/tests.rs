@@ -9,45 +9,30 @@ use std::{
 };
 
 use serde_json::{ser::PrettyFormatter, Serializer, Value};
-use tinymist_project::{CompileFontArgs, ExportTarget, LspCompileSnapshot, LspComputeGraph};
+use tinymist_project::{LspCompileSnapshot, LspComputeGraph};
 use tinymist_std::path::unix_slash;
 use tinymist_std::typst::TypstDocument;
 use tinymist_world::debug_loc::LspRange;
 use tinymist_world::package::PackageSpec;
 use tinymist_world::vfs::WorkspaceResolver;
-use tinymist_world::{EntryManager, EntryReader, EntryState, ShadowApi, TaskInputs};
-use typst::foundations::Bytes;
+use tinymist_world::{EntryReader, ShadowApi, TaskInputs};
 use typst::syntax::ast::{self, AstNode};
 use typst::syntax::{LinkedNode, Source, SyntaxKind, VirtualPath};
 use typst_shim::syntax::LinkedNodeExt;
 
-pub use crate::syntax::find_module_level_docs;
-pub use insta::assert_snapshot;
 pub use serde::Serialize;
 pub use serde_json::json;
-pub use tinymist_project::{LspUniverse, LspUniverseBuilder};
+pub use tinymist_project::LspUniverse;
+pub use tinymist_tests::{assert_snapshot, run_with_sources, with_settings};
 pub use tinymist_world::WorldComputeGraph;
 
+pub use crate::syntax::find_module_level_docs;
 use crate::{analysis::Analysis, prelude::LocalContext, LspPosition, PositionEncoding};
-use crate::{to_lsp_position, CompletionFeat, LspWorldExt};
+use crate::{to_lsp_position, to_typst_position, CompletionFeat};
 
 pub fn snapshot_testing(name: &str, f: &impl Fn(&mut LocalContext, PathBuf)) {
-    let name = if name.is_empty() { "playground" } else { name };
-
-    let mut settings = insta::Settings::new();
-    settings.set_prepend_module_to_snapshot(false);
-    settings.set_snapshot_path(format!("fixtures/{name}/snaps"));
-    settings.bind(|| {
-        let glob_path = format!("fixtures/{name}/*.typ");
-        insta::glob!(&glob_path, |path| {
-            let contents = std::fs::read_to_string(path).unwrap();
-            #[cfg(windows)]
-            let contents = contents.replace("\r\n", "\n");
-
-            run_with_sources(&contents, |verse, path| {
-                run_with_ctx(verse, path, f);
-            });
-        });
+    tinymist_tests::snapshot_testing!(name, |verse, path| {
+        run_with_ctx(verse, path, f);
     });
 }
 
@@ -143,64 +128,6 @@ pub fn compile_doc_for_test(
     WorldComputeGraph::new(snap)
 }
 
-pub fn run_with_sources<T>(source: &str, f: impl FnOnce(&mut LspUniverse, PathBuf) -> T) -> T {
-    let root = if cfg!(windows) {
-        PathBuf::from("C:\\root")
-    } else {
-        PathBuf::from("/root")
-    };
-    let mut verse = LspUniverseBuilder::build(
-        EntryState::new_rooted(root.as_path().into(), None),
-        ExportTarget::Paged,
-        Default::default(),
-        Default::default(),
-        LspUniverseBuilder::resolve_package(None, None),
-        Arc::new(
-            LspUniverseBuilder::resolve_fonts(CompileFontArgs {
-                ignore_system_fonts: true,
-                ..Default::default()
-            })
-            .unwrap(),
-        ),
-    );
-    let sources = source.split("-----");
-
-    let mut last_pw = None;
-    for (idx, source) in sources.enumerate() {
-        // find prelude
-        let mut source = source.trim_start();
-        let mut path = None;
-
-        if source.starts_with("//") {
-            let first_line = source.lines().next().unwrap();
-            let content = first_line.trim_start_matches("/").trim();
-
-            if let Some(path_attr) = content.strip_prefix("path:") {
-                source = source.strip_prefix(first_line).unwrap().trim();
-                path = Some(path_attr.trim().to_owned())
-            }
-        };
-
-        let path = path.unwrap_or_else(|| format!("/s{idx}.typ"));
-        let path = path.strip_prefix("/").unwrap_or(path.as_str());
-
-        let pw = root.join(Path::new(&path));
-        verse
-            .map_shadow(&pw, Bytes::from_string(source.to_owned()))
-            .unwrap();
-        last_pw = Some(pw);
-    }
-
-    let pw = last_pw.unwrap();
-    verse
-        .mutate_entry(EntryState::new_rooted(
-            root.as_path().into(),
-            Some(VirtualPath::new(pw.strip_prefix(root).unwrap())),
-        ))
-        .unwrap();
-    f(&mut verse, pw)
-}
-
 pub fn find_test_range(s: &Source) -> LspRange {
     let range = find_test_range_(s);
     crate::to_lsp_range(range, s, PositionEncoding::Utf16)
@@ -247,50 +174,60 @@ pub fn find_test_lsp_pos(s: &Source, offset: usize) -> LspPosition {
 }
 
 pub fn find_test_typst_pos(s: &Source) -> usize {
-    enum AstMatcher {
-        MatchAny { prev: bool },
-        MatchIdent { prev: bool },
+    enum PosMatcher {
+        Pos { prev: bool, ident: bool },
+        LoC { line: i32, column: i32 },
     }
-    use AstMatcher::*;
+    use PosMatcher::*;
 
-    let re = s
-        .text()
-        .find("/* position */")
-        .zip(Some(MatchAny { prev: true }));
-    let re = re.or_else(|| {
-        s.text()
-            .find("/* position after */")
-            .zip(Some(MatchAny { prev: false }))
-    });
-    let re = re.or_else(|| {
-        s.text()
-            .find("/* ident */")
-            .zip(Some(MatchIdent { prev: true }))
-    });
-    let re = re.or_else(|| {
-        s.text()
-            .find("/* ident after */")
-            .zip(Some(MatchIdent { prev: false }))
-    });
-    let (re, m) = re
-        .ok_or_else(|| panic!("No position marker found in source:\n{}", s.text()))
-        .unwrap();
+    fn pos(prev: bool, ident: bool) -> Option<PosMatcher> {
+        Some(Pos { prev, ident })
+    }
 
-    let n = LinkedNode::new(s.root());
-    let mut n = n.leaf_at_compat(re + 1).unwrap();
+    let re = s.text().find("/* position */").zip(pos(true, false));
+    let re = re.or_else(|| s.text().find("/* position after */").zip(pos(false, false)));
+    let re = re.or_else(|| s.text().find("/* ident */").zip(pos(true, true)));
+    let re = re.or_else(|| s.text().find("/* ident after */").zip(pos(false, true)));
+    let re = re.or_else(|| {
+        let re = s.text().find("/* loc ")?;
+        let (parts, _) = s.text()[re + "/* loc ".len()..]
+            .trim()
+            .split_once("*/")
+            .expect("bad loc marker");
+        let (line, column) = parts.split_once(',').expect("bad loc marker");
+        let line = line.trim().parse::<i32>().expect("bad loc marker");
+        let column = column.trim().parse::<i32>().expect("bad loc marker");
+        Some((re, LoC { line, column }))
+    });
 
-    let match_prev = match &m {
-        MatchAny { prev } => *prev,
-        MatchIdent { prev } => *prev,
-    };
-    let match_ident = match m {
-        MatchAny { .. } => false,
-        MatchIdent { .. } => true,
+    let Some((rel_offset, matcher)) = re else {
+        panic!("No (or bad) position marker found in source:\n{}", s.text())
     };
 
+    match matcher {
+        Pos { prev, ident } => {
+            let node = LinkedNode::new(s.root());
+            let node = node.leaf_at_compat(rel_offset + 1).unwrap();
+
+            match_by_pos(node, prev, ident)
+        }
+        LoC { line, column } => {
+            let column = if line != 0 { column } else { 0 };
+
+            let rel_pos = to_lsp_position(rel_offset, PositionEncoding::Utf16, s);
+            let pos = LspPosition {
+                line: (rel_pos.line as i32 + line) as u32,
+                character: (rel_pos.character as i32 + column) as u32,
+            };
+            to_typst_position(pos, PositionEncoding::Utf16, s).expect("invalid loc")
+        }
+    }
+}
+
+fn match_by_pos(mut n: LinkedNode, prev: bool, ident: bool) -> usize {
     'match_loop: loop {
         if n.kind().is_trivia() || n.kind().is_error() {
-            let m = if match_prev {
+            let m = if prev {
                 n.prev_sibling()
             } else {
                 n.next_sibling()
@@ -299,7 +236,7 @@ pub fn find_test_typst_pos(s: &Source) -> usize {
             continue;
         }
         if matches!(n.kind(), SyntaxKind::Named) {
-            if match_ident {
+            if ident {
                 n = n
                     .children()
                     .find(|n| matches!(n.kind(), SyntaxKind::Ident))
@@ -309,7 +246,7 @@ pub fn find_test_typst_pos(s: &Source) -> usize {
             }
             continue;
         }
-        if match_ident {
+        if ident {
             match n.kind() {
                 SyntaxKind::Closure => {
                     let closure = n.cast::<ast::Closure>().unwrap();
@@ -336,6 +273,18 @@ pub fn find_test_typst_pos(s: &Source) -> usize {
     }
 
     n.offset()
+}
+
+pub fn make_pos_annoation(source: &Source) -> (LspPosition, String) {
+    let pos = find_test_typst_pos(source);
+    let range_before = pos.saturating_sub(10)..pos;
+    let range_after = pos..pos.saturating_add(10).min(source.text().len());
+
+    let window_before = &source.text()[range_before];
+    let window_after = &source.text()[range_after];
+
+    let pos = to_lsp_position(pos, PositionEncoding::Utf16, source);
+    (pos, format!("{window_before}|{window_after}"))
 }
 
 pub fn make_range_annoation(source: &Source) -> String {
@@ -390,7 +339,12 @@ impl fmt::Display for JsonRepr {
         let mut ser = Serializer::with_formatter(w, PrettyFormatter::with_indent(b" "));
         self.0.serialize(&mut ser).unwrap();
 
-        f.write_str(&String::from_utf8(ser.into_inner().into_inner().unwrap()).unwrap())
+        let res = String::from_utf8(ser.into_inner().into_inner().unwrap()).unwrap();
+        // replace Span(number) to Span(..)
+        static REG: LazyLock<regex::Regex> =
+            LazyLock::new(|| regex::Regex::new(r#"Span\((\d+)\)"#).unwrap());
+        let res = REG.replace_all(&res, "Span(..)");
+        f.write_str(&res)
     }
 }
 

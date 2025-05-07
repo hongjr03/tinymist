@@ -6,7 +6,8 @@ use std::{
     sync::{Arc, LazyLock, OnceLock},
 };
 
-use tinymist_std::error::prelude::*;
+use ecow::EcoVec;
+use tinymist_std::{error::prelude::*, ImmutPath};
 use tinymist_vfs::{
     FileId, FsProvider, PathResolution, RevisingVfs, SourceCache, Vfs, WorkspaceResolver,
 };
@@ -358,7 +359,7 @@ impl<F: CompilerFeat> Drop for RevisingUniverse<'_, F> {
 
             // The registry has changed affects the vfs cache.
             log::info!("resetting shadow registry_changed");
-            self.vfs().reset_cache();
+            self.vfs.reset_read();
         }
         let view_changed = view_changed || self.vfs_changed();
 
@@ -403,7 +404,7 @@ impl<F: CompilerFeat> RevisingUniverse<'_, F> {
         let root_changed = self.inner.entry.workspace_root() != state.workspace_root();
         if root_changed {
             log::info!("resetting shadow root_changed");
-            self.vfs().reset_cache();
+            self.vfs.reset_read();
         }
 
         self.inner.mutate_entry_(state)
@@ -504,20 +505,28 @@ impl<F: CompilerFeat> CompilerWorld<F> {
         };
 
         if root_changed {
-            world.vfs.revise().reset_cache();
+            world.vfs.reset_read();
         }
 
         world
     }
 
-    pub fn take_cache(&mut self) -> SourceCache {
+    /// See [`Vfs::reset_read`].
+    pub fn reset_read(&mut self) {
+        self.vfs.reset_read();
+    }
+
+    /// See [`Vfs::take_source_cache`].
+    pub fn take_source_cache(&mut self) -> SourceCache {
         self.vfs.take_source_cache()
     }
 
-    pub fn clone_cache(&mut self) -> SourceCache {
+    /// See [`Vfs::clone_source_cache`].
+    pub fn clone_source_cache(&mut self) -> SourceCache {
         self.vfs.clone_source_cache()
     }
 
+    /// See [`SourceDb::take_state`].
     pub fn take_db(&mut self) -> SourceDb {
         self.source_db.take_state()
     }
@@ -537,6 +546,20 @@ impl<F: CompilerFeat> CompilerWorld<F> {
         self.inputs.clone()
     }
 
+    pub fn revision(&self) -> NonZeroUsize {
+        self.revision
+    }
+
+    pub fn evict_vfs(&mut self, threshold: usize) {
+        self.vfs.evict(threshold);
+    }
+
+    pub fn evict_source_cache(&mut self, threshold: usize) {
+        self.vfs
+            .clone_source_cache()
+            .evict(self.vfs.revision(), threshold);
+    }
+
     /// Resolve the real path for a file id.
     pub fn path_for_id(&self, id: FileId) -> Result<PathResolution, FileError> {
         self.vfs.file_path(id)
@@ -551,18 +574,37 @@ impl<F: CompilerFeat> CompilerWorld<F> {
         ))
     }
 
-    pub fn revision(&self) -> NonZeroUsize {
-        self.revision
+    pub fn file_id_by_path(&self, path: &Path) -> FileResult<FileId> {
+        // todo: source in packages
+        match self.id_for_path(path) {
+            Some(id) => Ok(id),
+            None => WorkspaceResolver::file_with_parent_root(path).ok_or_else(|| {
+                let reason = eco_format!("invalid path: {path:?}");
+                FileError::Other(Some(reason))
+            }),
+        }
     }
 
-    pub fn evict_vfs(&mut self, threshold: usize) {
-        self.vfs.evict(threshold);
+    pub fn source_by_path(&self, path: &Path) -> FileResult<Source> {
+        self.source(self.file_id_by_path(path)?)
     }
 
-    pub fn evict_source_cache(&mut self, threshold: usize) {
-        self.vfs
-            .clone_source_cache()
-            .evict(self.vfs.revision(), threshold);
+    pub fn depended_files(&self) -> EcoVec<FileId> {
+        let mut deps = EcoVec::new();
+        self.iter_dependencies(&mut |file_id| {
+            deps.push(file_id);
+        });
+        deps
+    }
+
+    pub fn depended_fs_paths(&self) -> EcoVec<ImmutPath> {
+        let mut deps = EcoVec::new();
+        self.iter_dependencies(&mut |file_id| {
+            if let Ok(path) = self.path_for_id(file_id) {
+                deps.push(path.as_path().into());
+            }
+        });
+        deps
     }
 
     /// A list of all available packages and optionally descriptions for them.
