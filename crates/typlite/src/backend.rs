@@ -482,9 +482,8 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::Square(data) => render_element_frame(node, data, out)?,
             Inline::Cite(data) => render_cite(data, out)?,
             Inline::Document(_) | Inline::Hide(_) | Inline::Metadata(_) | Inline::Page(_) => {}
-            Inline::FigureCaption(data) | Inline::FootnoteEntry(data) => {
-                render_inlines(&data.body, out)?
-            }
+            Inline::FigureCaption(data) => render_inlines(&data.body, out)?,
+            Inline::FootnoteEntry(_) => {}
             Inline::Footnote(data) => {
                 out.push_str("^[");
                 render_inlines(&data.body, out)?;
@@ -654,8 +653,8 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::Quote(data)
             | Inline::RawLine(data)
             | Inline::FigureCaption(data)
-            | Inline::FootnoteEntry(data)
             | Inline::OutlineEntry(data) => render_inlines_html(&data.body, out)?,
+            Inline::FootnoteEntry(_) => {}
             Inline::Circle(data)
             | Inline::Curve(data)
             | Inline::Ellipse(data)
@@ -1058,8 +1057,18 @@ fn render_cite(data: &InlineElementData, out: &mut String) -> Result<()> {
     let Some(key) = data.scalar("key").or_else(|| data.scalar("label")) else {
         bail!("typlite markdown cite rendering requires key or label");
     };
+    ensure_default_cite_field(data, "form", "normal")?;
+    ensure_default_cite_field(data, "style", "auto")?;
+
     out.push_str("[@");
     out.push_str(key.trim_start_matches('<').trim_end_matches('>'));
+    if let Some(supplement) = data
+        .inlines("supplement")
+        .filter(|value| has_semantic_inlines(value))
+    {
+        out.push_str(", ");
+        render_inlines(supplement, out)?;
+    }
     out.push(']');
 
     Ok(())
@@ -1069,26 +1078,59 @@ fn render_ref(data: &InlineElementData, out: &mut String) -> Result<()> {
     let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) else {
         bail!("typlite markdown ref rendering requires target or label");
     };
+    if let Some(form) = data.scalar("form").filter(|form| *form != "normal") {
+        bail!("typlite markdown ref rendering does not support form `{form}`");
+    }
+
+    let target = target.trim_start_matches('<').trim_end_matches('>');
     if let Some(supplement) = data
         .inlines("supplement")
-        .filter(|value| !value.is_empty() && !is_auto_inlines(value))
+        .filter(|value| has_semantic_inlines(value))
     {
-        out.push('[');
-        render_inlines(supplement, out)?;
-        out.push_str("](#");
-        out.push_str(target.trim_start_matches('<').trim_end_matches('>'));
-        out.push(')');
+        render_ref_link(target, supplement, out)?;
+        return Ok(());
+    }
+
+    if let Some(element) = data
+        .inlines("element")
+        .filter(|value| has_semantic_inlines(value))
+    {
+        render_ref_link(target, element, out)?;
         return Ok(());
     }
 
     out.push('@');
-    out.push_str(target.trim_start_matches('<').trim_end_matches('>'));
-
+    out.push_str(target);
     Ok(())
+}
+
+fn render_ref_link(target: &str, body: &[Inline], out: &mut String) -> Result<()> {
+    out.push('[');
+    render_inlines(body, out)?;
+    out.push_str("](#");
+    out.push_str(target);
+    out.push(')');
+    Ok(())
+}
+
+fn has_semantic_inlines(value: &[Inline]) -> bool {
+    !value.is_empty() && !is_auto_inlines(value) && !is_none_inlines(value)
 }
 
 fn is_auto_inlines(value: &[Inline]) -> bool {
     matches!(value, [Inline::Text(text)] if text.as_str() == "auto")
+}
+
+fn is_none_inlines(value: &[Inline]) -> bool {
+    matches!(value, [Inline::Text(text)] if text.as_str() == "none")
+}
+
+fn ensure_default_cite_field(data: &InlineElementData, field: &str, default: &str) -> Result<()> {
+    if let Some(value) = data.scalar(field).filter(|value| *value != default) {
+        bail!("typlite markdown cite rendering does not support {field} `{value}`");
+    }
+
+    Ok(())
 }
 
 fn render_structured_inline(

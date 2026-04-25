@@ -1,0 +1,18 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/reference_semantics.typ
+---
+# Target Section
+
+Plain reference: @target-section.
+
+Named reference: [the target section](#target-section).
+
+Explicit reference: [custom target](#target-section).
+
+Citation: [@target-section].
+
+Citation with supplement: [@target-section, chapter 2].
+
+Footnote call: ^[Footnote body with *emphasis*.]
