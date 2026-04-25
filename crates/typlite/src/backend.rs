@@ -1751,17 +1751,12 @@ fn render_ref(
         return Ok(());
     }
 
-    if let Some(element) = data
-        .inlines("element")
-        .filter(|value| has_semantic_inlines(value))
-    {
-        render_ref_link(target, element, bibliography, out)?;
+    if let Some(element) = data.blocks("element").filter(|value| !value.is_empty()) {
+        render_ref_element_link(target, element, bibliography, out)?;
         return Ok(());
     }
 
-    out.push('@');
-    out.push_str(target);
-    Ok(())
+    bail!("typlite markdown ref rendering requires supplement or resolved element for `{target}`")
 }
 
 fn render_citation_link(id: &str, key: &str, citation: &str, out: &mut String) {
@@ -1786,6 +1781,25 @@ fn render_ref_link(
     out.push_str(target);
     out.push(')');
     Ok(())
+}
+
+fn render_ref_element_link(
+    target: &str,
+    blocks: &[Block],
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    match blocks {
+        [Block::Heading { body, .. }] if has_semantic_inlines(body) => {
+            render_ref_link(target, body, bibliography, out)
+        }
+        [Block::Figure { caption, .. }] if has_semantic_inlines(caption) => {
+            render_ref_link(target, caption, bibliography, out)
+        }
+        _ => bail!(
+            "typlite markdown ref rendering cannot derive link text from resolved element `{target}`"
+        ),
+    }
 }
 
 fn render_inline_quote(

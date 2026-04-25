@@ -5,7 +5,7 @@ input_file: crates/typlite/fixtures/convert/reference_semantics.typ
 ---
 # Target Section
 
-Plain reference: @target-section.
+Plain reference: [Target Section](#target-section).
 
 Named reference: [the target section](#target-section).
 

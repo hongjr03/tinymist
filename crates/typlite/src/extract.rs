@@ -628,6 +628,13 @@ fn collect_element_field_value(
     mode: FieldMode,
     introspector: &Introspector,
 ) -> Result<ElementFieldValue> {
+    if name == "element" {
+        return Ok(ElementFieldValue::Blocks(collect_field_blocks(
+            children,
+            introspector,
+        )?));
+    }
+
     if is_content_field_name(name) {
         Ok(match mode {
             FieldMode::Block => {

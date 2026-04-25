@@ -476,6 +476,11 @@ impl InlineElementData {
     pub fn inlines(&self, name: &str) -> Option<&[Inline]> {
         self.field(name).and_then(ElementFieldValue::as_inlines)
     }
+
+    /// Returns a block field value by name.
+    pub fn blocks(&self, name: &str) -> Option<&[Block]> {
+        self.field(name).and_then(ElementFieldValue::as_blocks)
+    }
 }
 
 impl ElementFieldValue {
