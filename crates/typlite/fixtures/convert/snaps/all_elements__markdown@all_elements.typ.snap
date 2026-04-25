@@ -8,8 +8,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
 
 <!-- typlite-metadata: {"fixture":"all-elements"} -->
 
-Block body with   horizontal spacing and a 
- line break.
+Block body with
+
+horizontal spacing and a
+
+line break.
 
 <div style="column-count: 2; column-gap: calc(0% + 4pt)">
   Column one

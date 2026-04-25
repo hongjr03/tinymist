@@ -1,9 +1,12 @@
 //! Experimental extraction from Typst HTML custom elements into typlite IR.
 
 mod encoded;
+mod fields;
+mod flow;
+mod transport;
 
 use ecow::EcoString;
-use serde_json::{Map, Value};
+use serde_json::Value;
 use tinymist_std::error::prelude::*;
 use typst::introspection::Introspector;
 use typst_html::{HtmlDocument, HtmlElement, HtmlFrame, HtmlNode};
@@ -15,6 +18,10 @@ use crate::ir::{
     InlineElementData, ListItem, MathNode, TableAlign, TableCell, TableRow, TermItem,
     block_from_element_kind, inline_from_element_kind,
 };
+
+use self::fields::{content_fields, is_content_field_name};
+use self::flow::{flush_paragraph, table_alignment};
+use self::transport::TransportElement;
 
 /// Extracts typlite IR nodes from an HTML document root.
 pub fn extract_document(html: &HtmlDocument) -> Result<Document> {
@@ -143,77 +150,6 @@ impl<'a> Extractor<'a> {
             },
             None => None,
         })
-    }
-}
-
-struct TransportElement<'a> {
-    element: &'a HtmlElement,
-    encoded: Option<Map<String, Value>>,
-}
-
-impl<'a> TransportElement<'a> {
-    fn new(element: &'a HtmlElement) -> Result<Self> {
-        Ok(Self {
-            element,
-            encoded: encoded_object(element)?,
-        })
-    }
-
-    fn field(&self, name: &str) -> Option<&'a [HtmlNode]> {
-        field_children(self.element, name)
-    }
-
-    fn encoded_field(&self, name: &str) -> Option<&Value> {
-        self.encoded.as_ref().and_then(|object| object.get(name))
-    }
-
-    fn scalar(&self, name: &str) -> Option<EcoString> {
-        if let Some(value) = self.encoded_field(name) {
-            return Some(encoded::scalar(value));
-        }
-
-        self.field(name).map(collect_text_without_frames)
-    }
-
-    fn bool(&self, name: &str) -> bool {
-        self.scalar(name)
-            .is_some_and(|value| value.as_str() == "true")
-    }
-
-    fn content_blocks(&self, name: &str, introspector: &Introspector) -> Result<Vec<Block>> {
-        if let Some(children) = self.field(name) {
-            return collect_item_blocks(children, introspector);
-        }
-
-        if let Some(value) = self.encoded_field(name) {
-            return encoded::content_blocks(value, introspector);
-        }
-
-        Ok(Vec::new())
-    }
-
-    fn content_inlines(&self, name: &str, introspector: &Introspector) -> Result<Vec<Inline>> {
-        if let Some(children) = self.field(name) {
-            return collect_inlines(children, introspector);
-        }
-
-        if let Some(value) = self.encoded_field(name) {
-            return encoded::content_inlines(value, introspector);
-        }
-
-        Ok(Vec::new())
-    }
-
-    fn math(&self, name: &str) -> Result<MathNode> {
-        if self.field(name).is_some() {
-            return math_field(self.element, name);
-        }
-
-        if let Some(value) = self.encoded_field(name) {
-            return encoded::math_node(value);
-        }
-
-        math_field(self.element, name)
     }
 }
 
@@ -439,15 +375,6 @@ fn collect_table_alignments(element: &HtmlElement) -> Vec<TableAlign> {
     }
 }
 
-fn table_alignment(value: &str) -> TableAlign {
-    match value.trim() {
-        "left" | "start" => TableAlign::Left,
-        "center" | "horizon" => TableAlign::Center,
-        "right" | "end" => TableAlign::Right,
-        _ => TableAlign::Default,
-    }
-}
-
 fn collect_table_cells(
     node: &HtmlNode,
     cell_kind: &str,
@@ -511,116 +438,6 @@ fn collect_item_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Resul
 
     flush_paragraph(&mut inlines, &mut blocks);
     Ok(blocks)
-}
-
-fn flush_paragraph(inlines: &mut Vec<Inline>, blocks: &mut Vec<Block>) {
-    if inlines.iter().any(inline_has_content) {
-        blocks.push(Block::Paragraph(std::mem::take(inlines)));
-    } else {
-        inlines.clear();
-    }
-}
-
-fn inline_has_content(inline: &Inline) -> bool {
-    match inline {
-        Inline::Text(text) => !text.trim().is_empty(),
-        Inline::Linebreak => false,
-        Inline::Frame(_) => true,
-        Inline::Emph(body)
-        | Inline::Strong(body)
-        | Inline::Strike(body)
-        | Inline::Sub(body)
-        | Inline::Super(body) => body.iter().any(inline_has_content),
-        Inline::Math(_) => true,
-        Inline::Link { dest, body } => !dest.is_empty() || body.iter().any(inline_has_content),
-        Inline::Raw { text, .. } => !text.is_empty(),
-        Inline::Circle(data)
-        | Inline::Curve(data)
-        | Inline::Ellipse(data)
-        | Inline::Line(data)
-        | Inline::Path(data)
-        | Inline::Polygon(data)
-        | Inline::Rect(data)
-        | Inline::Square(data) => data
-            .inlines("frame")
-            .is_some_and(|frames| !frames.is_empty()),
-        Inline::Image(data) => data
-            .scalar("source")
-            .is_some_and(|source| !source.is_empty()),
-        Inline::Box(data)
-        | Inline::Cite(data)
-        | Inline::CurveClose(data)
-        | Inline::CurveCubic(data)
-        | Inline::CurveLine(data)
-        | Inline::CurveMove(data)
-        | Inline::CurveQuad(data)
-        | Inline::Document(data)
-        | Inline::FigureCaption(data)
-        | Inline::Footnote(data)
-        | Inline::FootnoteEntry(data)
-        | Inline::GridCell(data)
-        | Inline::GridFooter(data)
-        | Inline::GridHeader(data)
-        | Inline::GridHline(data)
-        | Inline::GridVline(data)
-        | Inline::H(data)
-        | Inline::Hide(data)
-        | Inline::Highlight(data)
-        | Inline::MathAccent(data)
-        | Inline::MathAttach(data)
-        | Inline::MathBinom(data)
-        | Inline::MathCancel(data)
-        | Inline::MathCases(data)
-        | Inline::MathClass(data)
-        | Inline::MathFrac(data)
-        | Inline::MathLimits(data)
-        | Inline::MathLr(data)
-        | Inline::MathMat(data)
-        | Inline::MathMid(data)
-        | Inline::MathOp(data)
-        | Inline::MathOverbrace(data)
-        | Inline::MathOverbracket(data)
-        | Inline::MathOverline(data)
-        | Inline::MathOverparen(data)
-        | Inline::MathOvershell(data)
-        | Inline::MathPrimes(data)
-        | Inline::MathRoot(data)
-        | Inline::MathScripts(data)
-        | Inline::MathStretch(data)
-        | Inline::MathUnderbrace(data)
-        | Inline::MathUnderbracket(data)
-        | Inline::MathUnderline(data)
-        | Inline::MathUnderparen(data)
-        | Inline::MathUndershell(data)
-        | Inline::MathVec(data)
-        | Inline::Metadata(data)
-        | Inline::Move(data)
-        | Inline::OutlineEntry(data)
-        | Inline::Overline(data)
-        | Inline::Pad(data)
-        | Inline::Page(data)
-        | Inline::ParLine(data)
-        | Inline::PdfArtifact(data)
-        | Inline::PdfAttach(data)
-        | Inline::PdfEmbed(data)
-        | Inline::Place(data)
-        | Inline::PlaceFlush(data)
-        | Inline::Quote(data)
-        | Inline::RawLine(data)
-        | Inline::Ref(data)
-        | Inline::Repeat(data)
-        | Inline::Rotate(data)
-        | Inline::Scale(data)
-        | Inline::Skew(data)
-        | Inline::Smallcaps(data)
-        | Inline::Smartquote(data)
-        | Inline::TableCell(data)
-        | Inline::TableFooter(data)
-        | Inline::TableHeader(data)
-        | Inline::TableHline(data)
-        | Inline::TableVline(data)
-        | Inline::Underline(data) => data.body.iter().any(inline_has_content),
-    }
 }
 
 fn collect_inlines(nodes: &[HtmlNode], introspector: &Introspector) -> Result<Vec<Inline>> {
@@ -744,22 +561,22 @@ fn collect_element_fields(
     let mut fields = Vec::new();
     let transport = TransportElement::new(element)?;
 
-    let Some(object) = transport.encoded.as_ref() else {
+    if transport.encoded.is_none() {
         return Ok(fields);
-    };
+    }
 
     for name in spec.fields.iter().copied() {
-        if is_content_field_name(name)
+        if let Some(value) = transport.encoded_field(name) {
+            fields.push(ElementField {
+                name,
+                value: encoded::element_field_value(name, value, mode, introspector)?,
+            });
+        } else if is_content_field_name(name)
             && let Some(children) = transport.field(name)
         {
             fields.push(ElementField {
                 name,
                 value: collect_element_field_value(name, children, mode, introspector)?,
-            });
-        } else if let Some(value) = object.get(name) {
-            fields.push(ElementField {
-                name,
-                value: encoded::element_field_value(name, value, mode, introspector)?,
             });
         }
     }
@@ -804,29 +621,6 @@ fn collect_element_field_value(
             introspector,
         )))
     }
-}
-
-fn content_fields(spec: &'static ElementSpec) -> impl Iterator<Item = &'static str> {
-    spec.fields
-        .iter()
-        .copied()
-        .filter(|field| is_content_field_name(field))
-}
-
-fn is_content_field_name(field: &str) -> bool {
-    matches!(
-        field,
-        "body"
-            | "children"
-            | "title"
-            | "caption"
-            | "attribution"
-            | "term"
-            | "description"
-            | "supplement"
-            | "citation"
-            | "element"
-    )
 }
 
 fn spec_by_kind(kind: &str) -> Option<&'static ElementSpec> {
@@ -907,38 +701,11 @@ fn attr(element: &HtmlElement, name: &str) -> Option<EcoString> {
 }
 
 fn field_value(element: &HtmlElement, name: &str) -> Option<EcoString> {
-    if let Some(value) = encoded_field(element, name).ok().flatten() {
-        return Some(encoded::scalar(&value));
+    if let Ok(transport) = TransportElement::new(element) {
+        return transport.scalar(name);
     }
 
     field_element(element, name).map(|field| collect_text_without_frames(&field.children))
-}
-
-fn encoded_field(element: &HtmlElement, name: &str) -> Result<Option<Value>> {
-    Ok(encoded_object(element)?.and_then(|object| object.get(name).cloned()))
-}
-
-fn encoded_object(element: &HtmlElement) -> Result<Option<Map<String, Value>>> {
-    if attr(element, "data-typlite-ir").as_deref() != Some("true") {
-        return Ok(None);
-    }
-
-    let raw = collect_text_without_frames(&element.children);
-    if raw.trim().is_empty() {
-        return Ok(None);
-    }
-
-    let value =
-        serde_json::from_str::<Value>(&raw).with_context_ut("cannot parse typlite IR", || {
-            Some(Box::new([
-                ("tag", tag_name(element).unwrap_or_default()),
-                ("raw", raw.to_string()),
-            ]))
-        })?;
-    let Value::Object(object) = value else {
-        bail!("typlite IR must be encoded as an object, got {value}");
-    };
-    Ok(Some(object))
 }
 
 fn collect_text_without_frames(nodes: &[HtmlNode]) -> EcoString {

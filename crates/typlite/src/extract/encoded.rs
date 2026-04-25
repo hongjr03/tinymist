@@ -13,10 +13,9 @@ use crate::ir::{
     block_from_element_kind, inline_from_element_kind,
 };
 
-use super::{
-    FieldMode, content_fields, flush_paragraph, inline_has_content, is_content_field_name,
-    table_alignment,
-};
+use super::FieldMode;
+use super::fields::{content_fields, is_content_field_name};
+use super::flow::{flush_paragraph, inline_has_content, table_alignment};
 
 fn list_items_from_json(
     value: Option<&Value>,
@@ -350,7 +349,7 @@ fn html_elem_inlines_from_json(
             _ => None,
         })
         .collect::<EcoString>();
-    let value = serde_json::from_str::<Value>(&raw).with_context_ut(
+    let value = parse_json_prefix(&raw).with_context_ut(
         "cannot parse nested typlite HTML transport",
         || {
             Some(Box::new([
@@ -378,6 +377,36 @@ fn html_elem_inlines_from_json(
                 .transpose()?
                 .unwrap_or_default(),
         )],
+        "link" => vec![Inline::Link {
+            dest: json_scalar(object, "dest").unwrap_or_default(),
+            body: object
+                .get("body")
+                .map(|body| content_inlines(body, introspector))
+                .transpose()?
+                .unwrap_or_default(),
+        }],
+        "strike" => vec![Inline::Strike(
+            object
+                .get("body")
+                .map(|body| content_inlines(body, introspector))
+                .transpose()?
+                .unwrap_or_default(),
+        )],
+        "sub" => vec![Inline::Sub(
+            object
+                .get("body")
+                .map(|body| content_inlines(body, introspector))
+                .transpose()?
+                .unwrap_or_default(),
+        )],
+        "super" => vec![Inline::Super(
+            object
+                .get("body")
+                .map(|body| content_inlines(body, introspector))
+                .transpose()?
+                .unwrap_or_default(),
+        )],
+        "linebreak" => vec![Inline::Linebreak],
         "raw" => vec![Inline::Raw {
             lang: json_scalar(object, "lang").filter(|lang| lang.as_str() != "none"),
             text: json_scalar(object, "text").unwrap_or_default(),
@@ -403,6 +432,15 @@ fn html_elem_inlines_from_json(
             vec![inline]
         }
     })
+}
+
+fn parse_json_prefix(raw: &str) -> Result<Value> {
+    serde_json::Deserializer::from_str(raw)
+        .into_iter::<Value>()
+        .next()
+        .transpose()
+        .context_ut("cannot parse JSON payload")?
+        .context("missing JSON payload")
 }
 
 fn block_from_object(
@@ -644,9 +682,13 @@ fn json_scalar(object: &Map<String, Value>, name: &str) -> Option<EcoString> {
 }
 
 fn spec_by_selector_or_kind(kind: &str) -> Option<&'static ElementSpec> {
-    ELEMENTS
-        .iter()
-        .find(|spec| spec.selector == kind || spec.kind.name() == kind)
+    ELEMENTS.iter().find(|spec| {
+        spec.selector == kind || spec.kind.name() == kind || is_typst_alias(kind, spec)
+    })
+}
+
+fn is_typst_alias(kind: &str, spec: &ElementSpec) -> bool {
+    matches!((kind, spec.selector), ("caption", "figure.caption"))
 }
 
 pub(super) fn math_node(value: &Value) -> Result<MathNode> {
