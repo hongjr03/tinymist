@@ -39,7 +39,7 @@ use typst_syntax::{FileId, Span};
 
 use crate::backend::{BibliographyContext, render_markdown_with_bibliography};
 use crate::extract::extract_document;
-use crate::ir::{Block, Document, ElementFieldValue, Inline};
+use crate::ir::{BibliographyBlock, Block, Document, Inline};
 
 pub use tinymist_project::CompileOnceArgs;
 
@@ -363,11 +363,12 @@ impl BibliographyContext {
             sources.extend(bibliography_sources(bibliography)?);
             if style.is_none() {
                 style = bibliography
-                    .scalar("style")
+                    .style
+                    .as_deref()
                     .filter(|value| !is_auto_or_none(value))
                     .map(str::to_owned);
             }
-            full |= bibliography.scalar("full") == Some("true");
+            full |= bibliography.full;
         }
 
         let library = load_bibliography_sources(world, entry, &sources)?;
@@ -393,34 +394,29 @@ enum BibliographySource {
     String(String),
 }
 
-fn collect_bibliography_blocks<'a>(
-    blocks: &'a [Block],
-    out: &mut Vec<&'a crate::ir::BlockElementData>,
-) {
+fn collect_bibliography_blocks<'a>(blocks: &'a [Block], out: &mut Vec<&'a BibliographyBlock>) {
     for block in blocks {
         match block {
             Block::Bibliography(data) => out.push(data),
-            Block::Quote(blocks) => collect_bibliography_blocks(blocks, out),
-            Block::Figure { body, .. }
-            | Block::Align { body, .. }
-            | Block::Block(crate::ir::BlockElementData { body, .. })
-            | Block::Columns(crate::ir::BlockElementData { body, .. })
-            | Block::Move(crate::ir::BlockElementData { body, .. })
-            | Block::Pad(crate::ir::BlockElementData { body, .. })
-            | Block::Rotate(crate::ir::BlockElementData { body, .. })
-            | Block::Scale(crate::ir::BlockElementData { body, .. })
-            | Block::Skew(crate::ir::BlockElementData { body, .. })
-            | Block::Stack(crate::ir::BlockElementData { body, .. })
-            | Block::Title(crate::ir::BlockElementData { body, .. }) => {
-                collect_bibliography_blocks(body, out);
-            }
-            Block::List { items, .. } => {
-                for item in items {
+            Block::Quote(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Figure(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Align(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Block(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Columns(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Move(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Pad(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Rotate(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Scale(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Skew(data) => collect_bibliography_blocks(&data.body, out),
+            Block::Stack(data) => collect_bibliography_blocks(&data.children, out),
+            Block::Title(data) => collect_bibliography_blocks(&data.body, out),
+            Block::List(data) => {
+                for item in &data.items {
                     collect_bibliography_blocks(&item.body, out);
                 }
             }
-            Block::Terms { items } => {
-                for item in items {
+            Block::Terms(data) => {
+                for item in &data.items {
                     collect_bibliography_blocks(&item.description, out);
                 }
             }
@@ -429,8 +425,8 @@ fn collect_bibliography_blocks<'a>(
     }
 }
 
-fn bibliography_sources(data: &crate::ir::BlockElementData) -> Result<Vec<BibliographySource>> {
-    let Some(raw) = data.scalar("sources").filter(|value| !value.is_empty()) else {
+fn bibliography_sources(data: &BibliographyBlock) -> Result<Vec<BibliographySource>> {
+    let Some(raw) = data.sources.as_deref().filter(|value| !value.is_empty()) else {
         return Ok(Vec::new());
     };
 
@@ -569,33 +565,30 @@ fn parse_bibliography_source(text: &str, path: Option<&str>) -> Result<Library> 
 fn collect_cite_keys(blocks: &[Block], out: &mut Vec<String>) {
     for block in blocks {
         match block {
-            Block::Heading { body, .. } | Block::Paragraph(body) => {
-                collect_cite_keys_in_inlines(body, out);
+            Block::Heading(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Block::Paragraph(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Block::Quote(data) => collect_cite_keys(&data.body, out),
+            Block::Figure(data) => {
+                collect_cite_keys(&data.body, out);
+                collect_cite_keys_in_inlines(&data.caption, out);
             }
-            Block::Quote(blocks) => collect_cite_keys(blocks, out),
-            Block::Figure { body, caption, .. } => {
-                collect_cite_keys(body, out);
-                collect_cite_keys_in_inlines(caption, out);
-            }
-            Block::Align { body, .. }
-            | Block::Block(crate::ir::BlockElementData { body, .. })
-            | Block::Columns(crate::ir::BlockElementData { body, .. })
-            | Block::Move(crate::ir::BlockElementData { body, .. })
-            | Block::Pad(crate::ir::BlockElementData { body, .. })
-            | Block::Rotate(crate::ir::BlockElementData { body, .. })
-            | Block::Scale(crate::ir::BlockElementData { body, .. })
-            | Block::Skew(crate::ir::BlockElementData { body, .. })
-            | Block::Stack(crate::ir::BlockElementData { body, .. })
-            | Block::Title(crate::ir::BlockElementData { body, .. }) => {
-                collect_cite_keys(body, out)
-            }
-            Block::List { items, .. } => {
-                for item in items {
+            Block::Align(data) => collect_cite_keys(&data.body, out),
+            Block::Block(data) => collect_cite_keys(&data.body, out),
+            Block::Columns(data) => collect_cite_keys(&data.body, out),
+            Block::Move(data) => collect_cite_keys(&data.body, out),
+            Block::Pad(data) => collect_cite_keys(&data.body, out),
+            Block::Rotate(data) => collect_cite_keys(&data.body, out),
+            Block::Scale(data) => collect_cite_keys(&data.body, out),
+            Block::Skew(data) => collect_cite_keys(&data.body, out),
+            Block::Stack(data) => collect_cite_keys(&data.children, out),
+            Block::Title(data) => collect_cite_keys(&data.body, out),
+            Block::List(data) => {
+                for item in &data.items {
                     collect_cite_keys(&item.body, out);
                 }
             }
-            Block::Terms { items } => {
-                for item in items {
+            Block::Terms(data) => {
+                for item in &data.items {
                     collect_cite_keys_in_inlines(&item.term, out);
                     collect_cite_keys(&item.description, out);
                 }
@@ -608,7 +601,7 @@ fn collect_cite_keys(blocks: &[Block], out: &mut Vec<String>) {
 fn collect_cite_keys_in_inlines(inlines: &[Inline], out: &mut Vec<String>) {
     for inline in inlines {
         if let Inline::Cite(data) = inline {
-            if let Some(key) = data.scalar("key").or_else(|| data.scalar("label")) {
+            if let Some(key) = data.key.as_deref() {
                 let key = key.trim_start_matches('<').trim_end_matches('>').to_owned();
                 if !out.contains(&key) {
                     out.push(key);
@@ -617,122 +610,57 @@ fn collect_cite_keys_in_inlines(inlines: &[Inline], out: &mut Vec<String>) {
         }
 
         match inline {
-            Inline::Emph(children)
-            | Inline::Strong(children)
-            | Inline::Strike(children)
-            | Inline::Sub(children)
-            | Inline::Super(children) => collect_cite_keys_in_inlines(children, out),
+            Inline::Emph(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Strong(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Strike(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Sub(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Super(data) => collect_cite_keys_in_inlines(&data.body, out),
             Inline::Math(_)
             | Inline::Text(_)
-            | Inline::Linebreak
+            | Inline::Linebreak(_)
             | Inline::Frame(_)
-            | Inline::Raw { .. } => {}
-            Inline::Link { body, .. } => collect_cite_keys_in_inlines(body, out),
-            _ => {
-                if let Some(children) = inline.generated_body() {
-                    collect_cite_keys_in_inlines(children, out);
-                }
-                for field in inline_fields(inline) {
-                    collect_cite_keys_in_field(field, out);
-                }
+            | Inline::Raw(_) => {}
+            Inline::Link(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Box(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Circle(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Curve(data) => collect_cite_keys_in_inlines(&data.components, out),
+            Inline::Ellipse(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::FigureCaption(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Footnote(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::GridCell(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::GridFooter(data) => collect_cite_keys_in_inlines(&data.children, out),
+            Inline::GridHeader(data) => collect_cite_keys_in_inlines(&data.children, out),
+            Inline::Hide(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Highlight(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::MathCases(data) => collect_cite_keys_in_inlines(&data.children, out),
+            Inline::MathVec(data) => collect_cite_keys_in_inlines(&data.children, out),
+            Inline::Move(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Overline(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Pad(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Page(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::PdfArtifact(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Place(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Quote(data) => {
+                collect_cite_keys_in_inlines(&data.attribution, out);
+                collect_cite_keys_in_inlines(&data.body, out);
             }
+            Inline::RawLine(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Ref(data) => {
+                collect_cite_keys_in_inlines(&data.supplement, out);
+                collect_cite_keys_in_inlines(&data.citation, out);
+                collect_cite_keys(&data.element, out);
+            }
+            Inline::Repeat(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Rotate(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Scale(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Skew(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::Smallcaps(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::TableCell(data) => collect_cite_keys_in_inlines(&data.body, out),
+            Inline::TableFooter(data) => collect_cite_keys_in_inlines(&data.children, out),
+            Inline::TableHeader(data) => collect_cite_keys_in_inlines(&data.children, out),
+            Inline::Underline(data) => collect_cite_keys_in_inlines(&data.body, out),
+            _ => {}
         }
-    }
-}
-
-fn inline_fields(inline: &Inline) -> &[crate::ir::ElementField] {
-    match inline {
-        Inline::Box(data)
-        | Inline::Circle(data)
-        | Inline::Cite(data)
-        | Inline::Curve(data)
-        | Inline::CurveClose(data)
-        | Inline::CurveCubic(data)
-        | Inline::CurveLine(data)
-        | Inline::CurveMove(data)
-        | Inline::CurveQuad(data)
-        | Inline::Document(data)
-        | Inline::Ellipse(data)
-        | Inline::FigureCaption(data)
-        | Inline::Footnote(data)
-        | Inline::FootnoteEntry(data)
-        | Inline::GridCell(data)
-        | Inline::GridFooter(data)
-        | Inline::GridHeader(data)
-        | Inline::GridHline(data)
-        | Inline::GridVline(data)
-        | Inline::H(data)
-        | Inline::Hide(data)
-        | Inline::Highlight(data)
-        | Inline::Image(data)
-        | Inline::Line(data)
-        | Inline::MathAccent(data)
-        | Inline::MathAttach(data)
-        | Inline::MathBinom(data)
-        | Inline::MathCancel(data)
-        | Inline::MathCases(data)
-        | Inline::MathClass(data)
-        | Inline::MathFrac(data)
-        | Inline::MathLimits(data)
-        | Inline::MathLr(data)
-        | Inline::MathMat(data)
-        | Inline::MathMid(data)
-        | Inline::MathOp(data)
-        | Inline::MathOverbrace(data)
-        | Inline::MathOverbracket(data)
-        | Inline::MathOverline(data)
-        | Inline::MathOverparen(data)
-        | Inline::MathOvershell(data)
-        | Inline::MathPrimes(data)
-        | Inline::MathRoot(data)
-        | Inline::MathScripts(data)
-        | Inline::MathStretch(data)
-        | Inline::MathUnderbrace(data)
-        | Inline::MathUnderbracket(data)
-        | Inline::MathUnderline(data)
-        | Inline::MathUnderparen(data)
-        | Inline::MathUndershell(data)
-        | Inline::MathVec(data)
-        | Inline::Metadata(data)
-        | Inline::Move(data)
-        | Inline::OutlineEntry(data)
-        | Inline::Overline(data)
-        | Inline::Pad(data)
-        | Inline::Page(data)
-        | Inline::ParLine(data)
-        | Inline::Path(data)
-        | Inline::PdfArtifact(data)
-        | Inline::PdfAttach(data)
-        | Inline::PdfEmbed(data)
-        | Inline::Place(data)
-        | Inline::PlaceFlush(data)
-        | Inline::Polygon(data)
-        | Inline::Quote(data)
-        | Inline::RawLine(data)
-        | Inline::Rect(data)
-        | Inline::Ref(data)
-        | Inline::Repeat(data)
-        | Inline::Rotate(data)
-        | Inline::Scale(data)
-        | Inline::Skew(data)
-        | Inline::Smallcaps(data)
-        | Inline::Smartquote(data)
-        | Inline::Square(data)
-        | Inline::TableCell(data)
-        | Inline::TableFooter(data)
-        | Inline::TableHeader(data)
-        | Inline::TableHline(data)
-        | Inline::TableVline(data)
-        | Inline::Underline(data) => &data.fields,
-        _ => &[],
-    }
-}
-
-fn collect_cite_keys_in_field(field: &crate::ir::ElementField, out: &mut Vec<String>) {
-    match &field.value {
-        ElementFieldValue::Inlines(inlines) => collect_cite_keys_in_inlines(inlines, out),
-        ElementFieldValue::Blocks(blocks) => collect_cite_keys(blocks, out),
-        ElementFieldValue::Scalar(_) => {}
     }
 }
 

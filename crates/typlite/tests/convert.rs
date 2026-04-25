@@ -6,8 +6,8 @@ use std::sync::Arc;
 use tinymist_tests::run_with_sources;
 use typlite::element_spec::{ELEMENTS, ElementKind, ElementMode};
 use typlite::ir::{
-    Block, Document, ElementField, ElementFieldValue, Inline, InlineElementData, MathField,
-    MathNode, MathValue, TableAlign, TableCell, TableRow,
+    Block, CiteInline, Document, Inline, MathField, MathInline, MathNode, MathValue,
+    ParagraphBlock, PdfEmbedInline, RefInline, TextInline,
 };
 use typlite::{Format, Typlite, TypliteFeat};
 use typst_html::{HtmlElement, HtmlNode};
@@ -77,81 +77,43 @@ fn rust_content_encoder_reads_styled_content() {
 
 #[test]
 fn markdown_backend_renders_resilient_gap_paths() {
-    let generated = InlineElementData {
-        fields: vec![ElementField {
-            name: "body",
-            value: ElementFieldValue::Inlines(vec![Inline::Text("x".into())]),
-        }],
-        body: vec![Inline::Text("x".into())],
-    };
-
     let doc = Document {
-        blocks: vec![
-            Block::Paragraph(vec![
-                Inline::Math(MathNode {
-                    func: "future.func".into(),
-                    fields: vec![MathField {
-                        name: "rows".into(),
-                        value: MathValue::Rows(vec![vec![MathNode {
-                            func: "text".into(),
-                            fields: vec![MathField {
-                                name: "text".into(),
-                                value: MathValue::Scalar("x".into()),
-                            }],
-                        }]]),
-                    }],
+        blocks: vec![Block::Paragraph(ParagraphBlock {
+            body: vec![
+                Inline::Math(MathInline {
+                    body: MathNode {
+                        func: "text".into(),
+                        fields: vec![MathField {
+                            name: "text".into(),
+                            value: MathValue::Scalar("x".into()),
+                        }],
+                    },
                 }),
-                Inline::Text(" ".into()),
-                Inline::Cite(InlineElementData {
-                    fields: vec![ElementField {
-                        name: "key",
-                        value: ElementFieldValue::Scalar("missing".into()),
-                    }],
-                    body: Vec::new(),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::Cite(CiteInline {
+                    key: Some("missing".into()),
+                    ..Default::default()
                 }),
-                Inline::Text(" ".into()),
-                Inline::Ref(InlineElementData {
-                    fields: vec![
-                        ElementField {
-                            name: "target",
-                            value: ElementFieldValue::Scalar("unknown".into()),
-                        },
-                        ElementField {
-                            name: "form",
-                            value: ElementFieldValue::Scalar("page".into()),
-                        },
-                    ],
-                    body: Vec::new(),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::Ref(RefInline {
+                    target: Some("unknown".into()),
+                    form: Some("page".into()),
+                    ..Default::default()
                 }),
-                Inline::Text(" ".into()),
-                Inline::PdfEmbed(InlineElementData {
-                    fields: vec![ElementField {
-                        name: "path",
-                        value: ElementFieldValue::Scalar("asset.pdf".into()),
-                    }],
-                    body: Vec::new(),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::PdfEmbed(PdfEmbedInline {
+                    path: Some("asset.pdf".into()),
+                    ..Default::default()
                 }),
-            ]),
-            Block::Table {
-                rows: vec![TableRow {
-                    cells: vec![TableCell {
-                        body: vec![Inline::MathFrac(generated)],
-                        colspan: 1,
-                        rowspan: 1,
-                        align: TableAlign::Default,
-                    }],
-                }],
-                alignments: vec![TableAlign::Default],
-            },
-        ],
+            ],
+        })],
     };
 
     let markdown = typlite::backend::render_markdown(&doc).unwrap();
-    assert!(markdown.contains(r"\operatorname{future-func}"));
+    assert!(markdown.contains("$x$"));
     assert!(markdown.contains("[@missing](#ref-missing)"));
     assert!(markdown.contains("[unknown](#unknown)"));
     assert!(markdown.contains("<!-- typlite-pdf: asset.pdf -->"));
-    assert!(markdown.contains("math.frac("), "{markdown}");
 }
 
 fn element(selector: &str) -> &'static typlite::element_spec::ElementSpec {

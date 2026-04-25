@@ -1,10 +1,7 @@
 //! Experimental backends for typlite IR.
 
 use crate::Result;
-use crate::ir::{
-    Block, BlockElementData, Document, ElementFieldValue, FrameImage, Inline, InlineElementData,
-    MathNode, MathValue, TableAlign, TableRow, TermItem,
-};
+use crate::ir::*;
 use base64::Engine;
 use ecow::EcoString;
 use std::cell::RefCell;
@@ -110,39 +107,48 @@ pub fn render_markdown_with_bibliography(
 fn collect_reference_anchors(blocks: &[Block], out: &mut BTreeMap<String, Vec<EcoString>>) {
     for block in blocks {
         match block {
-            Block::Heading { body, .. } | Block::Paragraph(body) => {
-                collect_reference_anchors_in_inlines(body, out);
+            Block::Heading(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Block::Paragraph(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Block::Quote(data) => collect_reference_anchors(&data.body, out),
+            Block::Figure(data) => {
+                collect_reference_anchors(&data.body, out);
+                collect_reference_anchors_in_inlines(&data.caption, out);
             }
-            Block::Quote(blocks) => collect_reference_anchors(blocks, out),
-            Block::Figure { body, caption, .. } => {
-                collect_reference_anchors(body, out);
-                collect_reference_anchors_in_inlines(caption, out);
-            }
-            Block::Align { body, .. } => collect_reference_anchors(body, out),
-            Block::Table { rows, .. } => {
-                for row in rows {
+            Block::Align(data) => collect_reference_anchors(&data.body, out),
+            Block::Table(data) => {
+                for row in &data.rows {
                     for cell in &row.cells {
                         collect_reference_anchors_in_inlines(&cell.body, out);
                     }
                 }
             }
-            Block::List { items, .. } => {
-                for item in items {
+            Block::List(data) => {
+                for item in &data.items {
                     collect_reference_anchors(&item.body, out);
                 }
             }
-            Block::Terms { items } => {
-                for item in items {
+            Block::Terms(data) => {
+                for item in &data.items {
                     collect_reference_anchors_in_inlines(&item.term, out);
                     collect_reference_anchors(&item.description, out);
                 }
             }
-            Block::Math(_) | Block::Raw { .. } => {}
-            _ => {
-                if let Some(body) = block.generated_body() {
-                    collect_reference_anchors(body, out);
-                }
-            }
+            Block::Block(data) => collect_reference_anchors(&data.body, out),
+            Block::Columns(data) => collect_reference_anchors(&data.body, out),
+            Block::Move(data) => collect_reference_anchors(&data.body, out),
+            Block::Pad(data) => collect_reference_anchors(&data.body, out),
+            Block::Rotate(data) => collect_reference_anchors(&data.body, out),
+            Block::Scale(data) => collect_reference_anchors(&data.body, out),
+            Block::Skew(data) => collect_reference_anchors(&data.body, out),
+            Block::Stack(data) => collect_reference_anchors(&data.children, out),
+            Block::Title(data) => collect_reference_anchors(&data.body, out),
+            Block::Math(_) | Block::Raw(_) => {}
+            Block::Bibliography(_)
+            | Block::Colbreak(_)
+            | Block::Outline(_)
+            | Block::Pagebreak(_)
+            | Block::Parbreak(_)
+            | Block::V(_) => {}
         }
     }
 }
@@ -154,9 +160,8 @@ fn collect_reference_anchors_in_inlines(
     for inline in inlines {
         match inline {
             Inline::Ref(data) => {
-                if let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) {
-                    if let Some(element) = data.blocks("element").and_then(|blocks| blocks.first())
-                    {
+                if let Some(target) = data.target.as_deref() {
+                    if let Some(element) = data.element.first() {
                         push_reference_anchor(
                             out,
                             reference_anchor_key(element),
@@ -164,41 +169,105 @@ fn collect_reference_anchors_in_inlines(
                         );
                     }
                 }
-                collect_reference_anchors_in_fields(&data.fields, out);
+                collect_reference_anchors_in_inlines(&data.supplement, out);
+                collect_reference_anchors_in_inlines(&data.citation, out);
+                collect_reference_anchors(&data.element, out);
             }
-            Inline::Emph(children)
-            | Inline::Strong(children)
-            | Inline::Strike(children)
-            | Inline::Sub(children)
-            | Inline::Super(children)
-            | Inline::Link { body: children, .. } => {
-                collect_reference_anchors_in_inlines(children, out);
-            }
+            Inline::Emph(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Strong(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Strike(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Sub(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Super(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Link(data) => collect_reference_anchors_in_inlines(&data.body, out),
             Inline::Text(_)
             | Inline::Math(_)
-            | Inline::Linebreak
+            | Inline::Linebreak(_)
             | Inline::Frame(_)
-            | Inline::Raw { .. } => {}
-            _ => {
-                if let Some(body) = inline.generated_body() {
-                    collect_reference_anchors_in_inlines(body, out);
-                }
+            | Inline::Raw(_) => {}
+            Inline::Box(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Circle(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Curve(data) => collect_reference_anchors_in_inlines(&data.components, out),
+            Inline::Ellipse(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::FigureCaption(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Footnote(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::GridCell(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::GridFooter(data) => collect_reference_anchors_in_inlines(&data.children, out),
+            Inline::GridHeader(data) => collect_reference_anchors_in_inlines(&data.children, out),
+            Inline::Hide(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Highlight(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::MathCases(data) => collect_reference_anchors_in_inlines(&data.children, out),
+            Inline::MathVec(data) => collect_reference_anchors_in_inlines(&data.children, out),
+            Inline::Move(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Overline(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Pad(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Page(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::PdfArtifact(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Place(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Quote(data) => {
+                collect_reference_anchors_in_inlines(&data.attribution, out);
+                collect_reference_anchors_in_inlines(&data.body, out);
             }
-        }
-    }
-}
-
-fn collect_reference_anchors_in_fields(
-    fields: &[crate::ir::ElementField],
-    out: &mut BTreeMap<String, Vec<EcoString>>,
-) {
-    for field in fields {
-        match &field.value {
-            ElementFieldValue::Inlines(inlines) => {
-                collect_reference_anchors_in_inlines(inlines, out)
-            }
-            ElementFieldValue::Blocks(blocks) => collect_reference_anchors(blocks, out),
-            ElementFieldValue::Scalar(_) => {}
+            Inline::RawLine(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Repeat(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Rotate(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Scale(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Skew(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Smallcaps(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::TableCell(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::TableFooter(data) => collect_reference_anchors_in_inlines(&data.children, out),
+            Inline::TableHeader(data) => collect_reference_anchors_in_inlines(&data.children, out),
+            Inline::Underline(data) => collect_reference_anchors_in_inlines(&data.body, out),
+            Inline::Cite(_)
+            | Inline::CurveClose(_)
+            | Inline::CurveCubic(_)
+            | Inline::CurveLine(_)
+            | Inline::CurveMove(_)
+            | Inline::CurveQuad(_)
+            | Inline::Document(_)
+            | Inline::FootnoteEntry(_)
+            | Inline::GridHline(_)
+            | Inline::GridVline(_)
+            | Inline::H(_)
+            | Inline::Image(_)
+            | Inline::Line(_)
+            | Inline::MathAccent(_)
+            | Inline::MathAttach(_)
+            | Inline::MathBinom(_)
+            | Inline::MathCancel(_)
+            | Inline::MathClass(_)
+            | Inline::MathFrac(_)
+            | Inline::MathLimits(_)
+            | Inline::MathLr(_)
+            | Inline::MathMat(_)
+            | Inline::MathMid(_)
+            | Inline::MathOp(_)
+            | Inline::MathOverbrace(_)
+            | Inline::MathOverbracket(_)
+            | Inline::MathOverline(_)
+            | Inline::MathOverparen(_)
+            | Inline::MathOvershell(_)
+            | Inline::MathPrimes(_)
+            | Inline::MathRoot(_)
+            | Inline::MathScripts(_)
+            | Inline::MathStretch(_)
+            | Inline::MathUnderbrace(_)
+            | Inline::MathUnderbracket(_)
+            | Inline::MathUnderline(_)
+            | Inline::MathUnderparen(_)
+            | Inline::MathUndershell(_)
+            | Inline::Metadata(_)
+            | Inline::OutlineEntry(_)
+            | Inline::ParLine(_)
+            | Inline::Path(_)
+            | Inline::PdfAttach(_)
+            | Inline::PdfEmbed(_)
+            | Inline::PlaceFlush(_)
+            | Inline::Polygon(_)
+            | Inline::Rect(_)
+            | Inline::Smartquote(_)
+            | Inline::Square(_)
+            | Inline::TableHline(_)
+            | Inline::TableVline(_) => {}
         }
     }
 }
@@ -281,81 +350,79 @@ fn render_block(
 ) -> Result<()> {
     render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
     match block {
-        Block::Heading { id, level, body } => {
-            if let Some(id) = id {
+        Block::Heading(data) => {
+            if let Some(id) = &data.id {
                 out.push_str(&" ".repeat(indent));
                 out.push_str("<a id=\"");
                 push_html_escaped(id, out);
                 out.push_str("\"></a>\n");
             }
             out.push_str(&" ".repeat(indent));
-            out.push_str(&"#".repeat(*level as usize));
+            out.push_str(&"#".repeat(data.level as usize));
             out.push(' ');
-            render_inlines(body, bibliography, out)?;
+            render_inlines(&data.body, bibliography, out)?;
         }
-        Block::Paragraph(body) => {
+        Block::Paragraph(data) => {
             out.push_str(&" ".repeat(indent));
-            render_inlines(body, bibliography, out)?;
+            render_inlines(&data.body, bibliography, out)?;
         }
-        Block::Quote(blocks) => render_quote(blocks, indent, bibliography, out)?,
-        Block::Figure { body, caption, alt } => {
+        Block::Quote(data) => render_quote(&data.body, indent, bibliography, out)?,
+        Block::Figure(data) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<figure");
-            if let Some(alt) = alt {
+            if let Some(alt) = &data.alt {
                 out.push_str(" aria-label=\"");
                 push_html_escaped(alt, out);
                 out.push('"');
             }
             out.push_str(">\n");
-            render_blocks_html_into(body, indent, bibliography, out)?;
-            if !caption.is_empty() {
+            render_blocks_html_into(&data.body, indent, bibliography, out)?;
+            if !data.caption.is_empty() {
                 out.push('\n');
                 out.push_str(&" ".repeat(indent));
                 out.push_str("<figcaption>");
-                render_inlines_html(caption, bibliography, out)?;
+                render_inlines_html(&data.caption, bibliography, out)?;
                 out.push_str("</figcaption>");
             }
             out.push('\n');
             out.push_str(&" ".repeat(indent));
             out.push_str("</figure>");
         }
-        Block::Align { alignment, body } => {
-            render_align(alignment.as_deref(), body, indent, bibliography, out)?
-        }
-        Block::Math(body) => {
+        Block::Align(data) => render_align(
+            data.alignment.as_deref(),
+            &data.body,
+            indent,
+            bibliography,
+            out,
+        )?,
+        Block::Math(data) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("$$");
-            render_math(body, out)?;
+            render_math(&data.body, out)?;
             out.push_str("$$");
         }
-        Block::Table { rows, alignments } => {
-            render_table(rows, alignments, indent, bibliography, out)?
+        Block::Table(data) => {
+            render_table(&data.rows, &data.alignments, indent, bibliography, out)?
         }
-        Block::Raw { lang, text } => {
+        Block::Raw(data) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("```");
-            if let Some(lang) = lang {
+            if let Some(lang) = &data.lang {
                 out.push_str(lang);
             }
             out.push('\n');
-            out.push_str(text);
-            if !text.ends_with('\n') {
+            out.push_str(&data.text);
+            if !data.text.ends_with('\n') {
                 out.push('\n');
             }
             out.push_str(&" ".repeat(indent));
             out.push_str("```");
         }
-        Block::List {
-            ordered,
-            start,
-            reversed,
-            items,
-            ..
-        } => render_list(
-            *ordered,
-            *start,
-            *reversed,
-            items,
+        Block::List(data) => render_list(
+            data.ordered,
+            data.start,
+            data.reversed,
+            &data.items,
             indent,
             bibliography,
             out,
@@ -363,17 +430,13 @@ fn render_block(
         Block::Columns(data) => render_columns(data, indent, bibliography, out)?,
         Block::Move(data) => render_move_block(data, indent, bibliography, out)?,
         Block::Pad(data) => render_pad_block(data, indent, bibliography, out)?,
-        Block::Rotate(data) => {
-            render_transform_block(data, "rotate", &["angle"], indent, bibliography, out)?
-        }
+        Block::Rotate(data) => render_rotate_block(data, indent, bibliography, out)?,
         Block::Scale(data) => render_scale_block(data, indent, bibliography, out)?,
-        Block::Skew(data) => {
-            render_transform_block(data, "skew", &["ax", "ay"], indent, bibliography, out)?
-        }
+        Block::Skew(data) => render_skew_block(data, indent, bibliography, out)?,
         Block::Stack(data) => render_stack(data, indent, bibliography, out)?,
         Block::Block(data) => render_blocks_compact_into(&data.body, indent, bibliography, out)?,
         Block::Title(data) => render_blocks_into(&data.body, indent, bibliography, out)?,
-        Block::Terms { items } => render_terms(items, indent, bibliography, out)?,
+        Block::Terms(data) => render_terms(&data.items, indent, bibliography, out)?,
         Block::Colbreak(_) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<div style=\"break-after: column\"></div>");
@@ -381,12 +444,12 @@ fn render_block(
         Block::V(data) => render_vertical_space(data, indent, out)?,
         Block::Parbreak(_) => {}
         Block::Outline(data) => {
-            if let Some(title) = data
-                .field("title")
-                .filter(|title| !matches!(title.as_scalar(), Some(value) if is_auto_or_none(value)))
+            if !is_auto_inlines(&data.title)
+                && !is_none_inlines(&data.title)
+                && !data.title.is_empty()
             {
                 out.push_str(&" ".repeat(indent));
-                render_field_value(title, out)?;
+                render_inlines(&data.title, bibliography, out)?;
             }
         }
         Block::Pagebreak(_) => {
@@ -465,20 +528,20 @@ fn render_block_html(
     out: &mut String,
 ) -> Result<()> {
     match block {
-        Block::Paragraph(body) => {
+        Block::Paragraph(data) => {
             out.push_str(&" ".repeat(indent));
-            render_inlines_html(body, bibliography, out)
+            render_inlines_html(&data.body, bibliography, out)
         }
-        Block::Raw { lang, text } => {
+        Block::Raw(data) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<pre><code");
-            if let Some(lang) = lang {
+            if let Some(lang) = &data.lang {
                 out.push_str(" class=\"language-");
                 push_html_escaped(lang, out);
                 out.push('"');
             }
             out.push('>');
-            push_html_escaped(text, out);
+            push_html_escaped(&data.text, out);
             out.push_str("</code></pre>");
             Ok(())
         }
@@ -510,7 +573,7 @@ fn render_align(
 }
 
 fn render_columns(
-    data: &BlockElementData,
+    data: &ColumnsBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
@@ -518,12 +581,12 @@ fn render_columns(
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"");
     let mut has_style = false;
-    if let Some(count) = data.scalar("count").filter(|value| !value.is_empty()) {
+    if let Some(count) = data.count.as_deref().filter(|value| !value.is_empty()) {
         has_style = true;
         out.push_str("column-count: ");
         push_html_escaped(count, out);
     }
-    if let Some(gutter) = data.scalar("gutter").filter(|value| !value.is_empty()) {
+    if let Some(gutter) = data.gutter.as_deref().filter(|value| !value.is_empty()) {
         if has_style {
             out.push_str("; ");
         }
@@ -540,23 +603,23 @@ fn render_columns(
 }
 
 fn render_stack(
-    data: &BlockElementData,
+    data: &StackBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"display: flex");
-    if let Some(direction) = data.scalar("dir").and_then(css_stack_direction) {
+    if let Some(direction) = data.dir.as_deref().and_then(css_stack_direction) {
         out.push_str("; flex-direction: ");
         out.push_str(direction);
     }
-    if let Some(spacing) = data.scalar("spacing").filter(|value| !value.is_empty()) {
+    if let Some(spacing) = data.spacing.as_deref().filter(|value| !value.is_empty()) {
         out.push_str("; gap: ");
         push_css_length(spacing, out);
     }
     out.push_str("\">\n");
-    render_blocks_html_into(&data.body, indent + 2, bibliography, out)?;
+    render_blocks_html_into(&data.children, indent + 2, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push_str("</div>");
@@ -564,8 +627,8 @@ fn render_stack(
     Ok(())
 }
 
-fn render_vertical_space(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
-    let Some(amount) = data.scalar("amount").filter(|value| !value.is_empty()) else {
+fn render_vertical_space(data: &VBlock, indent: usize, out: &mut String) -> Result<()> {
+    let Some(amount) = data.amount.as_deref().filter(|value| !value.is_empty()) else {
         return Ok(());
     };
 
@@ -578,14 +641,14 @@ fn render_vertical_space(data: &BlockElementData, indent: usize, out: &mut Strin
 }
 
 fn render_bibliography(
-    data: &BlockElementData,
+    data: &BibliographyBlock,
     bibliography: &BibliographyContext,
     indent: usize,
     out: &mut String,
 ) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<section data-typlite-bibliography=\"true\">");
-    if let Some(title) = bibliography_title(data)? {
+    if let Some(title) = bibliography_title(data, bibliography)? {
         out.push('\n');
         out.push_str(&" ".repeat(indent + 2));
         out.push_str("<h2>");
@@ -622,13 +685,16 @@ fn render_bibliography(
     Ok(())
 }
 
-fn bibliography_title(data: &BlockElementData) -> Result<Option<String>> {
-    let Some(title) = data.field("title") else {
+fn bibliography_title(
+    data: &BibliographyBlock,
+    bibliography: &BibliographyContext,
+) -> Result<Option<String>> {
+    if data.title.is_empty() {
         return Ok(None);
-    };
+    }
 
     let mut rendered = String::new();
-    render_field_value(title, &mut rendered)?;
+    render_inlines(&data.title, bibliography, &mut rendered)?;
     if rendered.is_empty() || rendered == "auto" || rendered == "none" {
         Ok(None)
     } else {
@@ -637,75 +703,68 @@ fn bibliography_title(data: &BlockElementData) -> Result<Option<String>> {
 }
 
 fn render_pad_block(
-    data: &BlockElementData,
+    data: &PadBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_div(data, indent, bibliography, out, |data, out| {
+    render_layout_div(&data.body, indent, bibliography, out, |out| {
         out.push_str("display: block");
-        push_optional_block_css_length(data, "left", "padding-left", out);
-        push_optional_block_css_length(data, "top", "padding-top", out);
-        push_optional_block_css_length(data, "right", "padding-right", out);
-        push_optional_block_css_length(data, "bottom", "padding-bottom", out);
+        push_optional_css_length_value(data.left.as_deref(), "padding-left", out);
+        push_optional_css_length_value(data.top.as_deref(), "padding-top", out);
+        push_optional_css_length_value(data.right.as_deref(), "padding-right", out);
+        push_optional_css_length_value(data.bottom.as_deref(), "padding-bottom", out);
     })
 }
 
 fn render_move_block(
-    data: &BlockElementData,
+    data: &MoveBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_div(data, indent, bibliography, out, |data, out| {
+    render_layout_div(&data.body, indent, bibliography, out, |out| {
         out.push_str("display: block; transform: translate(");
-        push_css_length(data.scalar("dx").unwrap_or("0pt"), out);
+        push_css_length(data.dx.as_deref().unwrap_or("0pt"), out);
         out.push_str(", ");
-        push_css_length(data.scalar("dy").unwrap_or("0pt"), out);
+        push_css_length(data.dy.as_deref().unwrap_or("0pt"), out);
         out.push(')');
     })
 }
 
-fn render_transform_block(
-    data: &BlockElementData,
-    function: &str,
-    fields: &[&str],
+fn render_rotate_block(
+    data: &RotateBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_div(data, indent, bibliography, out, |data, out| {
-        out.push_str("display: block; transform: ");
-        out.push_str(function);
-        out.push('(');
-        for (index, field) in fields.iter().enumerate() {
-            if index > 0 {
-                out.push_str(", ");
-            }
-            push_html_escaped(data.scalar(field).unwrap_or("0deg"), out);
-        }
+    render_layout_div(&data.body, indent, bibliography, out, |out| {
+        out.push_str("display: block; transform: rotate(");
+        push_html_escaped(data.angle.as_deref().unwrap_or("0deg"), out);
         out.push(')');
     })
 }
 
 fn render_scale_block(
-    data: &BlockElementData,
+    data: &ScaleBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_div(data, indent, bibliography, out, |data, out| {
+    render_layout_div(&data.body, indent, bibliography, out, |out| {
         out.push_str("display: block; transform: scale(");
         push_css_scale(
-            data.scalar("x")
-                .or_else(|| data.scalar("factor"))
+            data.x
+                .as_deref()
+                .or(data.factor.as_deref())
                 .unwrap_or("100%"),
             out,
         );
         out.push_str(", ");
         push_css_scale(
-            data.scalar("y")
-                .or_else(|| data.scalar("factor"))
+            data.y
+                .as_deref()
+                .or(data.factor.as_deref())
                 .unwrap_or("100%"),
             out,
         );
@@ -713,18 +772,33 @@ fn render_scale_block(
     })
 }
 
-fn render_layout_div(
-    data: &BlockElementData,
+fn render_skew_block(
+    data: &SkewBlock,
     indent: usize,
     bibliography: &BibliographyContext,
     out: &mut String,
-    push_style: impl FnOnce(&BlockElementData, &mut String),
+) -> Result<()> {
+    render_layout_div(&data.body, indent, bibliography, out, |out| {
+        out.push_str("display: block; transform: skew(");
+        push_html_escaped(data.ax.as_deref().unwrap_or("0deg"), out);
+        out.push_str(", ");
+        push_html_escaped(data.ay.as_deref().unwrap_or("0deg"), out);
+        out.push(')');
+    })
+}
+
+fn render_layout_div(
+    body: &[Block],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+    push_style: impl FnOnce(&mut String),
 ) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"");
-    push_style(data, out);
+    push_style(out);
     out.push_str("\">\n");
-    render_blocks_html_into(&data.body, indent + 2, bibliography, out)?;
+    render_blocks_html_into(body, indent + 2, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push_str("</div>");
@@ -840,8 +914,8 @@ fn requires_html_table(rows: &[TableRow]) -> bool {
 
 fn table_cell_requires_html(body: &[Inline]) -> bool {
     body.iter().any(|inline| match inline {
-        Inline::Raw { lang, text } => lang.is_some() || text.contains('\n'),
-        Inline::Linebreak | Inline::Frame(_) => true,
+        Inline::Raw(data) => data.lang.is_some() || data.text.contains('\n'),
+        Inline::Linebreak(_) | Inline::Frame(_) => true,
         Inline::TableCell(_)
         | Inline::TableFooter(_)
         | Inline::TableHeader(_)
@@ -906,15 +980,15 @@ fn render_table_cell_html(
     out: &mut String,
 ) -> Result<()> {
     match body {
-        [Inline::Raw { lang, text }] if lang.is_some() || text.contains('\n') => {
+        [Inline::Raw(data)] if data.lang.is_some() || data.text.contains('\n') => {
             out.push_str("<pre><code");
-            if let Some(lang) = lang {
+            if let Some(lang) = &data.lang {
                 out.push_str(" class=\"language-");
                 push_html_escaped(lang, out);
                 out.push('"');
             }
             out.push('>');
-            push_html_escaped(text, out);
+            push_html_escaped(&data.text, out);
             out.push_str("</code></pre>");
             Ok(())
         }
@@ -1056,79 +1130,77 @@ fn render_inlines(
 ) -> Result<()> {
     for node in nodes {
         match node {
-            Inline::Text(text) => out.push_str(text),
-            Inline::Emph(children) => {
+            Inline::Text(data) => out.push_str(&data.text),
+            Inline::Emph(data) => {
                 out.push('*');
-                render_inlines(children, bibliography, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push('*');
             }
-            Inline::Strong(children) => {
+            Inline::Strong(data) => {
                 out.push_str("**");
-                render_inlines(children, bibliography, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("**");
             }
-            Inline::Link { dest, body } => {
+            Inline::Link(data) => {
                 out.push('[');
-                render_inlines(body, bibliography, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("](");
-                out.push_str(dest);
+                out.push_str(&data.dest);
                 out.push(')');
             }
-            Inline::Strike(children) => {
+            Inline::Strike(data) => {
                 out.push_str("~~");
-                render_inlines(children, bibliography, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("~~");
             }
-            Inline::Sub(children) => {
+            Inline::Sub(data) => {
                 out.push_str("<sub>");
-                render_inlines(children, bibliography, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</sub>");
             }
-            Inline::Super(children) => {
+            Inline::Super(data) => {
                 out.push_str("<sup>");
-                render_inlines(children, bibliography, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</sup>");
             }
-            Inline::Math(children) => {
+            Inline::Math(data) => {
                 out.push('$');
-                render_math(children, out)?;
+                render_math(&data.body, out)?;
                 out.push('$');
             }
-            Inline::Linebreak => out.push_str("  \n"),
-            Inline::Frame(frame) => render_frame_image("frame", frame, out)?,
-            Inline::Raw { text, .. } => {
+            Inline::Linebreak(_) => out.push_str("  \n"),
+            Inline::Frame(data) => render_frame_image("frame", &data.image, out)?,
+            Inline::Raw(data) => {
                 out.push('`');
-                out.push_str(text);
+                out.push_str(&data.text);
                 out.push('`');
             }
             Inline::Repeat(data) => render_repeat(data, bibliography, out)?,
-            Inline::TableCell(data)
-            | Inline::TableFooter(data)
-            | Inline::TableHeader(data)
-            | Inline::GridCell(data)
-            | Inline::GridFooter(data)
-            | Inline::GridHeader(data)
-            | Inline::ParLine(data)
-            | Inline::RawLine(data) => render_inlines(&data.body, bibliography, out)?,
+            Inline::TableCell(data) => render_inlines(&data.body, bibliography, out)?,
+            Inline::TableFooter(data) => render_inlines(&data.children, bibliography, out)?,
+            Inline::TableHeader(data) => render_inlines(&data.children, bibliography, out)?,
+            Inline::GridCell(data) => render_inlines(&data.body, bibliography, out)?,
+            Inline::GridFooter(data) => render_inlines(&data.children, bibliography, out)?,
+            Inline::GridHeader(data) => render_inlines(&data.children, bibliography, out)?,
+            Inline::ParLine(_) => {}
+            Inline::RawLine(data) => render_inlines(&data.body, bibliography, out)?,
             Inline::PdfArtifact(data) => render_pdf_artifact(data, bibliography, out)?,
             Inline::Box(data) => render_box(data, bibliography, out)?,
             Inline::Move(data) => render_move(data, bibliography, out)?,
             Inline::Pad(data) => render_pad(data, bibliography, out)?,
             Inline::Place(data) => render_place(data, bibliography, out)?,
-            Inline::Rotate(data) => {
-                render_transform(data, "rotate", &["angle"], bibliography, out)?
-            }
+            Inline::Rotate(data) => render_rotate(data, bibliography, out)?,
             Inline::Scale(data) => render_scale(data, bibliography, out)?,
-            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], bibliography, out)?,
+            Inline::Skew(data) => render_skew(data, bibliography, out)?,
             Inline::Quote(data) => render_inline_quote(data, bibliography, out)?,
-            Inline::Circle(data)
-            | Inline::Curve(data)
-            | Inline::Ellipse(data)
-            | Inline::Line(data)
-            | Inline::Path(data)
-            | Inline::Polygon(data)
-            | Inline::Rect(data)
-            | Inline::Square(data) => render_element_frame(node, data, out)?,
+            Inline::Circle(data) => render_element_frame("circle", data.frame.as_ref(), out)?,
+            Inline::Curve(data) => render_element_frame("curve", data.frame.as_ref(), out)?,
+            Inline::Ellipse(data) => render_element_frame("ellipse", data.frame.as_ref(), out)?,
+            Inline::Line(data) => render_element_frame("line", data.frame.as_ref(), out)?,
+            Inline::Path(data) => render_element_frame("path", data.frame.as_ref(), out)?,
+            Inline::Polygon(data) => render_element_frame("polygon", data.frame.as_ref(), out)?,
+            Inline::Rect(data) => render_element_frame("rect", data.frame.as_ref(), out)?,
+            Inline::Square(data) => render_element_frame("square", data.frame.as_ref(), out)?,
             Inline::Cite(data) => render_cite(data, bibliography, out)?,
             Inline::Metadata(data) => render_metadata(data, out),
             Inline::Document(_) | Inline::Hide(_) | Inline::Page(_) => {}
@@ -1151,45 +1223,46 @@ fn render_inlines(
                 out.push_str("</mark>");
             }
             Inline::Image(data) => render_image(data, out)?,
-            Inline::MathAccent(data)
-            | Inline::MathAttach(data)
-            | Inline::MathBinom(data)
-            | Inline::MathCancel(data)
-            | Inline::MathCases(data)
-            | Inline::MathClass(data)
-            | Inline::MathFrac(data)
-            | Inline::MathLimits(data)
-            | Inline::MathLr(data)
-            | Inline::MathMat(data)
-            | Inline::MathMid(data)
-            | Inline::MathOp(data)
-            | Inline::MathOverbrace(data)
-            | Inline::MathOverbracket(data)
-            | Inline::MathOverline(data)
-            | Inline::MathOverparen(data)
-            | Inline::MathOvershell(data)
-            | Inline::MathPrimes(data)
-            | Inline::MathRoot(data)
-            | Inline::MathScripts(data)
-            | Inline::MathStretch(data)
-            | Inline::MathUnderbrace(data)
-            | Inline::MathUnderbracket(data)
-            | Inline::MathUnderline(data)
-            | Inline::MathUnderparen(data)
-            | Inline::MathUndershell(data)
-            | Inline::MathVec(data)
-            | Inline::CurveClose(data)
-            | Inline::CurveCubic(data)
-            | Inline::CurveLine(data)
-            | Inline::CurveMove(data)
-            | Inline::CurveQuad(data) => render_structured_inline(node, data, out)?,
-            Inline::OutlineEntry(data) => render_inlines(&data.body, bibliography, out)?,
+            Inline::MathAccent(_)
+            | Inline::MathAttach(_)
+            | Inline::MathBinom(_)
+            | Inline::MathCancel(_)
+            | Inline::MathCases(_)
+            | Inline::MathClass(_)
+            | Inline::MathFrac(_)
+            | Inline::MathLimits(_)
+            | Inline::MathLr(_)
+            | Inline::MathMat(_)
+            | Inline::MathMid(_)
+            | Inline::MathOp(_)
+            | Inline::MathOverbrace(_)
+            | Inline::MathOverbracket(_)
+            | Inline::MathOverline(_)
+            | Inline::MathOverparen(_)
+            | Inline::MathOvershell(_)
+            | Inline::MathPrimes(_)
+            | Inline::MathRoot(_)
+            | Inline::MathScripts(_)
+            | Inline::MathStretch(_)
+            | Inline::MathUnderbrace(_)
+            | Inline::MathUnderbracket(_)
+            | Inline::MathUnderline(_)
+            | Inline::MathUnderparen(_)
+            | Inline::MathUndershell(_)
+            | Inline::MathVec(_)
+            | Inline::CurveClose(_)
+            | Inline::CurveCubic(_)
+            | Inline::CurveLine(_)
+            | Inline::CurveMove(_)
+            | Inline::CurveQuad(_) => render_unimplemented_inline(node)?,
+            Inline::OutlineEntry(_) => {}
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
                 render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</span>");
             }
-            Inline::PdfAttach(data) | Inline::PdfEmbed(data) => render_pdf_embedding(data, out),
+            Inline::PdfAttach(data) => render_pdf_embedding(data.path.as_deref(), out),
+            Inline::PdfEmbed(data) => render_pdf_embedding(data.path.as_deref(), out),
             Inline::Ref(data) => render_ref(data, bibliography, out)?,
             Inline::Smallcaps(data) => {
                 out.push_str("<span style=\"font-variant: small-caps\">");
@@ -1215,51 +1288,51 @@ fn render_inlines_html(
 ) -> Result<()> {
     for node in nodes {
         match node {
-            Inline::Text(text) => push_html_escaped(text, out),
-            Inline::Emph(children) => {
+            Inline::Text(data) => push_html_escaped(&data.text, out),
+            Inline::Emph(data) => {
                 out.push_str("<em>");
-                render_inlines_html(children, bibliography, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</em>");
             }
-            Inline::Strong(children) => {
+            Inline::Strong(data) => {
                 out.push_str("<strong>");
-                render_inlines_html(children, bibliography, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</strong>");
             }
-            Inline::Link { dest, body } => {
+            Inline::Link(data) => {
                 out.push_str("<a href=\"");
-                push_html_escaped(dest, out);
+                push_html_escaped(&data.dest, out);
                 out.push_str("\">");
-                render_inlines_html(body, bibliography, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</a>");
             }
-            Inline::Strike(children) => {
+            Inline::Strike(data) => {
                 out.push_str("<del>");
-                render_inlines_html(children, bibliography, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</del>");
             }
-            Inline::Sub(children) => {
+            Inline::Sub(data) => {
                 out.push_str("<sub>");
-                render_inlines_html(children, bibliography, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</sub>");
             }
-            Inline::Super(children) => {
+            Inline::Super(data) => {
                 out.push_str("<sup>");
-                render_inlines_html(children, bibliography, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</sup>");
             }
-            Inline::Raw { text, .. } => {
+            Inline::Raw(data) => {
                 out.push_str("<code>");
-                push_html_escaped(text, out);
+                push_html_escaped(&data.text, out);
                 out.push_str("</code>");
             }
-            Inline::Linebreak => out.push_str("<br>"),
-            Inline::Math(math) => {
+            Inline::Linebreak(_) => out.push_str("<br>"),
+            Inline::Math(data) => {
                 out.push('$');
-                render_math(math, out)?;
+                render_math(&data.body, out)?;
                 out.push('$');
             }
-            Inline::Frame(frame) => render_frame_image("frame", frame, out)?,
+            Inline::Frame(data) => render_frame_image("frame", &data.image, out)?,
             Inline::Footnote(data) => {
                 out.push_str("<sup>");
                 render_inlines_html(&data.body, bibliography, out)?;
@@ -1287,36 +1360,34 @@ fn render_inlines_html(
                 out.push_str("</u>");
             }
             Inline::Repeat(data) => render_repeat(data, bibliography, out)?,
-            Inline::TableCell(data)
-            | Inline::TableFooter(data)
-            | Inline::TableHeader(data)
-            | Inline::GridCell(data)
-            | Inline::GridFooter(data)
-            | Inline::GridHeader(data)
-            | Inline::ParLine(data)
-            | Inline::RawLine(data)
-            | Inline::FigureCaption(data)
-            | Inline::OutlineEntry(data) => render_inlines_html(&data.body, bibliography, out)?,
+            Inline::TableCell(data) => render_inlines_html(&data.body, bibliography, out)?,
+            Inline::TableFooter(data) => render_inlines_html(&data.children, bibliography, out)?,
+            Inline::TableHeader(data) => render_inlines_html(&data.children, bibliography, out)?,
+            Inline::GridCell(data) => render_inlines_html(&data.body, bibliography, out)?,
+            Inline::GridFooter(data) => render_inlines_html(&data.children, bibliography, out)?,
+            Inline::GridHeader(data) => render_inlines_html(&data.children, bibliography, out)?,
+            Inline::ParLine(_) => {}
+            Inline::RawLine(data) => render_inlines_html(&data.body, bibliography, out)?,
+            Inline::FigureCaption(data) => render_inlines_html(&data.body, bibliography, out)?,
+            Inline::OutlineEntry(_) => {}
             Inline::PdfArtifact(data) => render_pdf_artifact(data, bibliography, out)?,
             Inline::Box(data) => render_box(data, bibliography, out)?,
             Inline::Move(data) => render_move(data, bibliography, out)?,
             Inline::Pad(data) => render_pad(data, bibliography, out)?,
             Inline::Place(data) => render_place(data, bibliography, out)?,
-            Inline::Rotate(data) => {
-                render_transform(data, "rotate", &["angle"], bibliography, out)?
-            }
+            Inline::Rotate(data) => render_rotate(data, bibliography, out)?,
             Inline::Scale(data) => render_scale(data, bibliography, out)?,
-            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], bibliography, out)?,
+            Inline::Skew(data) => render_skew(data, bibliography, out)?,
             Inline::Quote(data) => render_inline_quote_html(data, bibliography, out)?,
             Inline::FootnoteEntry(_) => {}
-            Inline::Circle(data)
-            | Inline::Curve(data)
-            | Inline::Ellipse(data)
-            | Inline::Line(data)
-            | Inline::Path(data)
-            | Inline::Polygon(data)
-            | Inline::Rect(data)
-            | Inline::Square(data) => render_element_frame(node, data, out)?,
+            Inline::Circle(data) => render_element_frame("circle", data.frame.as_ref(), out)?,
+            Inline::Curve(data) => render_element_frame("curve", data.frame.as_ref(), out)?,
+            Inline::Ellipse(data) => render_element_frame("ellipse", data.frame.as_ref(), out)?,
+            Inline::Line(data) => render_element_frame("line", data.frame.as_ref(), out)?,
+            Inline::Path(data) => render_element_frame("path", data.frame.as_ref(), out)?,
+            Inline::Polygon(data) => render_element_frame("polygon", data.frame.as_ref(), out)?,
+            Inline::Rect(data) => render_element_frame("rect", data.frame.as_ref(), out)?,
+            Inline::Square(data) => render_element_frame("square", data.frame.as_ref(), out)?,
             Inline::Cite(data) => render_cite(data, bibliography, out)?,
             Inline::Metadata(data) => render_metadata(data, out),
             Inline::Document(_) | Inline::Hide(_) | Inline::Page(_) => {}
@@ -1326,41 +1397,42 @@ fn render_inlines_html(
             | Inline::TableHline(_)
             | Inline::TableVline(_) => {}
             Inline::H(_) => out.push(' '),
-            Inline::PdfAttach(data) | Inline::PdfEmbed(data) => render_pdf_embedding(data, out),
+            Inline::PdfAttach(data) => render_pdf_embedding(data.path.as_deref(), out),
+            Inline::PdfEmbed(data) => render_pdf_embedding(data.path.as_deref(), out),
             Inline::Ref(data) => render_ref(data, bibliography, out)?,
             Inline::Smartquote(data) => render_smartquote_html(data, out)?,
-            Inline::MathAccent(data)
-            | Inline::MathAttach(data)
-            | Inline::MathBinom(data)
-            | Inline::MathCancel(data)
-            | Inline::MathCases(data)
-            | Inline::MathClass(data)
-            | Inline::MathFrac(data)
-            | Inline::MathLimits(data)
-            | Inline::MathLr(data)
-            | Inline::MathMat(data)
-            | Inline::MathMid(data)
-            | Inline::MathOp(data)
-            | Inline::MathOverbrace(data)
-            | Inline::MathOverbracket(data)
-            | Inline::MathOverline(data)
-            | Inline::MathOverparen(data)
-            | Inline::MathOvershell(data)
-            | Inline::MathPrimes(data)
-            | Inline::MathRoot(data)
-            | Inline::MathScripts(data)
-            | Inline::MathStretch(data)
-            | Inline::MathUnderbrace(data)
-            | Inline::MathUnderbracket(data)
-            | Inline::MathUnderline(data)
-            | Inline::MathUnderparen(data)
-            | Inline::MathUndershell(data)
-            | Inline::MathVec(data)
-            | Inline::CurveClose(data)
-            | Inline::CurveCubic(data)
-            | Inline::CurveLine(data)
-            | Inline::CurveMove(data)
-            | Inline::CurveQuad(data) => render_structured_inline_html(node, data, out)?,
+            Inline::MathAccent(_)
+            | Inline::MathAttach(_)
+            | Inline::MathBinom(_)
+            | Inline::MathCancel(_)
+            | Inline::MathCases(_)
+            | Inline::MathClass(_)
+            | Inline::MathFrac(_)
+            | Inline::MathLimits(_)
+            | Inline::MathLr(_)
+            | Inline::MathMat(_)
+            | Inline::MathMid(_)
+            | Inline::MathOp(_)
+            | Inline::MathOverbrace(_)
+            | Inline::MathOverbracket(_)
+            | Inline::MathOverline(_)
+            | Inline::MathOverparen(_)
+            | Inline::MathOvershell(_)
+            | Inline::MathPrimes(_)
+            | Inline::MathRoot(_)
+            | Inline::MathScripts(_)
+            | Inline::MathStretch(_)
+            | Inline::MathUnderbrace(_)
+            | Inline::MathUnderbracket(_)
+            | Inline::MathUnderline(_)
+            | Inline::MathUnderparen(_)
+            | Inline::MathUndershell(_)
+            | Inline::MathVec(_)
+            | Inline::CurveClose(_)
+            | Inline::CurveCubic(_)
+            | Inline::CurveLine(_)
+            | Inline::CurveMove(_)
+            | Inline::CurveQuad(_) => render_unimplemented_inline(node)?,
         }
     }
 
@@ -1413,7 +1485,7 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
         "underparen" => render_math_under_annotated_command(node, "underbrace", out),
         "undershell" => render_math_annotation_command(node, "underset", out),
         "vec" => render_math_vec(node, out),
-        _ => render_math_generic(node, out),
+        _ => render_unimplemented(&format!("math.{}", node.func)),
     }
 }
 
@@ -1851,28 +1923,6 @@ fn render_math_value(value: &MathValue, out: &mut String) -> Result<()> {
     }
 }
 
-fn render_math_generic(node: &MathNode, out: &mut String) -> Result<()> {
-    out.push_str(r"\operatorname{");
-    push_latex_text_escaped(&node.func.replace(".", "-"), out);
-    out.push('}');
-
-    if node.fields.is_empty() {
-        return Ok(());
-    }
-
-    out.push_str(r"\left(");
-    for (index, field) in node.fields.iter().enumerate() {
-        if index > 0 {
-            out.push_str(", ");
-        }
-        push_latex_text_escaped(&field.name, out);
-        out.push('=');
-        render_math_value(&field.value, out)?;
-    }
-    out.push_str(r"\right)");
-    Ok(())
-}
-
 fn push_latex_text_escaped(value: &str, out: &mut String) {
     for ch in value.chars() {
         match ch {
@@ -2091,19 +2141,11 @@ fn math_bool(node: &MathNode, name: &str) -> Result<bool> {
     }
 }
 
-fn render_element_frame(node: &Inline, data: &InlineElementData, out: &mut String) -> Result<()> {
-    let kind = inline_kind(node)?;
-    let Some(frame) = data.inlines("frame").and_then(single_frame) else {
+fn render_element_frame(kind: &str, frame: Option<&FrameImage>, out: &mut String) -> Result<()> {
+    let Some(frame) = frame else {
         bail!("typlite markdown {kind} rendering requires html.frame");
     };
     render_frame_image(kind, frame, out)
-}
-
-fn single_frame(inlines: &[Inline]) -> Option<&FrameImage> {
-    match inlines {
-        [Inline::Frame(frame)] => Some(frame),
-        _ => None,
-    }
 }
 
 fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) -> Result<()> {
@@ -2123,20 +2165,16 @@ fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) -> Result
     Ok(())
 }
 
-fn render_pdf_embedding(data: &InlineElementData, out: &mut String) {
+fn render_pdf_embedding(path: Option<&str>, out: &mut String) {
     out.push_str("<!-- typlite-pdf");
-    if let Some(path) = data
-        .scalar("path")
-        .or_else(|| data.scalar("source"))
-        .filter(|value| !value.is_empty())
-    {
+    if let Some(path) = path.filter(|value| !value.is_empty()) {
         out.push_str(": ");
         push_html_comment_escaped(path, out);
     }
     out.push_str(" -->");
 }
 
-fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_image(data: &ImageInline, out: &mut String) -> Result<()> {
     let source = image_source(data)?;
     if source.mime == Some("application/pdf") {
         render_pdf_image_frame(data, out)?;
@@ -2144,7 +2182,7 @@ fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
     }
 
     out.push_str("![");
-    if let Some(alt) = data.scalar("alt") {
+    if let Some(alt) = data.alt.as_deref() {
         push_markdown_link_text_escaped(alt, out);
     }
     out.push_str("](");
@@ -2154,7 +2192,7 @@ fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
     Ok(())
 }
 
-fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_image_html(data: &ImageInline, out: &mut String) -> Result<()> {
     let source = image_source(data)?;
     if source.mime == Some("application/pdf") {
         render_pdf_image_frame(data, out)?;
@@ -2162,7 +2200,7 @@ fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
     }
 
     out.push_str("<img alt=\"");
-    if let Some(alt) = data.scalar("alt") {
+    if let Some(alt) = data.alt.as_deref() {
         push_html_escaped(alt, out);
     }
     out.push_str("\" src=\"");
@@ -2172,11 +2210,11 @@ fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
     Ok(())
 }
 
-fn render_pdf_image_frame(data: &InlineElementData, out: &mut String) -> Result<()> {
-    let Some(frame) = data.inlines("frame").and_then(single_frame) else {
+fn render_pdf_image_frame(data: &ImageInline, out: &mut String) -> Result<()> {
+    let Some(frame) = data.frame.as_ref() else {
         bail!("typlite markdown PDF image rendering requires html.frame");
     };
-    render_frame_image(data.scalar("alt").unwrap_or("PDF"), frame, out)
+    render_frame_image(data.alt.as_deref().unwrap_or("PDF"), frame, out)
 }
 
 enum SourceValue {
@@ -2189,7 +2227,7 @@ struct ImageSource {
     mime: Option<&'static str>,
 }
 
-fn image_source(data: &InlineElementData) -> Result<ImageSource> {
+fn image_source(data: &ImageInline) -> Result<ImageSource> {
     match source_value(data, "image")? {
         SourceValue::String(source) => {
             let mime = image_source_path_mime(&source);
@@ -2197,7 +2235,8 @@ fn image_source(data: &InlineElementData) -> Result<ImageSource> {
         }
         SourceValue::Bytes(bytes) => {
             let mime = if let Some(format) = data
-                .scalar("format")
+                .format
+                .as_deref()
                 .filter(|format| !is_auto_or_none(format))
             {
                 image_format_mime(format)?
@@ -2217,8 +2256,8 @@ fn image_source(data: &InlineElementData) -> Result<ImageSource> {
     }
 }
 
-fn source_value(data: &InlineElementData, element: &str) -> Result<SourceValue> {
-    let Some(raw) = data.scalar("source").filter(|source| !source.is_empty()) else {
+fn source_value(data: &ImageInline, element: &str) -> Result<SourceValue> {
+    let Some(raw) = data.source.as_deref().filter(|source| !source.is_empty()) else {
         bail!("typlite markdown {element} rendering requires source");
     };
 
@@ -2308,40 +2347,40 @@ fn decode_source_bytes(bytes: serde_json::Value) -> Result<Vec<u8>> {
 }
 
 fn render_box(
-    data: &InlineElementData,
+    data: &BoxInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, bibliography, out, |data, out| {
+    render_layout_span(&data.body, bibliography, out, |out| {
         out.push_str("display: inline-block");
-        push_optional_css_length(data, "width", "width", out);
-        push_optional_css_length(data, "height", "height", out);
+        push_optional_css_length_value(data.width.as_deref(), "width", out);
+        push_optional_css_length_value(data.height.as_deref(), "height", out);
     })
 }
 
 fn render_repeat(
-    data: &InlineElementData,
+    data: &RepeatInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
     out.push_str("<span data-typlite-repeat=\"true\"");
-    if let Some(gap) = data.scalar("gap").filter(|value| !is_auto_or_none(value)) {
+    if let Some(gap) = data.gap.as_deref().filter(|value| !is_auto_or_none(value)) {
         out.push_str(" data-gap=\"");
         push_html_escaped(gap, out);
         out.push('"');
     }
-    if let Some(justify) = data.scalar("justify").filter(|value| !value.is_empty()) {
+    if let Some(justify) = data.justify.as_deref().filter(|value| !value.is_empty()) {
         out.push_str(" data-justify=\"");
         push_html_escaped(justify, out);
         out.push('"');
     }
 
     out.push_str(" style=\"display: inline-flex");
-    if let Some(gap) = data.scalar("gap").filter(|value| !is_auto_or_none(value)) {
+    if let Some(gap) = data.gap.as_deref().filter(|value| !is_auto_or_none(value)) {
         out.push_str("; gap: ");
         push_css_length(gap, out);
     }
-    if data.scalar("justify") == Some("true") {
+    if data.justify.as_deref() == Some("true") {
         out.push_str("; justify-content: space-between");
     }
     out.push_str("\">");
@@ -2351,12 +2390,12 @@ fn render_repeat(
 }
 
 fn render_pdf_artifact(
-    data: &InlineElementData,
+    data: &PdfArtifactInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
     out.push_str("<span data-typlite-pdf-artifact=\"");
-    push_html_escaped(data.scalar("kind").unwrap_or("artifact"), out);
+    push_html_escaped(data.kind.as_deref().unwrap_or("artifact"), out);
     out.push_str("\">");
     render_inlines_html(&data.body, bibliography, out)?;
     out.push_str("</span>");
@@ -2364,89 +2403,82 @@ fn render_pdf_artifact(
 }
 
 fn render_pad(
-    data: &InlineElementData,
+    data: &PadInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, bibliography, out, |data, out| {
+    render_layout_span(&data.body, bibliography, out, |out| {
         out.push_str("display: inline-block");
-        push_optional_css_length(data, "left", "padding-left", out);
-        push_optional_css_length(data, "top", "padding-top", out);
-        push_optional_css_length(data, "right", "padding-right", out);
-        push_optional_css_length(data, "bottom", "padding-bottom", out);
+        push_optional_css_length_value(data.left.as_deref(), "padding-left", out);
+        push_optional_css_length_value(data.top.as_deref(), "padding-top", out);
+        push_optional_css_length_value(data.right.as_deref(), "padding-right", out);
+        push_optional_css_length_value(data.bottom.as_deref(), "padding-bottom", out);
     })
 }
 
 fn render_move(
-    data: &InlineElementData,
+    data: &MoveInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, bibliography, out, |data, out| {
+    render_layout_span(&data.body, bibliography, out, |out| {
         out.push_str("display: inline-block; transform: translate(");
-        push_css_length(data.scalar("dx").unwrap_or("0pt"), out);
+        push_css_length(data.dx.as_deref().unwrap_or("0pt"), out);
         out.push_str(", ");
-        push_css_length(data.scalar("dy").unwrap_or("0pt"), out);
+        push_css_length(data.dy.as_deref().unwrap_or("0pt"), out);
         out.push(')');
     })
 }
 
 fn render_place(
-    data: &InlineElementData,
+    data: &PlaceInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, bibliography, out, |data, out| {
+    render_layout_span(&data.body, bibliography, out, |out| {
         out.push_str("display: inline-block; position: relative");
-        if let Some(dx) = data.scalar("dx").filter(|value| !is_auto_or_none(value)) {
+        if let Some(dx) = data.dx.as_deref().filter(|value| !is_auto_or_none(value)) {
             out.push_str("; left: ");
             push_css_length(dx, out);
         }
-        if let Some(dy) = data.scalar("dy").filter(|value| !is_auto_or_none(value)) {
+        if let Some(dy) = data.dy.as_deref().filter(|value| !is_auto_or_none(value)) {
             out.push_str("; top: ");
             push_css_length(dy, out);
         }
     })
 }
 
-fn render_transform(
-    data: &InlineElementData,
-    function: &str,
-    fields: &[&str],
+fn render_rotate(
+    data: &RotateInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, bibliography, out, |data, out| {
-        out.push_str("display: inline-block; transform: ");
-        out.push_str(function);
-        out.push('(');
-        for (index, field) in fields.iter().enumerate() {
-            if index > 0 {
-                out.push_str(", ");
-            }
-            push_html_escaped(data.scalar(field).unwrap_or("0deg"), out);
-        }
+    render_layout_span(&data.body, bibliography, out, |out| {
+        out.push_str("display: inline-block; transform: rotate(");
+        push_html_escaped(data.angle.as_deref().unwrap_or("0deg"), out);
         out.push(')');
     })
 }
 
 fn render_scale(
-    data: &InlineElementData,
+    data: &ScaleInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, bibliography, out, |data, out| {
+    render_layout_span(&data.body, bibliography, out, |out| {
         out.push_str("display: inline-block; transform: scale(");
         push_css_scale(
-            data.scalar("x")
-                .or_else(|| data.scalar("factor"))
+            data.x
+                .as_deref()
+                .or(data.factor.as_deref())
                 .unwrap_or("100%"),
             out,
         );
         out.push_str(", ");
         push_css_scale(
-            data.scalar("y")
-                .or_else(|| data.scalar("factor"))
+            data.y
+                .as_deref()
+                .or(data.factor.as_deref())
                 .unwrap_or("100%"),
             out,
         );
@@ -2454,41 +2486,36 @@ fn render_scale(
     })
 }
 
-fn render_layout_span(
-    data: &InlineElementData,
+fn render_skew(
+    data: &SkewInline,
     bibliography: &BibliographyContext,
     out: &mut String,
-    push_style: impl FnOnce(&InlineElementData, &mut String),
+) -> Result<()> {
+    render_layout_span(&data.body, bibliography, out, |out| {
+        out.push_str("display: inline-block; transform: skew(");
+        push_html_escaped(data.ax.as_deref().unwrap_or("0deg"), out);
+        out.push_str(", ");
+        push_html_escaped(data.ay.as_deref().unwrap_or("0deg"), out);
+        out.push(')');
+    })
+}
+
+fn render_layout_span(
+    body: &[Inline],
+    bibliography: &BibliographyContext,
+    out: &mut String,
+    push_style: impl FnOnce(&mut String),
 ) -> Result<()> {
     out.push_str("<span style=\"");
-    push_style(data, out);
+    push_style(out);
     out.push_str("\">");
-    render_inlines_html(&data.body, bibliography, out)?;
+    render_inlines_html(body, bibliography, out)?;
     out.push_str("</span>");
     Ok(())
 }
 
-fn push_optional_css_length(
-    data: &InlineElementData,
-    field: &str,
-    property: &str,
-    out: &mut String,
-) {
-    if let Some(value) = data.scalar(field).filter(|value| !is_auto_or_none(value)) {
-        out.push_str("; ");
-        out.push_str(property);
-        out.push_str(": ");
-        push_css_length(value, out);
-    }
-}
-
-fn push_optional_block_css_length(
-    data: &BlockElementData,
-    field: &str,
-    property: &str,
-    out: &mut String,
-) {
-    if let Some(value) = data.scalar(field).filter(|value| !is_auto_or_none(value)) {
+fn push_optional_css_length_value(value: Option<&str>, property: &str, out: &mut String) {
+    if let Some(value) = value.filter(|value| !is_auto_or_none(value)) {
         out.push_str("; ");
         out.push_str(property);
         out.push_str(": ");
@@ -2512,13 +2539,12 @@ fn is_auto_or_none(value: &str) -> bool {
 }
 
 fn render_cite(
-    data: &InlineElementData,
+    data: &CiteInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    let Some(key) = data.scalar("key").or_else(|| data.scalar("label")) else {
-        render_structured_inline(&Inline::Cite(data.clone()), data, out)?;
-        return Ok(());
+    let Some(key) = data.key.as_deref() else {
+        return render_unimplemented("cite without key");
     };
 
     let key = key.trim_start_matches('<').trim_end_matches('>');
@@ -2537,13 +2563,12 @@ fn render_cite(
 }
 
 fn render_ref(
-    data: &InlineElementData,
+    data: &RefInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) else {
-        render_structured_inline(&Inline::Ref(data.clone()), data, out)?;
-        return Ok(());
+    let Some(target) = data.target.as_deref() else {
+        return render_unimplemented("ref without target");
     };
 
     let target = target.trim_start_matches('<').trim_end_matches('>');
@@ -2553,16 +2578,14 @@ fn render_ref(
         return Ok(());
     }
 
-    if let Some(supplement) = data
-        .inlines("supplement")
-        .filter(|value| has_semantic_inlines(value))
-    {
+    if has_semantic_inlines(&data.supplement) {
+        let supplement = &data.supplement;
         render_ref_link(target, supplement, bibliography, out)?;
         return Ok(());
     }
 
-    if let Some(element) = data.blocks("element").filter(|value| !value.is_empty()) {
-        render_ref_element_link(target, element, bibliography, out)?;
+    if !data.element.is_empty() {
+        render_ref_element_link(target, &data.element, bibliography, out)?;
         return Ok(());
     }
 
@@ -2600,11 +2623,11 @@ fn render_ref_element_link(
     out: &mut String,
 ) -> Result<()> {
     match blocks {
-        [Block::Heading { body, .. }] if has_semantic_inlines(body) => {
-            render_ref_link(target, body, bibliography, out)
+        [Block::Heading(data)] if has_semantic_inlines(&data.body) => {
+            render_ref_link(target, &data.body, bibliography, out)
         }
-        [Block::Figure { caption, .. }] if has_semantic_inlines(caption) => {
-            render_ref_link(target, caption, bibliography, out)
+        [Block::Figure(data)] if has_semantic_inlines(&data.caption) => {
+            render_ref_link(target, &data.caption, bibliography, out)
         }
         [_] | [_, ..] => render_ref_text_link(target, target, out),
         [] => render_ref_text_link(target, target, out),
@@ -2621,11 +2644,11 @@ fn render_ref_text_link(target: &str, text: &str, out: &mut String) -> Result<()
 }
 
 fn render_inline_quote(
-    data: &InlineElementData,
+    data: &QuoteInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    let quoted = match data.scalar("quotes").unwrap_or("auto") {
+    let quoted = match data.quotes.as_deref().unwrap_or("auto") {
         "auto" | "true" => true,
         "false" => false,
         _ => true,
@@ -2639,12 +2662,9 @@ fn render_inline_quote(
         out.push('"');
     }
 
-    if let Some(attribution) = data
-        .inlines("attribution")
-        .filter(|value| has_semantic_inlines(value))
-    {
+    if has_semantic_inlines(&data.attribution) {
         out.push_str(" (");
-        render_inlines(attribution, bibliography, out)?;
+        render_inlines(&data.attribution, bibliography, out)?;
         out.push(')');
     }
 
@@ -2652,11 +2672,11 @@ fn render_inline_quote(
 }
 
 fn render_inline_quote_html(
-    data: &InlineElementData,
+    data: &QuoteInline,
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    let quoted = match data.scalar("quotes").unwrap_or("auto") {
+    let quoted = match data.quotes.as_deref().unwrap_or("auto") {
         "auto" | "true" => true,
         "false" => false,
         _ => true,
@@ -2670,20 +2690,17 @@ fn render_inline_quote_html(
         out.push_str("</q>");
     }
 
-    if let Some(attribution) = data
-        .inlines("attribution")
-        .filter(|value| has_semantic_inlines(value))
-    {
+    if has_semantic_inlines(&data.attribution) {
         out.push_str(" <cite>");
-        render_inlines_html(attribution, bibliography, out)?;
+        render_inlines_html(&data.attribution, bibliography, out)?;
         out.push_str("</cite>");
     }
 
     Ok(())
 }
 
-fn render_metadata(data: &InlineElementData, out: &mut String) {
-    let Some(value) = data.scalar("value").filter(|value| !value.is_empty()) else {
+fn render_metadata(data: &MetadataInline, out: &mut String) {
+    let Some(value) = data.value.as_deref().filter(|value| !value.is_empty()) else {
         return;
     };
 
@@ -2692,12 +2709,12 @@ fn render_metadata(data: &InlineElementData, out: &mut String) {
     out.push_str(" -->");
 }
 
-fn render_smartquote(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_smartquote(data: &SmartquoteInline, out: &mut String) -> Result<()> {
     out.push(smartquote_char(data)?);
     Ok(())
 }
 
-fn render_smartquote_html(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_smartquote_html(data: &SmartquoteInline, out: &mut String) -> Result<()> {
     match smartquote_char(data)? {
         '"' => out.push_str("&quot;"),
         '\'' => out.push_str("&#39;"),
@@ -2706,8 +2723,8 @@ fn render_smartquote_html(data: &InlineElementData, out: &mut String) -> Result<
     Ok(())
 }
 
-fn smartquote_char(data: &InlineElementData) -> Result<char> {
-    match data.scalar("double").unwrap_or("true") {
+fn smartquote_char(data: &SmartquoteInline) -> Result<char> {
+    match data.double.as_deref().unwrap_or("true") {
         "true" => Ok('"'),
         "false" => Ok('\''),
         _ => Ok('"'),
@@ -2719,58 +2736,19 @@ fn has_semantic_inlines(value: &[Inline]) -> bool {
 }
 
 fn is_auto_inlines(value: &[Inline]) -> bool {
-    matches!(value, [Inline::Text(text)] if text.as_str() == "auto")
+    matches!(value, [Inline::Text(data)] if data.text.as_str() == "auto")
 }
 
 fn is_none_inlines(value: &[Inline]) -> bool {
-    matches!(value, [Inline::Text(text)] if text.as_str() == "none")
+    matches!(value, [Inline::Text(data)] if data.text.as_str() == "none")
 }
 
-fn render_structured_inline(
-    node: &Inline,
-    data: &InlineElementData,
-    out: &mut String,
-) -> Result<()> {
-    out.push_str(inline_kind(node)?);
-    out.push('(');
-    for (index, field) in data.fields.iter().enumerate() {
-        if index > 0 {
-            out.push_str(", ");
-        }
-        out.push_str(field.name);
-        out.push_str(": ");
-        render_field_value(&field.value, out)?;
-    }
-    out.push(')');
-
-    Ok(())
+fn render_unimplemented_inline(node: &Inline) -> Result<()> {
+    render_unimplemented(inline_kind(node)?)
 }
 
-fn render_structured_inline_html(
-    node: &Inline,
-    data: &InlineElementData,
-    out: &mut String,
-) -> Result<()> {
-    let mut rendered = String::new();
-    render_structured_inline(node, data, &mut rendered)?;
-    out.push_str("<code>");
-    push_html_escaped(&rendered, out);
-    out.push_str("</code>");
-    Ok(())
-}
-
-fn render_field_value(value: &ElementFieldValue, out: &mut String) -> Result<()> {
-    match value {
-        ElementFieldValue::Scalar(value) => out.push_str(value),
-        ElementFieldValue::Inlines(value) => {
-            render_inlines(value, &BibliographyContext::default(), out)?
-        }
-        ElementFieldValue::Blocks(value) => {
-            out.push_str(&render_blocks(value, 0, &BibliographyContext::default())?)
-        }
-    }
-
-    Ok(())
+fn render_unimplemented(feature: &str) -> Result<()> {
+    bail!("typlite markdown rendering for `{feature}` is not implemented")
 }
 
 fn inline_kind(node: &Inline) -> Result<&'static str> {
@@ -2860,14 +2838,14 @@ fn inline_kind(node: &Inline) -> Result<&'static str> {
         Inline::Text(_)
         | Inline::Emph(_)
         | Inline::Strong(_)
-        | Inline::Link { .. }
+        | Inline::Link(_)
         | Inline::Strike(_)
         | Inline::Sub(_)
         | Inline::Super(_)
         | Inline::Math(_)
-        | Inline::Linebreak
+        | Inline::Linebreak(_)
         | Inline::Frame(_)
-        | Inline::Raw { .. } => bail!("not a generated inline element"),
+        | Inline::Raw(_) => bail!("not a generated inline element"),
     };
 
     Ok(kind)
