@@ -395,46 +395,6 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
         tag
     tag
     <typlite-parbreak>
-    tag
-    <typlite-paragraph>
-      <span data-typlite-field="true" name="leading" kind="length">
-        text "0.65em"
-      <span data-typlite-field="true" name="spacing" kind="length">
-        text "1.2em"
-      <span data-typlite-field="true" name="justify" kind="boolean">
-        text "false"
-      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
-        <span data-typlite-field="true" name="spacing" kind="dictionary">
-          <span data-typlite-field="true" name="min" kind="relative length">
-            text "66.67% + 0pt"
-          <span data-typlite-field="true" name="max" kind="relative length">
-            text "150% + 0pt"
-        <span data-typlite-field="true" name="tracking" kind="dictionary">
-          <span data-typlite-field="true" name="min" kind="length">
-            text "0pt"
-          <span data-typlite-field="true" name="max" kind="length">
-            text "0pt"
-      <span data-typlite-field="true" name="linebreaks" kind="auto">
-        text "auto"
-      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
-        <span data-typlite-field="true" name="amount" kind="length">
-          text "0pt"
-        <span data-typlite-field="true" name="all" kind="boolean">
-          text "false"
-      <span data-typlite-field="true" name="hanging-indent" kind="length">
-        text "0pt"
-      <span data-typlite-field="true" name="body" kind="content">
-        tag
-        <span data-typlite="cite">
-          <span data-typlite-field="true" name="key" kind="label">
-            text "title"
-          <span data-typlite-field="true" name="supplement" kind="none">
-          <span data-typlite-field="true" name="form" kind="string">
-            text "normal"
-          <span data-typlite-field="true" name="style" kind="auto">
-            text "auto"
-        tag
-    tag
     <typlite-parbreak>
     tag
     <typlite-quote>
@@ -823,65 +783,60 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
             text "false"
           <span data-typlite-field="true" name="body" kind="content">
             text "Boxed"
-        text " "
-        <span data-typlite="pad">
-          <span data-typlite-field="true" name="left" kind="relative length">
-            text "0% + 1pt"
-          <span data-typlite-field="true" name="top" kind="relative length">
-            text "0% + 1pt"
-          <span data-typlite-field="true" name="right" kind="relative length">
-            text "0% + 1pt"
-          <span data-typlite-field="true" name="bottom" kind="relative length">
-            text "0% + 1pt"
-          <span data-typlite-field="true" name="x" kind="none">
-          <span data-typlite-field="true" name="y" kind="none">
-          <span data-typlite-field="true" name="rest" kind="none">
-          <span data-typlite-field="true" name="body" kind="content">
-            text "Padded"
-        text " "
-        <span data-typlite="move">
-          <span data-typlite-field="true" name="dx" kind="relative length">
-            text "0% + 1pt"
-          <span data-typlite-field="true" name="dy" kind="relative length">
-            text "0% + 1pt"
-          <span data-typlite-field="true" name="body" kind="content">
-            text "Moved"
-        text " "
-        <span data-typlite="rotate">
-          <span data-typlite-field="true" name="angle" kind="angle">
-            text "10deg"
-          <span data-typlite-field="true" name="origin" kind="alignment">
-            text "center + horizon"
-          <span data-typlite-field="true" name="reflow" kind="boolean">
-            text "false"
-          <span data-typlite-field="true" name="body" kind="content">
-            text "Rotated"
-        text " "
-        <span data-typlite="scale">
-          <span data-typlite-field="true" name="factor" kind="none">
-          <span data-typlite-field="true" name="x" kind="ratio">
-            text "80%"
-          <span data-typlite-field="true" name="y" kind="ratio">
-            text "80%"
-          <span data-typlite-field="true" name="origin" kind="alignment">
-            text "center + horizon"
-          <span data-typlite-field="true" name="reflow" kind="boolean">
-            text "false"
-          <span data-typlite-field="true" name="body" kind="content">
-            text "Scaled"
-        text " "
-        <span data-typlite="skew">
-          <span data-typlite-field="true" name="ax" kind="angle">
-            text "10deg"
-          <span data-typlite-field="true" name="ay" kind="angle">
-            text "0deg"
-          <span data-typlite-field="true" name="origin" kind="alignment">
-            text "center + horizon"
-          <span data-typlite-field="true" name="reflow" kind="boolean">
-            text "false"
-          <span data-typlite-field="true" name="body" kind="content">
-            text "Skewed"
     tag
+    <typlite-pad>
+      <span data-typlite-field="true" name="left" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="top" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="right" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="bottom" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="x" kind="none">
+      <span data-typlite-field="true" name="y" kind="none">
+      <span data-typlite-field="true" name="rest" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Padded"
+    <typlite-move>
+      <span data-typlite-field="true" name="dx" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="dy" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Moved"
+    <typlite-rotate>
+      <span data-typlite-field="true" name="angle" kind="angle">
+        text "10deg"
+      <span data-typlite-field="true" name="origin" kind="alignment">
+        text "center + horizon"
+      <span data-typlite-field="true" name="reflow" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Rotated"
+    <typlite-scale>
+      <span data-typlite-field="true" name="factor" kind="none">
+      <span data-typlite-field="true" name="x" kind="ratio">
+        text "80%"
+      <span data-typlite-field="true" name="y" kind="ratio">
+        text "80%"
+      <span data-typlite-field="true" name="origin" kind="alignment">
+        text "center + horizon"
+      <span data-typlite-field="true" name="reflow" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Scaled"
+    <typlite-skew>
+      <span data-typlite-field="true" name="ax" kind="angle">
+        text "10deg"
+      <span data-typlite-field="true" name="ay" kind="angle">
+        text "0deg"
+      <span data-typlite-field="true" name="origin" kind="alignment">
+        text "center + horizon"
+      <span data-typlite-field="true" name="reflow" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Skewed"
     <typlite-parbreak>
     tag
     <typlite-paragraph>

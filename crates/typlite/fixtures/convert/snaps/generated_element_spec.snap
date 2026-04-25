@@ -665,7 +665,7 @@ metadata
 move
   enum: Move
   kind: move
-  mode: inline
+  mode: block
   fields:
     - dx
     - dy
@@ -705,7 +705,7 @@ overline
 pad
   enum: Pad
   kind: pad
-  mode: inline
+  mode: block
   fields:
     - left
     - top
@@ -920,7 +920,7 @@ repeat
 rotate
   enum: Rotate
   kind: rotate
-  mode: inline
+  mode: block
   fields:
     - angle
     - origin
@@ -930,7 +930,7 @@ rotate
 scale
   enum: Scale
   kind: scale
-  mode: inline
+  mode: block
   fields:
     - factor
     - x
@@ -942,7 +942,7 @@ scale
 skew
   enum: Skew
   kind: skew
-  mode: inline
+  mode: block
   fields:
     - ax
     - ay

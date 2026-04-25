@@ -58,12 +58,22 @@ pub enum Block {
     Colbreak(BlockElementData),
     /// Columns block.
     Columns(BlockElementData),
+    /// Moved block.
+    Move(BlockElementData),
     /// Outline block.
     Outline(BlockElementData),
+    /// Padded block.
+    Pad(BlockElementData),
     /// Page break.
     Pagebreak(BlockElementData),
     /// Paragraph break.
     Parbreak(BlockElementData),
+    /// Rotated block.
+    Rotate(BlockElementData),
+    /// Scaled block.
+    Scale(BlockElementData),
+    /// Skewed block.
+    Skew(BlockElementData),
     /// Stack block.
     Stack(BlockElementData),
     /// Terms list.
@@ -502,9 +512,14 @@ impl Block {
             | Self::Block(data)
             | Self::Colbreak(data)
             | Self::Columns(data)
+            | Self::Move(data)
             | Self::Outline(data)
+            | Self::Pad(data)
             | Self::Pagebreak(data)
             | Self::Parbreak(data)
+            | Self::Rotate(data)
+            | Self::Scale(data)
+            | Self::Skew(data)
             | Self::Stack(data)
             | Self::Title(data)
             | Self::V(data) => Some(&data.body),
@@ -611,9 +626,14 @@ pub fn block_from_element_kind(kind: ElementKind, data: BlockElementData) -> Opt
         ElementKind::Block => Some(Block::Block(data)),
         ElementKind::Colbreak => Some(Block::Colbreak(data)),
         ElementKind::Columns => Some(Block::Columns(data)),
+        ElementKind::Move => Some(Block::Move(data)),
         ElementKind::Outline => Some(Block::Outline(data)),
+        ElementKind::Pad => Some(Block::Pad(data)),
         ElementKind::Pagebreak => Some(Block::Pagebreak(data)),
         ElementKind::Parbreak => Some(Block::Parbreak(data)),
+        ElementKind::Rotate => Some(Block::Rotate(data)),
+        ElementKind::Scale => Some(Block::Scale(data)),
+        ElementKind::Skew => Some(Block::Skew(data)),
         ElementKind::Stack => Some(Block::Stack(data)),
         ElementKind::Title => Some(Block::Title(data)),
         ElementKind::V => Some(Block::V(data)),

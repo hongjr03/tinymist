@@ -2,8 +2,8 @@
 
 use crate::Result;
 use crate::ir::{
-    Block, Document, ElementFieldValue, FrameImage, Inline, InlineElementData, MathNode, MathValue,
-    TableAlign, TableRow, TermItem,
+    Block, BlockElementData, Document, ElementFieldValue, FrameImage, Inline, InlineElementData,
+    MathNode, MathValue, TableAlign, TableRow, TermItem,
 };
 use tinymist_std::error::prelude::*;
 
@@ -98,6 +98,11 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             ..
         } => render_list(*ordered, *start, *reversed, items, indent, out)?,
         Block::Columns(data) => render_columns(data, indent, out)?,
+        Block::Move(data) => render_move_block(data, indent, out)?,
+        Block::Pad(data) => render_pad_block(data, indent, out)?,
+        Block::Rotate(data) => render_transform_block(data, "rotate", &["angle"], indent, out)?,
+        Block::Scale(data) => render_scale_block(data, indent, out)?,
+        Block::Skew(data) => render_transform_block(data, "skew", &["ax", "ay"], indent, out)?,
         Block::Stack(data) => render_stack(data, indent, out)?,
         Block::Block(data) | Block::Title(data) => render_blocks_into(&data.body, indent, out)?,
         Block::Terms { items } => render_terms(items, indent, out)?,
@@ -210,11 +215,7 @@ fn render_align(
     Ok(())
 }
 
-fn render_columns(
-    data: &crate::ir::BlockElementData,
-    indent: usize,
-    out: &mut String,
-) -> Result<()> {
+fn render_columns(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"");
     let mut has_style = false;
@@ -239,7 +240,7 @@ fn render_columns(
     Ok(())
 }
 
-fn render_stack(data: &crate::ir::BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+fn render_stack(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"display: flex");
     if let Some(direction) = data.scalar("dir").and_then(css_stack_direction) {
@@ -259,11 +260,7 @@ fn render_stack(data: &crate::ir::BlockElementData, indent: usize, out: &mut Str
     Ok(())
 }
 
-fn render_vertical_space(
-    data: &crate::ir::BlockElementData,
-    indent: usize,
-    out: &mut String,
-) -> Result<()> {
+fn render_vertical_space(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
     let Some(amount) = data.scalar("amount").filter(|value| !value.is_empty()) else {
         return Ok(());
     };
@@ -273,6 +270,84 @@ fn render_vertical_space(
     push_css_length(amount, out);
     out.push_str("\"></div>");
 
+    Ok(())
+}
+
+fn render_pad_block(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+    render_layout_div(data, indent, out, |data, out| {
+        out.push_str("display: block");
+        push_optional_block_css_length(data, "left", "padding-left", out);
+        push_optional_block_css_length(data, "top", "padding-top", out);
+        push_optional_block_css_length(data, "right", "padding-right", out);
+        push_optional_block_css_length(data, "bottom", "padding-bottom", out);
+    })
+}
+
+fn render_move_block(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+    render_layout_div(data, indent, out, |data, out| {
+        out.push_str("display: block; transform: translate(");
+        push_css_length(data.scalar("dx").unwrap_or("0pt"), out);
+        out.push_str(", ");
+        push_css_length(data.scalar("dy").unwrap_or("0pt"), out);
+        out.push(')');
+    })
+}
+
+fn render_transform_block(
+    data: &BlockElementData,
+    function: &str,
+    fields: &[&str],
+    indent: usize,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_div(data, indent, out, |data, out| {
+        out.push_str("display: block; transform: ");
+        out.push_str(function);
+        out.push('(');
+        for (index, field) in fields.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            push_html_escaped(data.scalar(field).unwrap_or("0deg"), out);
+        }
+        out.push(')');
+    })
+}
+
+fn render_scale_block(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+    render_layout_div(data, indent, out, |data, out| {
+        out.push_str("display: block; transform: scale(");
+        push_css_scale(
+            data.scalar("x")
+                .or_else(|| data.scalar("factor"))
+                .unwrap_or("100%"),
+            out,
+        );
+        out.push_str(", ");
+        push_css_scale(
+            data.scalar("y")
+                .or_else(|| data.scalar("factor"))
+                .unwrap_or("100%"),
+            out,
+        );
+        out.push(')');
+    })
+}
+
+fn render_layout_div(
+    data: &BlockElementData,
+    indent: usize,
+    out: &mut String,
+    push_style: impl FnOnce(&BlockElementData, &mut String),
+) -> Result<()> {
+    out.push_str(&" ".repeat(indent));
+    out.push_str("<div style=\"");
+    push_style(data, out);
+    out.push_str("\">\n");
+    render_blocks_html_into(&data.body, indent + 2, out)?;
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out.push_str("</div>");
     Ok(())
 }
 
@@ -1276,6 +1351,20 @@ fn render_layout_span(
 
 fn push_optional_css_length(
     data: &InlineElementData,
+    field: &str,
+    property: &str,
+    out: &mut String,
+) {
+    if let Some(value) = data.scalar(field).filter(|value| !is_auto_or_none(value)) {
+        out.push_str("; ");
+        out.push_str(property);
+        out.push_str(": ");
+        push_css_length(value, out);
+    }
+}
+
+fn push_optional_block_css_length(
+    data: &BlockElementData,
     field: &str,
     property: &str,
     out: &mut String,
