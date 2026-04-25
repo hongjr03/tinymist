@@ -1,0 +1,74 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/math_sweep.typ
+---
+# Typst Math Suite Sweep
+
+## Accent
+
+$$\grave{a}, \acute{b}, \hat{f}, \tilde{u}, \bar{a}, \bar{a}, \breve{a}, \dot{x}, \ddot{a}, \dddot{a}, \ddddot{a}, \mathring{a}, \H{a}, \check{x}, \vec{Z}, \vec{Z}, \vec{Z}, \rightharpoonaccent{a}, \rightharpoonaccent{a}$$
+
+$$\hat{x + y}$$
+
+## Attach
+
+$$f_{x} + t^{b} + V_{1}^{2} + A_{\beta}^{\alpha}$$
+
+$${}_{8}^{16}O_{2}^{2}$$
+
+$${}_{x}^{u}a_{b}^{t}_{y}^{v}$$
+
+$$\sum\limits_{1}^{2} + \sum\nolimits_{1}^{2}$$
+
+## Fractions and roots
+
+$$\frac{1}{2} + {x}/{y} + {x}/{y}$$
+
+$$\binom{n}{k_{1}k_{2}k_{3}} + \sqrt{x} + \sqrt[3]{x}$$
+
+## Delimiters
+
+$$(x + y) + |x| + \Vert x\Vert  + \lfloor x\rfloor + \lceil x\rceil + \lfloor x\rceil$$
+
+$$\to + \middle|$$
+
+## Matrix vector cases
+
+$$\begin{pmatrix}1 & 2 \\ 3 & 4\end{pmatrix}$$
+
+$$\begin{bmatrix}1 & 2 \\ 3 & 4\end{bmatrix}$$
+
+$$\begin{matrix}1 & 2 \\ 3 & 4\end{matrix}$$
+
+$$\left(\begin{matrix}a \\ b \\ c\end{matrix}\right) + \left[\begin{matrix}1 \\ 2\end{matrix}\right]$$
+
+$$\left\{\begin{array}{l}1 if x < 0 \\ 2 else\end{array}\right.$$
+
+$$\left.\begin{array}{l}z_{n_{p}} \\ a^{2}\end{array}\right)$$
+
+## Class operators and styles
+
+$$x + \operatorname{lim}\limits_{n \to \infty} n$$
+
+$$A + A + A + A + A$$
+
+$$A + A + A + A + A$$
+
+$$\sum_{i} x_{i} + \sum_{i} x_{i} + x + x$$
+
+## Under over cancel align
+
+$$\cancel{x} + \bcancel{x} + \xcancel{x}$$
+
+$$\underbrace{x + y}_{n} + \overbrace{x + y}^{n}$$
+
+$$\underbracket{x + y}_{n} + \overbracket{x + y}^{n}$$
+
+$$\underline{x + y} + \overline{x + y}$$
+
+$$\underparen{x + y}_{n} + \overparen{x + y}^{n}$$
+
+$$\underset{n}{x + y} + \overset{n}{x + y}$$
+
+$$a & = b  \\  && = c$$

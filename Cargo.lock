@@ -7303,6 +7303,8 @@ checksum = "562d481066bde0658276a35467c4af00bdc6ee726305698a55b86e61d7ad82bb"
 name = "typlite"
 version = "0.14.16"
 dependencies = [
+ "base64 0.22.1",
+ "clap",
  "ecow",
  "hayagriva",
  "insta",

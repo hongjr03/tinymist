@@ -21,6 +21,8 @@ bench = false
 doc = false
 
 [dependencies]
+base64.workspace = true
+clap = { workspace = true, optional = true }
 ecow.workspace = true
 hayagriva.workspace = true
 serde_json.workspace = true
@@ -40,8 +42,8 @@ typst.workspace = true
 
 [features]
 default = ["no-content-hint", "cli"]
-clap = []
-cli = []
+clap = ["dep:clap"]
+cli = ["clap", "system"]
 docx = []
 no-content-hint = ["tinymist-project/no-content-hint"]
 system = ["tinymist-project/system"]

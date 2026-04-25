@@ -1168,6 +1168,32 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="body" kind="content">
         text "{\"func\":\"sequence\",\"children\":[{\"func\":\"underbrace\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"underbracket\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"underline\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"underparen\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"undershell\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"vec\",\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}]}]}"
     tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"vec\",\"delim\":[\"[\",\"]\"],\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"∑\"},\"t\":{\"func\":\"symbol\",\"text\":\"n\"},\"b\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"k\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"text\",\"text\":\"0\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"k\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"2\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"…\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"space\"},{\"func\":\"linebreak\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"frac\",\"num\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"symbol\",\"text\":\")\"}]}}]},\"denom\":{\"func\":\"text\",\"text\":\"2\"}}]}"
+    tag
     <section role="doc-endnotes">
       <ol style="list-style-type: none">
         tag

@@ -730,9 +730,9 @@ fn math_field(element: &HtmlElement, name: &str) -> Result<MathNode> {
 }
 
 fn parse_math_node(value: &Value) -> Result<MathNode> {
-    let object = value
-        .as_object()
-        .context("math node must be encoded as an object")?;
+    let Some(object) = value.as_object() else {
+        bail!("math node must be encoded as an object, got {value}");
+    };
     let func = object
         .get("func")
         .and_then(Value::as_str)
@@ -745,7 +745,13 @@ fn parse_math_node(value: &Value) -> Result<MathNode> {
         }
         fields.push(MathField {
             name: name.as_str().into(),
-            value: parse_math_value(value)?,
+            value: parse_math_value(value).with_context_ut("cannot parse math field", || {
+                Some(Box::new([
+                    ("func", func.to_owned()),
+                    ("field", name.to_owned()),
+                    ("value", value.to_string()),
+                ]))
+            })?,
         });
     }
 
@@ -771,6 +777,14 @@ fn parse_math_array(values: &[Value]) -> Result<MathValue> {
         return Ok(MathValue::Nodes(Vec::new()));
     }
 
+    if values.iter().all(Value::is_object) {
+        let mut nodes = Vec::new();
+        for value in values {
+            nodes.push(parse_math_node(value)?);
+        }
+        return Ok(MathValue::Nodes(nodes));
+    }
+
     if values.iter().all(Value::is_array) {
         let mut rows = Vec::new();
         for row in values {
@@ -786,11 +800,9 @@ fn parse_math_array(values: &[Value]) -> Result<MathValue> {
         return Ok(MathValue::Rows(rows));
     }
 
-    let mut nodes = Vec::new();
-    for value in values {
-        nodes.push(parse_math_node(value)?);
-    }
-    Ok(MathValue::Nodes(nodes))
+    Ok(MathValue::Scalar(
+        Value::Array(values.to_vec()).to_string().into(),
+    ))
 }
 
 fn tag_name(element: &HtmlElement) -> Option<String> {

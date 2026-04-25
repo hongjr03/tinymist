@@ -84,6 +84,29 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
   }
 }
 
+#let source_value(value) = {
+  let ty = type(value)
+  if ty == type(bytes(())) {
+    (kind: "bytes", bytes: range(value.len()).map(i => value.at(i)))
+  } else if ty == type("") {
+    (kind: "string", value: value)
+  } else if ty == type(()) {
+    value.map(source_value)
+  } else {
+    value
+  }
+}
+
+#let source_node(name, value) = {
+  let ty = type(value)
+  let kind = str(ty)
+  if ty == type(none) {
+    field_node(name, kind, [])
+  } else {
+    field_node(name, "source", json.encode(source_value(value), pretty: false))
+  }
+}
+
 #let frame_node(name, value) = field_node(name, "frame", html.frame(value))
 
 #let html_target(value, fallback) = if target() == "html" {
@@ -308,7 +331,15 @@ impl ElementSpec {
     fn needs_frame(&self) -> bool {
         matches!(
             self.selector().as_str(),
-            "circle" | "curve" | "ellipse" | "line" | "path" | "polygon" | "rect" | "square"
+            "circle"
+                | "curve"
+                | "ellipse"
+                | "image"
+                | "line"
+                | "path"
+                | "polygon"
+                | "rect"
+                | "square"
         )
     }
 
@@ -326,8 +357,8 @@ impl ElementSpec {
             ("metadata", "value") => {
                 format!("    opaque_value_node({field:?}, field(it, {field:?}))\n")
             }
-            ("bibliography", "sources") => {
-                format!("    opaque_value_node({field:?}, field(it, {field:?}))\n")
+            (_, "source" | "sources") => {
+                format!("    source_node({field:?}, field(it, {field:?}))\n")
             }
             _ => format!("    {value_node}({field:?}, field(it, {field:?}))\n"),
         }

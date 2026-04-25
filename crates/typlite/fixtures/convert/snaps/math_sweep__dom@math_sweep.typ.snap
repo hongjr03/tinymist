@@ -1,0 +1,529 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/math_sweep.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Typst Math Suite Sweep"
+    tag
+    <typlite-parbreak>
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Accent"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{300}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"b\"},\"accent\":\"\u{301}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"f\"},\"accent\":\"\u{302}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"u\"},\"accent\":\"\u{303}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{304}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{305}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{306}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"accent\":\"\u{307}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{308}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{20db}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{20dc}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{30a}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{30b}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"accent\":\"\u{30c}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"Z\"},\"accent\":\"\u{20d7}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"Z\"},\"accent\":\"\u{20d6}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"Z\"},\"accent\":\"\u{20e1}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{20d1}\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"accent\":\"\u{20d0}\"}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"accent\",\"base\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"accent\":\"\u{302}\",\"size\":\"150% + 0pt\"}"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Attach"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"f\"},\"b\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"t\"},\"t\":{\"func\":\"symbol\",\"text\":\"b\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"V\"},\"t\":{\"func\":\"text\",\"text\":\"2\"},\"b\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"A\"},\"t\":{\"func\":\"symbol\",\"text\":\"α\"},\"b\":{\"func\":\"symbol\",\"text\":\"β\"}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"O\"},\"tl\":{\"func\":\"text\",\"text\":\"16\"},\"bl\":{\"func\":\"text\",\"text\":\"8\"},\"tr\":{\"func\":\"text\",\"text\":\"2\"},\"br\":{\"func\":\"text\",\"text\":\"2\"}}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"t\":{\"func\":\"symbol\",\"text\":\"t\"},\"b\":{\"func\":\"symbol\",\"text\":\"b\"},\"tl\":{\"func\":\"symbol\",\"text\":\"u\"},\"bl\":{\"func\":\"symbol\",\"text\":\"x\"},\"tr\":{\"func\":\"symbol\",\"text\":\"v\"},\"br\":{\"func\":\"symbol\",\"text\":\"y\"}}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"limits\",\"body\":{\"func\":\"symbol\",\"text\":\"∑\"}},\"t\":{\"func\":\"text\",\"text\":\"2\"},\"b\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"scripts\",\"body\":{\"func\":\"symbol\",\"text\":\"∑\"}},\"t\":{\"func\":\"text\",\"text\":\"2\"},\"b\":{\"func\":\"text\",\"text\":\"1\"}}]}"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Fractions and roots"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"frac\",\"num\":{\"func\":\"text\",\"text\":\"1\"},\"denom\":{\"func\":\"text\",\"text\":\"2\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"frac\",\"num\":{\"func\":\"symbol\",\"text\":\"x\"},\"denom\":{\"func\":\"symbol\",\"text\":\"y\"},\"style\":\"skewed\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"frac\",\"num\":{\"func\":\"symbol\",\"text\":\"x\"},\"denom\":{\"func\":\"symbol\",\"text\":\"y\"},\"style\":\"horizontal\"}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"binom\",\"upper\":{\"func\":\"symbol\",\"text\":\"n\"},\"lower\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"k\"},\"b\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"k\"},\"b\":{\"func\":\"text\",\"text\":\"2\"}},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"k\"},\"b\":{\"func\":\"text\",\"text\":\"3\"}}]},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"root\",\"radicand\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"root\",\"index\":{\"func\":\"text\",\"text\":\"3\"},\"radicand\":{\"func\":\"symbol\",\"text\":\"x\"}}]}"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Delimiters"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"lr\",\"body\":{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"},{\"func\":\"symbol\",\"text\":\")\"}]}}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"|\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\"|\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"‖\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\"‖\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"⌊\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\"⌋\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"⌈\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\"⌉\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"⌊\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\"⌉\"}]}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"stretch\",\"body\":{\"func\":\"symbol\",\"text\":\"→\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"mid\",\"body\":{\"func\":\"symbol\",\"text\":\"|\"}}]}"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Matrix vector cases"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"mat\",\"rows\":[[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],[{\"func\":\"text\",\"text\":\"3\"},{\"func\":\"text\",\"text\":\"4\"}]]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"mat\",\"delim\":[\"[\",\"]\"],\"rows\":[[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],[{\"func\":\"text\",\"text\":\"3\"},{\"func\":\"text\",\"text\":\"4\"}]]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"mat\",\"delim\":[null,null],\"rows\":[[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],[{\"func\":\"text\",\"text\":\"3\"},{\"func\":\"text\",\"text\":\"4\"}]]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"vec\",\"children\":[{\"func\":\"symbol\",\"text\":\"a\"},{\"func\":\"symbol\",\"text\":\"b\"},{\"func\":\"symbol\",\"text\":\"c\"}]},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"vec\",\"delim\":[\"[\",\"]\"],\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}]}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"cases\",\"children\":[{\"func\":\"sequence\",\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"if\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"<\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"0\"}]},{\"func\":\"sequence\",\"children\":[{\"func\":\"text\",\"text\":\"2\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"else\"}]}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"cases\",\"delim\":[\"(\",\")\"],\"reverse\":true,\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"z\"},\"b\":{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"n\"},\"b\":{\"func\":\"symbol\",\"text\":\"p\"}}},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"a\"},\"t\":{\"func\":\"text\",\"text\":\"2\"}}]}"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Class operators and styles"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"class\",\"class\":\"relation\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"op\",\"text\":{\"func\":\"text\",\"text\":\"lim\"},\"limits\":true},\"b\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"→\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"∞\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"n\"}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"A\"},\"styles\":\"..\"}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"styled\",\"child\":{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"∑\"},\"b\":{\"func\":\"symbol\",\"text\":\"i\"}},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"b\":{\"func\":\"symbol\",\"text\":\"i\"}}]},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"∑\"},\"b\":{\"func\":\"symbol\",\"text\":\"i\"}},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"b\":{\"func\":\"symbol\",\"text\":\"i\"}}]},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"x\"},\"styles\":\"..\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"styled\",\"child\":{\"func\":\"symbol\",\"text\":\"x\"},\"styles\":\"..\"}]}"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Under over cancel align"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"cancel\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"cancel\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"inverted\":true},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"cancel\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"cross\":true}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"underbrace\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overbrace\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"underbracket\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overbracket\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"underline\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overline\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"underparen\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overparen\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"undershell\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overshell\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"}]},\"annotation\":{\"func\":\"symbol\",\"text\":\"n\"}}]}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"a\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"b\"},{\"func\":\"space\"},{\"func\":\"linebreak\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"c\"}]}"
+    tag

@@ -83,3 +83,6 @@ $ lr((x)) + mat(1, 2; 3, 4) + mid(|) + op("lim", limits: #true) $
 $ overbrace(x, 1) + overbracket(x, 1) + overline(x) + overparen(x, 1) + overshell(x, 1) $
 $ primes(#3) + root(3, x) + scripts(x) + stretch(->) $
 $ underbrace(x, 1) + underbracket(x, 1) + underline(x) + underparen(x, 1) + undershell(x, 1) + vec(1, 2) $
+$ vec(1, 2, delim: "[") $
+$ sum_(k=0)^n k & = 1 + 2 + ... + n \
+    & = (n(n+1)) / 2 $

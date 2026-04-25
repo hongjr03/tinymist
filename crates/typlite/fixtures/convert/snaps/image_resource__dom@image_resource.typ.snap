@@ -60,8 +60,8 @@ input_file: crates/typlite/fixtures/convert/image_resource.typ
       <span data-typlite-field="true" name="body" kind="content">
         tag
         <span data-typlite="image">
-          <span data-typlite-field="true" name="source" kind="string">
-            text "sample.svg"
+          <span data-typlite-field="true" name="source" kind="source">
+            text "{\"kind\":\"string\",\"value\":\"sample.svg\"}"
           <span data-typlite-field="true" name="format" kind="auto">
             text "auto"
           <span data-typlite-field="true" name="width" kind="auto">
@@ -78,6 +78,8 @@ input_file: crates/typlite/fixtures/convert/image_resource.typ
             text "auto"
           <span data-typlite-field="true" name="icc" kind="auto">
             text "auto"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         tag
     tag
     <typlite-parbreak>
@@ -86,8 +88,8 @@ input_file: crates/typlite/fixtures/convert/image_resource.typ
       <span data-typlite-field="true" name="body" kind="content">
         tag
         <span data-typlite="image">
-          <span data-typlite-field="true" name="source" kind="string">
-            text "sample.svg"
+          <span data-typlite-field="true" name="source" kind="source">
+            text "{\"kind\":\"string\",\"value\":\"sample.svg\"}"
           <span data-typlite-field="true" name="format" kind="auto">
             text "auto"
           <span data-typlite-field="true" name="width" kind="auto">
@@ -104,6 +106,8 @@ input_file: crates/typlite/fixtures/convert/image_resource.typ
             text "auto"
           <span data-typlite-field="true" name="icc" kind="auto">
             text "auto"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         tag
       <span data-typlite-field="true" name="alt" kind="string">
         text "Figure [alt]"

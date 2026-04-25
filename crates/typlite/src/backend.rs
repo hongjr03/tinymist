@@ -5,10 +5,12 @@ use crate::ir::{
     Block, BlockElementData, Document, ElementFieldValue, FrameImage, Inline, InlineElementData,
     MathNode, MathValue, TableAlign, TableRow, TermItem,
 };
+use base64::Engine;
 use ecow::EcoString;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use tinymist_std::error::prelude::*;
+use typst::visualize::{ExchangeFormat, ImageFormat, RasterFormat, VectorFormat};
 
 /// Rendered bibliography entries available to the Markdown backend.
 #[derive(Debug, Default, Clone)]
@@ -84,12 +86,9 @@ impl BibliographyContext {
     }
 
     fn take_reference_anchors(&self, block: &Block) -> Vec<EcoString> {
-        let Some(key) = reference_anchor_key(block) else {
-            return Vec::new();
-        };
         self.reference_anchors
             .borrow_mut()
-            .remove(&key)
+            .remove(&reference_anchor_key(block))
             .unwrap_or_default()
     }
 }
@@ -158,9 +157,11 @@ fn collect_reference_anchors_in_inlines(
                 if let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) {
                     if let Some(element) = data.blocks("element").and_then(|blocks| blocks.first())
                     {
-                        if let Some(key) = reference_anchor_key(element) {
-                            push_reference_anchor(out, key, normalized_label(target).into());
-                        }
+                        push_reference_anchor(
+                            out,
+                            reference_anchor_key(element),
+                            normalized_label(target).into(),
+                        );
                     }
                 }
                 collect_reference_anchors_in_fields(&data.fields, out);
@@ -213,11 +214,8 @@ fn push_reference_anchor(
     }
 }
 
-fn reference_anchor_key(block: &Block) -> Option<String> {
-    match block {
-        Block::Heading { .. } | Block::Figure { .. } => Some(format!("{block:?}")),
-        _ => None,
-    }
+fn reference_anchor_key(block: &Block) -> String {
+    format!("{block:?}")
 }
 
 fn normalized_label(label: &str) -> &str {
@@ -256,9 +254,9 @@ fn render_block(
     bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
+    render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
     match block {
         Block::Heading { level, body } => {
-            render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
             out.push_str(&" ".repeat(indent));
             out.push_str(&"#".repeat(*level as usize));
             out.push(' ');
@@ -270,7 +268,6 @@ fn render_block(
         }
         Block::Quote(blocks) => render_quote(blocks, indent, bibliography, out)?,
         Block::Figure { body, caption, alt } => {
-            render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
             out.push_str(&" ".repeat(indent));
             out.push_str("<figure");
             if let Some(alt) = alt {
@@ -1307,23 +1304,37 @@ fn render_inlines_html(
 fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
     match node.func.as_str() {
         "sequence" => render_math_nodes(math_nodes(node, "children")?, out),
-        "text" | "symbol" => {
+        "text" => {
             out.push_str(math_scalar(node, "text")?);
             Ok(())
         }
-        "space" => {
+        "symbol" => {
+            render_math_symbol(math_scalar(node, "text")?, out);
+            Ok(())
+        }
+        "space" | "h" => {
             out.push(' ');
+            Ok(())
+        }
+        "align-point" => {
+            out.push('&');
+            Ok(())
+        }
+        "linebreak" => {
+            out.push_str(r" \\ ");
             Ok(())
         }
         "accent" => render_math_accent(node, out),
         "attach" => render_math_attach(node, out),
         "binom" => render_math_two_arg_command(node, "binom", "upper", "lower", out),
-        "cancel" => render_math_one_arg_command(node, "cancel", "body", out),
+        "cancel" => render_math_cancel(node, out),
         "cases" => render_math_cases(node, out),
-        "class" | "limits" | "lr" | "scripts" | "stretch" | "mid" => {
-            render_math(math_child(node, "body")?, out)
-        }
-        "frac" => render_math_two_arg_command(node, "frac", "num", "denom", out),
+        "class" | "lr" | "stretch" => render_math(math_child(node, "body")?, out),
+        "limits" => render_math_limit_style(node, r"\limits", out),
+        "mid" => render_math_mid(node, out),
+        "scripts" => render_math_limit_style(node, r"\nolimits", out),
+        "styled" => render_math_styled(node, out),
+        "frac" => render_math_frac(node, out),
         "mat" => render_math_matrix(node, out),
         "op" => render_math_op(node, out),
         "overbrace" => render_math_annotated_command(node, "overbrace", "body", out),
@@ -1333,12 +1344,12 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
         "overshell" => render_math_annotation_command(node, "overset", out),
         "primes" => render_math_primes(node, out),
         "root" => render_math_root(node, out),
-        "underbrace" => render_math_annotated_command(node, "underbrace", "body", out),
-        "underbracket" => render_math_annotated_command(node, "underbracket", "body", out),
+        "underbrace" => render_math_under_annotated_command(node, "underbrace", out),
+        "underbracket" => render_math_under_annotated_command(node, "underbracket", out),
         "underline" => render_math_one_arg_command(node, "underline", "body", out),
-        "underparen" => render_math_annotated_command(node, "underparen", "body", out),
+        "underparen" => render_math_under_annotated_command(node, "underparen", out),
         "undershell" => render_math_annotation_command(node, "underset", out),
-        "vec" => render_math_one_arg_nodes_command(node, "vec", "children", out),
+        "vec" => render_math_vec(node, out),
         func => bail!("typlite markdown math rendering is not implemented for `{func}`"),
     }
 }
@@ -1350,27 +1361,122 @@ fn render_math_nodes(nodes: &[MathNode], out: &mut String) -> Result<()> {
     Ok(())
 }
 
+fn render_math_symbol(symbol: &str, out: &mut String) {
+    let command = match symbol {
+        "∑" => Some(r"\sum"),
+        "∏" => Some(r"\prod"),
+        "∫" => Some(r"\int"),
+        "∞" => Some(r"\infty"),
+        "→" => Some(r"\to"),
+        "←" => Some(r"\leftarrow"),
+        "↔" => Some(r"\leftrightarrow"),
+        "⇒" => Some(r"\Rightarrow"),
+        "⇐" => Some(r"\Leftarrow"),
+        "⇔" => Some(r"\Leftrightarrow"),
+        "≤" => Some(r"\le"),
+        "≥" => Some(r"\ge"),
+        "≠" => Some(r"\ne"),
+        "≈" => Some(r"\approx"),
+        "∈" => Some(r"\in"),
+        "∉" => Some(r"\notin"),
+        "⊂" => Some(r"\subset"),
+        "⊆" => Some(r"\subseteq"),
+        "∂" => Some(r"\partial"),
+        "…" => Some(r"\dots"),
+        "α" => Some(r"\alpha"),
+        "β" => Some(r"\beta"),
+        "γ" => Some(r"\gamma"),
+        "δ" => Some(r"\delta"),
+        "ε" => Some(r"\epsilon"),
+        "ζ" => Some(r"\zeta"),
+        "η" => Some(r"\eta"),
+        "θ" => Some(r"\theta"),
+        "ι" => Some(r"\iota"),
+        "κ" => Some(r"\kappa"),
+        "λ" => Some(r"\lambda"),
+        "μ" => Some(r"\mu"),
+        "ν" => Some(r"\nu"),
+        "ξ" => Some(r"\xi"),
+        "π" => Some(r"\pi"),
+        "ρ" => Some(r"\rho"),
+        "σ" => Some(r"\sigma"),
+        "τ" => Some(r"\tau"),
+        "φ" => Some(r"\phi"),
+        "χ" => Some(r"\chi"),
+        "ψ" => Some(r"\psi"),
+        "ω" => Some(r"\omega"),
+        "Γ" => Some(r"\Gamma"),
+        "Δ" => Some(r"\Delta"),
+        "Θ" => Some(r"\Theta"),
+        "Λ" => Some(r"\Lambda"),
+        "Ξ" => Some(r"\Xi"),
+        "Π" => Some(r"\Pi"),
+        "Σ" => Some(r"\Sigma"),
+        "Φ" => Some(r"\Phi"),
+        "Ψ" => Some(r"\Psi"),
+        "Ω" => Some(r"\Omega"),
+        "‖" => Some(r"\Vert "),
+        "⌊" => Some(r"\lfloor "),
+        "⌋" => Some(r"\rfloor"),
+        "⌈" => Some(r"\lceil "),
+        "⌉" => Some(r"\rceil"),
+        _ => None,
+    };
+
+    if let Some(command) = command {
+        out.push_str(command);
+    } else {
+        out.push_str(symbol);
+    }
+}
+
 fn render_math_accent(node: &MathNode, out: &mut String) -> Result<()> {
     let command = match math_scalar(node, "accent")? {
+        "\u{0300}" | "`" => "grave",
+        "\u{0301}" | "'" => "acute",
         "\u{302}" => "hat",
         "\u{303}" => "tilde",
-        "\u{304}" => "bar",
+        "\u{304}" | "\u{305}" => "bar",
+        "\u{033f}" => "overline",
+        "\u{0306}" => "breve",
         "\u{307}" => "dot",
         "\u{308}" => "ddot",
-        "\u{20d7}" => "vec",
+        "\u{20db}" => "dddot",
+        "\u{20dc}" => "ddddot",
+        "\u{030a}" => "mathring",
+        "\u{030b}" => "H",
+        "\u{030c}" => "check",
+        "\u{20d7}" | "\u{20d6}" | "\u{20e1}" => "vec",
+        "\u{20d1}" | "\u{20d0}" => "rightharpoonaccent",
         accent => bail!("typlite markdown math accent `{accent}` is not implemented"),
     };
     render_math_one_arg_command(node, command, "base", out)
 }
 
 fn render_math_attach(node: &MathNode, out: &mut String) -> Result<()> {
+    if math_optional_child(node, "bl")?.is_some() || math_optional_child(node, "tl")?.is_some() {
+        out.push_str("{}");
+        render_math_script_pair(node, "bl", "tl", out)?;
+    }
+
     render_math(math_child(node, "base")?, out)?;
-    if let Some(bottom) = math_optional_child(node, "b")? {
+    render_math_script_pair(node, "b", "t", out)?;
+    render_math_script_pair(node, "br", "tr", out)?;
+    Ok(())
+}
+
+fn render_math_script_pair(
+    node: &MathNode,
+    bottom_field: &str,
+    top_field: &str,
+    out: &mut String,
+) -> Result<()> {
+    if let Some(bottom) = math_optional_child(node, bottom_field)? {
         out.push_str("_{");
         render_math(bottom, out)?;
         out.push('}');
     }
-    if let Some(top) = math_optional_child(node, "t")? {
+    if let Some(top) = math_optional_child(node, top_field)? {
         out.push_str("^{");
         render_math(top, out)?;
         out.push('}');
@@ -1378,21 +1484,86 @@ fn render_math_attach(node: &MathNode, out: &mut String) -> Result<()> {
     Ok(())
 }
 
+fn render_math_cancel(node: &MathNode, out: &mut String) -> Result<()> {
+    let command = if math_bool(node, "cross")? {
+        "xcancel"
+    } else if math_bool(node, "inverted")? {
+        "bcancel"
+    } else {
+        "cancel"
+    };
+    render_math_one_arg_command(node, command, "body", out)
+}
+
 fn render_math_cases(node: &MathNode, out: &mut String) -> Result<()> {
-    out.push_str(r"\begin{cases}");
+    let (open, close) = math_delim_pair(node, "delim", Some("{"), Some("}"))?;
+    let reverse = math_bool(node, "reverse")?;
+
+    out.push_str(r"\left");
+    out.push_str(if !reverse {
+        open.as_deref().unwrap_or(".")
+    } else {
+        "."
+    });
+    out.push_str(r"\begin{array}{l}");
     for (index, child) in math_nodes(node, "children")?.iter().enumerate() {
         if index > 0 {
             out.push_str(r" \\ ");
         }
         render_math(child, out)?;
     }
-    out.push_str(r"\end{cases}");
+    out.push_str(r"\end{array}\right");
+    out.push_str(if reverse {
+        close.as_deref().unwrap_or(".")
+    } else {
+        "."
+    });
     Ok(())
 }
 
 fn render_math_matrix(node: &MathNode, out: &mut String) -> Result<()> {
+    let (open, close) = math_delim_pair(node, "delim", Some("("), Some(")"))?;
+    if let Some(env) = matrix_env(open.as_deref(), close.as_deref()) {
+        out.push_str(r"\begin{");
+        out.push_str(env);
+        out.push('}');
+        render_math_rows(math_rows(node, "rows")?, out)?;
+        out.push_str(r"\end{");
+        out.push_str(env);
+        out.push('}');
+    } else {
+        render_math_delimited_matrix(
+            open.as_deref(),
+            close.as_deref(),
+            math_rows(node, "rows")?,
+            out,
+        )?;
+    }
+    Ok(())
+}
+
+fn render_math_delimited_matrix(
+    open: Option<&str>,
+    close: Option<&str>,
+    rows: &[Vec<MathNode>],
+    out: &mut String,
+) -> Result<()> {
+    if open.is_some() || close.is_some() {
+        out.push_str(r"\left");
+        out.push_str(open.unwrap_or("."));
+    }
     out.push_str(r"\begin{matrix}");
-    for (row_index, row) in math_rows(node, "rows")?.iter().enumerate() {
+    render_math_rows(rows, out)?;
+    out.push_str(r"\end{matrix}");
+    if open.is_some() || close.is_some() {
+        out.push_str(r"\right");
+        out.push_str(close.unwrap_or("."));
+    }
+    Ok(())
+}
+
+fn render_math_rows(rows: &[Vec<MathNode>], out: &mut String) -> Result<()> {
+    for (row_index, row) in rows.iter().enumerate() {
         if row_index > 0 {
             out.push_str(r" \\ ");
         }
@@ -1403,7 +1574,6 @@ fn render_math_matrix(node: &MathNode, out: &mut String) -> Result<()> {
             render_math(cell, out)?;
         }
     }
-    out.push_str(r"\end{matrix}");
     Ok(())
 }
 
@@ -1411,6 +1581,9 @@ fn render_math_op(node: &MathNode, out: &mut String) -> Result<()> {
     out.push_str(r"\operatorname{");
     render_math(math_child(node, "text")?, out)?;
     out.push('}');
+    if math_bool(node, "limits")? {
+        out.push_str(r"\limits");
+    }
     Ok(())
 }
 
@@ -1437,6 +1610,71 @@ fn render_math_root(node: &MathNode, out: &mut String) -> Result<()> {
     Ok(())
 }
 
+fn render_math_frac(node: &MathNode, out: &mut String) -> Result<()> {
+    match math_optional_scalar(node, "style")? {
+        Some("skewed") | Some("horizontal") => {
+            out.push('{');
+            render_math_value(math_field(node, "num")?, out)?;
+            out.push_str("}/{");
+            render_math_value(math_field(node, "denom")?, out)?;
+            out.push('}');
+            Ok(())
+        }
+        Some("vertical") | None => render_math_two_arg_command(node, "frac", "num", "denom", out),
+        Some(style) => bail!("typlite markdown math fraction style `{style}` is not implemented"),
+    }
+}
+
+fn render_math_limit_style(node: &MathNode, suffix: &str, out: &mut String) -> Result<()> {
+    render_math(math_child(node, "body")?, out)?;
+    out.push_str(suffix);
+    Ok(())
+}
+
+fn render_math_mid(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\middle");
+    render_math(math_child(node, "body")?, out)
+}
+
+fn render_math_styled(node: &MathNode, out: &mut String) -> Result<()> {
+    if let Some(size) = math_optional_scalar(node, "size")? {
+        let command = match size {
+            "display" => r"\displaystyle ",
+            "text" => r"\textstyle ",
+            "script" => r"\scriptstyle ",
+            "script-script" => r"\scriptscriptstyle ",
+            _ => "",
+        };
+        out.push_str(command);
+    }
+
+    let variant = math_optional_scalar(node, "variant")?;
+    let italic = math_optional_scalar(node, "italic")?;
+    let bold = math_bool(node, "bold")?;
+
+    if let Some(command) = math_style_command(variant, italic, bold) {
+        out.push('\\');
+        out.push_str(command);
+        out.push('{');
+        render_math(math_child(node, "child")?, out)?;
+        out.push('}');
+    } else {
+        render_math(math_child(node, "child")?, out)?;
+    }
+
+    Ok(())
+}
+
+fn render_math_vec(node: &MathNode, out: &mut String) -> Result<()> {
+    let (open, close) = math_delim_pair(node, "delim", Some("("), Some(")"))?;
+    let rows = math_nodes(node, "children")?
+        .iter()
+        .cloned()
+        .map(|node| vec![node])
+        .collect::<Vec<_>>();
+    render_math_delimited_matrix(open.as_deref(), close.as_deref(), &rows, out)
+}
+
 fn render_math_one_arg_command(
     node: &MathNode,
     command: &str,
@@ -1447,20 +1685,6 @@ fn render_math_one_arg_command(
     out.push_str(command);
     out.push('{');
     render_math(math_child(node, field)?, out)?;
-    out.push('}');
-    Ok(())
-}
-
-fn render_math_one_arg_nodes_command(
-    node: &MathNode,
-    command: &str,
-    field: &str,
-    out: &mut String,
-) -> Result<()> {
-    out.push('\\');
-    out.push_str(command);
-    out.push('{');
-    render_math_nodes(math_nodes(node, field)?, out)?;
     out.push('}');
     Ok(())
 }
@@ -1501,6 +1725,24 @@ fn render_math_annotated_command(
     Ok(())
 }
 
+fn render_math_under_annotated_command(
+    node: &MathNode,
+    command: &str,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math(math_child(node, "body")?, out)?;
+    out.push('}');
+    if let Some(annotation) = math_optional_child(node, "annotation")? {
+        out.push_str("_{");
+        render_math(annotation, out)?;
+        out.push('}');
+    }
+    Ok(())
+}
+
 fn render_math_annotation_command(node: &MathNode, command: &str, out: &mut String) -> Result<()> {
     out.push('\\');
     out.push_str(command);
@@ -1529,6 +1771,119 @@ fn render_math_value(value: &MathValue, out: &mut String) -> Result<()> {
     }
 }
 
+fn math_style_command(
+    variant: Option<&str>,
+    italic: Option<&str>,
+    bold: bool,
+) -> Option<&'static str> {
+    if bold {
+        return Some("mathbf");
+    }
+
+    match variant {
+        Some("plain") => Some("mathrm"),
+        Some("sans-serif") => Some("mathsf"),
+        Some("chancery") => Some("mathcal"),
+        Some("roundhand") => Some("mathscr"),
+        Some("fraktur") => Some("mathfrak"),
+        Some("monospace") => Some("mathtt"),
+        Some("double-struck") => Some("mathbb"),
+        _ => match italic {
+            Some("false") => Some("mathrm"),
+            Some("true") => Some("mathit"),
+            _ => None,
+        },
+    }
+}
+
+fn matrix_env(open: Option<&str>, close: Option<&str>) -> Option<&'static str> {
+    match (open, close) {
+        (Some("("), Some(")")) => Some("pmatrix"),
+        (Some("["), Some("]")) => Some("bmatrix"),
+        (Some(r"\{"), Some(r"\}")) => Some("Bmatrix"),
+        (Some("|"), Some("|")) => Some("vmatrix"),
+        (Some(r"\|"), Some(r"\|")) => Some("Vmatrix"),
+        (None, None) => Some("matrix"),
+        _ => None,
+    }
+}
+
+fn math_delim_pair(
+    node: &MathNode,
+    field: &str,
+    default_open: Option<&str>,
+    default_close: Option<&str>,
+) -> Result<(Option<String>, Option<String>)> {
+    let Some(value) = math_optional_field(node, field) else {
+        return Ok((
+            default_open.map(math_delim).map(str::to_owned),
+            default_close.map(math_delim).map(str::to_owned),
+        ));
+    };
+
+    let MathValue::Scalar(value) = value else {
+        return Ok((
+            default_open.map(math_delim).map(str::to_owned),
+            default_close.map(math_delim).map(str::to_owned),
+        ));
+    };
+
+    if value == "none" {
+        return Ok((None, None));
+    }
+
+    if let Ok(serde_json::Value::Array(values)) = serde_json::from_str::<serde_json::Value>(value) {
+        let open = values
+            .first()
+            .and_then(json_delim)
+            .map(math_delim)
+            .map(str::to_owned);
+        let close = values
+            .get(1)
+            .and_then(json_delim)
+            .map(math_delim)
+            .map(str::to_owned);
+        return Ok((open, close));
+    }
+
+    let open = math_delim(value);
+    Ok((
+        Some(open.to_owned()),
+        Some(math_matching_delim(open).to_owned()),
+    ))
+}
+
+fn json_delim(value: &serde_json::Value) -> Option<&str> {
+    match value {
+        serde_json::Value::Null => None,
+        serde_json::Value::String(value) => Some(value),
+        _ => None,
+    }
+}
+
+fn math_delim(value: &str) -> &str {
+    match value {
+        r"{" => r"\{",
+        r"}" => r"\}",
+        "‖" => r"\|",
+        _ => value,
+    }
+}
+
+fn math_matching_delim(open: &str) -> &str {
+    match open {
+        "(" => ")",
+        "[" => "]",
+        r"\{" => r"\}",
+        r"\}" => r"\{",
+        ")" => "(",
+        "]" => "[",
+        "|" => "|",
+        r"\|" => r"\|",
+        _ => open,
+    }
+}
+
 fn math_field<'a>(node: &'a MathNode, name: &str) -> Result<&'a MathValue> {
     let Some(value) = node
         .fields
@@ -1536,9 +1891,25 @@ fn math_field<'a>(node: &'a MathNode, name: &str) -> Result<&'a MathValue> {
         .find(|field| field.name == name)
         .map(|field| &field.value)
     else {
-        bail!("math.{} is missing field `{name}`", node.func);
+        let fields = node
+            .fields
+            .iter()
+            .map(|field| field.name.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
+        bail!(
+            "math.{} is missing field `{name}`; available fields: {fields}",
+            node.func
+        );
     };
     Ok(value)
+}
+
+fn math_optional_field<'a>(node: &'a MathNode, name: &str) -> Option<&'a MathValue> {
+    node.fields
+        .iter()
+        .find(|field| field.name == name)
+        .map(|field| &field.value)
 }
 
 fn math_child<'a>(node: &'a MathNode, name: &str) -> Result<&'a MathNode> {
@@ -1580,6 +1951,27 @@ fn math_scalar<'a>(node: &'a MathNode, name: &str) -> Result<&'a str> {
     }
 }
 
+fn math_optional_scalar<'a>(node: &'a MathNode, name: &str) -> Result<Option<&'a str>> {
+    match math_optional_field(node, name) {
+        Some(MathValue::Scalar(value)) => Ok(Some(value)),
+        Some(MathValue::None) | None => Ok(None),
+        _ => bail!("math.{} field `{name}` must be a scalar", node.func),
+    }
+}
+
+fn math_bool(node: &MathNode, name: &str) -> Result<bool> {
+    match math_optional_field(node, name) {
+        Some(MathValue::Bool(value)) => Ok(*value),
+        Some(MathValue::Scalar(value)) => match value.as_str() {
+            "true" => Ok(true),
+            "false" => Ok(false),
+            _ => bail!("math.{} field `{name}` must be a bool", node.func),
+        },
+        Some(MathValue::None) | None => Ok(false),
+        _ => bail!("math.{} field `{name}` must be a bool", node.func),
+    }
+}
+
 fn render_element_frame(node: &Inline, data: &InlineElementData, out: &mut String) -> Result<()> {
     let kind = inline_kind(node)?;
     let Some(frame) = data.inlines("frame").and_then(single_frame) else {
@@ -1610,35 +2002,174 @@ fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) -> Result
 }
 
 fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
-    let Some(source) = data.scalar("source").filter(|source| !source.is_empty()) else {
-        bail!("typlite markdown image rendering requires source");
-    };
+    let source = image_source(data)?;
+    if source.mime == Some("application/pdf") {
+        render_pdf_image_frame(data, out)?;
+        return Ok(());
+    }
 
     out.push_str("![");
     if let Some(alt) = data.scalar("alt") {
         push_markdown_link_text_escaped(alt, out);
     }
     out.push_str("](");
-    push_markdown_url(source, out);
+    push_markdown_url(&source.url, out);
     out.push(')');
 
     Ok(())
 }
 
 fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
-    let Some(source) = data.scalar("source").filter(|source| !source.is_empty()) else {
-        bail!("typlite HTML image rendering requires source");
-    };
+    let source = image_source(data)?;
+    if source.mime == Some("application/pdf") {
+        render_pdf_image_frame(data, out)?;
+        return Ok(());
+    }
 
     out.push_str("<img alt=\"");
     if let Some(alt) = data.scalar("alt") {
         push_html_escaped(alt, out);
     }
     out.push_str("\" src=\"");
-    push_html_escaped(source, out);
+    push_html_escaped(&source.url, out);
     out.push_str("\">");
 
     Ok(())
+}
+
+fn render_pdf_image_frame(data: &InlineElementData, out: &mut String) -> Result<()> {
+    let Some(frame) = data.inlines("frame").and_then(single_frame) else {
+        bail!("typlite markdown PDF image rendering requires html.frame");
+    };
+    render_frame_image(data.scalar("alt").unwrap_or("PDF"), frame, out)
+}
+
+enum SourceValue {
+    String(String),
+    Bytes(Vec<u8>),
+}
+
+struct ImageSource {
+    url: String,
+    mime: Option<&'static str>,
+}
+
+fn image_source(data: &InlineElementData) -> Result<ImageSource> {
+    match source_value(data, "image")? {
+        SourceValue::String(source) => {
+            let mime = image_source_path_mime(&source);
+            Ok(ImageSource { url: source, mime })
+        }
+        SourceValue::Bytes(bytes) => {
+            let mime = if let Some(format) = data
+                .scalar("format")
+                .filter(|format| !is_auto_or_none(format))
+            {
+                image_format_mime(format)?
+            } else {
+                ImageFormat::detect(&bytes)
+                    .and_then(image_format_mime_detected)
+                    .context_ut("typlite markdown image bytes source requires known image format")?
+            };
+            Ok(ImageSource {
+                url: format!(
+                    "data:{mime};base64,{}",
+                    base64::engine::general_purpose::STANDARD.encode(bytes)
+                ),
+                mime: Some(mime),
+            })
+        }
+    }
+}
+
+fn source_value(data: &InlineElementData, element: &str) -> Result<SourceValue> {
+    let Some(raw) = data.scalar("source").filter(|source| !source.is_empty()) else {
+        bail!("typlite markdown {element} rendering requires source");
+    };
+
+    let value = serde_json::from_str::<serde_json::Value>(raw)
+        .context_ut("typlite source must be encoded as JSON")?;
+    let serde_json::Value::Object(mut value) = value else {
+        bail!("typlite source must be encoded as an object, got {value}");
+    };
+    match value.remove("kind") {
+        Some(serde_json::Value::String(kind)) if kind == "string" => {
+            let Some(serde_json::Value::String(value)) = value.remove("value") else {
+                bail!("typlite source string must contain string field `value`");
+            };
+            Ok(SourceValue::String(value))
+        }
+        Some(serde_json::Value::String(kind)) if kind == "path" => {
+            let Some(serde_json::Value::String(path)) = value.remove("path") else {
+                bail!("typlite source path must contain string field `path`");
+            };
+            Ok(SourceValue::String(path))
+        }
+        Some(serde_json::Value::String(kind)) if kind == "bytes" => {
+            let Some(bytes) = value.remove("bytes") else {
+                bail!("typlite source bytes must contain field `bytes`");
+            };
+            Ok(SourceValue::Bytes(decode_source_bytes(bytes)?))
+        }
+        Some(kind) => bail!("unsupported typlite source kind {kind}"),
+        None => bail!("typlite source object must contain field `kind`"),
+    }
+}
+
+fn image_format_mime(format: &str) -> Result<&'static str> {
+    match format {
+        "png" => Ok("image/png"),
+        "jpg" | "jpeg" => Ok("image/jpeg"),
+        "gif" => Ok("image/gif"),
+        "svg" => Ok("image/svg+xml"),
+        "webp" => Ok("image/webp"),
+        "pdf" => Ok("application/pdf"),
+        value => bail!("typlite markdown image bytes source does not support format `{value}`"),
+    }
+}
+
+fn image_source_path_mime(source: &str) -> Option<&'static str> {
+    let source = source.split(['?', '#']).next().unwrap_or(source);
+    let extension = source.rsplit_once('.').map(|(_, extension)| extension)?;
+    match extension.to_ascii_lowercase().as_str() {
+        "pdf" => Some("application/pdf"),
+        "png" => Some("image/png"),
+        "jpg" | "jpeg" => Some("image/jpeg"),
+        "gif" => Some("image/gif"),
+        "svg" | "svgz" => Some("image/svg+xml"),
+        "webp" => Some("image/webp"),
+        _ => None,
+    }
+}
+
+fn image_format_mime_detected(format: ImageFormat) -> Option<&'static str> {
+    match format {
+        ImageFormat::Raster(RasterFormat::Exchange(exchange)) => match exchange {
+            ExchangeFormat::Png => Some("image/png"),
+            ExchangeFormat::Jpg => Some("image/jpeg"),
+            ExchangeFormat::Gif => Some("image/gif"),
+            ExchangeFormat::Webp => Some("image/webp"),
+        },
+        ImageFormat::Vector(vector) => match vector {
+            VectorFormat::Svg => Some("image/svg+xml"),
+            VectorFormat::Pdf => Some("application/pdf"),
+        },
+        ImageFormat::Raster(RasterFormat::Pixel(_)) => None,
+    }
+}
+
+fn decode_source_bytes(bytes: serde_json::Value) -> Result<Vec<u8>> {
+    let serde_json::Value::Array(values) = bytes else {
+        bail!("typlite source bytes field `bytes` must be an array");
+    };
+    let mut bytes = Vec::with_capacity(values.len());
+    for value in values {
+        let Some(byte) = value.as_u64().and_then(|value| u8::try_from(value).ok()) else {
+            bail!("typlite source bytes contains non-byte value {value}");
+        };
+        bytes.push(byte);
+    }
+    Ok(bytes)
 }
 
 fn render_box(
@@ -1938,10 +2469,18 @@ fn render_ref_element_link(
         [Block::Figure { caption, .. }] if has_semantic_inlines(caption) => {
             render_ref_link(target, caption, bibliography, out)
         }
-        _ => bail!(
-            "typlite markdown ref rendering cannot derive link text from resolved element `{target}`"
-        ),
+        [_] => render_ref_text_link(target, target, out),
+        _ => bail!("typlite markdown ref rendering expected one resolved element for `{target}`"),
     }
+}
+
+fn render_ref_text_link(target: &str, text: &str, out: &mut String) -> Result<()> {
+    out.push('[');
+    push_markdown_link_text_escaped(text, out);
+    out.push_str("](#");
+    out.push_str(target);
+    out.push(')');
+    Ok(())
 }
 
 fn render_inline_quote(
