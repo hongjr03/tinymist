@@ -28,6 +28,22 @@ pub enum Block {
         /// Raw text.
         text: EcoString,
     },
+    /// A bullet or numbered list.
+    List {
+        /// Whether this is a numbered list.
+        ordered: bool,
+        /// List items.
+        items: Vec<ListItem>,
+    },
+}
+
+/// A list item.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ListItem {
+    /// Optional explicit number for numbered lists.
+    pub number: Option<EcoString>,
+    /// Item body blocks.
+    pub body: Vec<Block>,
 }
 
 /// Inline semantic nodes.

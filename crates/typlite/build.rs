@@ -69,6 +69,36 @@ fn main() {
   }
 }
 
+#let opaque_value_node(name, value) = {
+  let ty = type(value)
+  let kind = str(ty)
+  if ty == type(none) {
+    field_node(name, kind, [])
+  } else {
+    field_node(name, kind, scalar(value))
+  }
+}
+
+#let list_item_node(index, item) = field_node(str(index), "list.item", {
+  value_node("body", field(item, "body"))
+})
+
+#let enum_item_node(index, item) = field_node(str(index), "enum.item", {
+  value_node("number", field(item, "number"))
+  value_node("body", field(item, "body"))
+})
+
+#let term_item_node(index, item) = field_node(str(index), "terms.item", {
+  value_node("term", field(item, "term"))
+  value_node("description", field(item, "description"))
+})
+
+#let children_node(name, children, item_node) = field_node(name, "array", {
+  for (index, item) in children.enumerate() {
+    item_node(index, item)
+  }
+})
+
 #let node(kind, body) = html.elem(
   "typlite-" + kind,
   body,
@@ -87,16 +117,21 @@ fn main() {
     for element in elements {
         let selector = element.selector();
         let kind = element.kind();
+        let value_node = if selector.starts_with("math.") {
+            "opaque_value_node"
+        } else {
+            "value_node"
+        };
         let fields = element
             .fields()
-            .map(|field| format!("    value_node({field:?}, field(it, {field:?}))\n"))
+            .map(|field| element.field_node(field, value_node))
             .collect::<String>();
         let body = format!("{{\n{fields}  }}");
 
         let call = match element.mode() {
             Mode::Block => format!("node({kind:?}, {body})"),
             Mode::Inline => format!("inline({kind:?}, {body})"),
-            Mode::Raw => format!(
+            Mode::BlockOrInline => format!(
                 "if field(it, \"block\", default: false) {{ node({kind:?}, {body}) }} else {{ inline({kind:?}, {body}) }}"
             ),
         };
@@ -130,8 +165,8 @@ impl ElementSpec {
 
     fn mode(&self) -> Mode {
         match self.selector().as_str() {
-            "heading" | "par" => Mode::Block,
-            "raw" => Mode::Raw,
+            "enum" | "grid" | "heading" | "list" | "par" | "parbreak" | "table" => Mode::Block,
+            "raw" => Mode::BlockOrInline,
             _ => Mode::Inline,
         }
     }
@@ -140,8 +175,19 @@ impl ElementSpec {
         element_fields(self.elem)
     }
 
-    fn has_field(&self, name: &str) -> bool {
-        element_fields(self.elem).any(|field| field == name)
+    fn field_node(&self, field: &str, value_node: &str) -> String {
+        match (self.selector().as_str(), field) {
+            ("enum", "children") => {
+                format!("    children_node({field:?}, field(it, {field:?}), enum_item_node)\n")
+            }
+            ("list", "children") => {
+                format!("    children_node({field:?}, field(it, {field:?}), list_item_node)\n")
+            }
+            ("terms", "children") => {
+                format!("    children_node({field:?}, field(it, {field:?}), term_item_node)\n")
+            }
+            _ => format!("    {value_node}({field:?}, field(it, {field:?}))\n"),
+        }
     }
 }
 
@@ -149,7 +195,7 @@ impl ElementSpec {
 enum Mode {
     Block,
     Inline,
-    Raw,
+    BlockOrInline,
 }
 
 fn collect_elements() -> Vec<ElementSpec> {
@@ -246,13 +292,17 @@ fn insert_element(
 }
 
 fn should_generate(spec: &ElementSpec) -> bool {
-    if matches!(spec.selector().as_str(), "block" | "parbreak" | "text")
-        || spec.elem.name() == "text"
+    let selector = spec.selector();
+
+    if matches!(
+        selector.as_str(),
+        "text" | "enum.item" | "list.item" | "terms.item"
+    ) || spec.elem.name() == "text"
     {
         return false;
     }
 
-    spec.has_field("body") || spec.has_field("text")
+    true
 }
 
 fn element_fields(elem: Element) -> impl Iterator<Item = &'static str> {

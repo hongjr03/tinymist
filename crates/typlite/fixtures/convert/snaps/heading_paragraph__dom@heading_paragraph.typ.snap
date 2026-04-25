@@ -28,6 +28,7 @@ input_file: crates/typlite/fixtures/convert/heading_paragraph.typ
       <span data-typlite-field="true" name="body" kind="content">
         text "Title"
     tag
+    <typlite-parbreak>
     tag
     <typlite-paragraph>
       <span data-typlite-field="true" name="leading" kind="length">

@@ -8,6 +8,7 @@ input_file: crates/typlite/fixtures/convert/page_set.typ
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
+    <typlite-parbreak>
     tag
     <typlite-heading>
       <span data-typlite-field="true" name="level" kind="integer">
@@ -28,6 +29,7 @@ input_file: crates/typlite/fixtures/convert/page_set.typ
       <span data-typlite-field="true" name="body" kind="content">
         text "Title"
     tag
+    <typlite-parbreak>
     tag
     <typlite-paragraph>
       <span data-typlite-field="true" name="leading" kind="length">

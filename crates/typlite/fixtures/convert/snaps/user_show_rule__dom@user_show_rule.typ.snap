@@ -8,6 +8,7 @@ input_file: crates/typlite/fixtures/convert/user_show_rule.typ
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
+    <typlite-parbreak>
     tag
     <typlite-paragraph>
       <span data-typlite-field="true" name="leading" kind="length">
@@ -47,6 +48,7 @@ input_file: crates/typlite/fixtures/convert/user_show_rule.typ
         tag
         tag
     tag
+    <typlite-parbreak>
     tag
     <typlite-paragraph>
       <span data-typlite-field="true" name="leading" kind="length">

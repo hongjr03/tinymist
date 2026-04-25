@@ -1,0 +1,1390 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/element_coverage.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Coverage"
+    tag
+    <typlite-parbreak>
+    tag
+    tag
+    <typlite-list>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="marker" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          text "•"
+        <span data-typlite-field="true" name="1" kind="content">
+          text "‣"
+        <span data-typlite-field="true" name="2" kind="content">
+          text "–"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body-indent" kind="length">
+        text "0.5em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="list.item">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "List item with"
+            text " "
+            tag
+            <span data-typlite="emph">
+              <span data-typlite-field="true" name="body" kind="content">
+                text "emphasis"
+            tag
+        <span data-typlite-field="true" name="1" kind="list.item">
+          <span data-typlite-field="true" name="body" kind="content">
+            tag
+            <typlite-paragraph>
+              <span data-typlite-field="true" name="leading" kind="length">
+                text "0.65em"
+              <span data-typlite-field="true" name="spacing" kind="length">
+                text "1.2em"
+              <span data-typlite-field="true" name="justify" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+                <span data-typlite-field="true" name="spacing" kind="dictionary">
+                  <span data-typlite-field="true" name="min" kind="relative length">
+                    text "66.67% + 0pt"
+                  <span data-typlite-field="true" name="max" kind="relative length">
+                    text "150% + 0pt"
+                <span data-typlite-field="true" name="tracking" kind="dictionary">
+                  <span data-typlite-field="true" name="min" kind="length">
+                    text "0pt"
+                  <span data-typlite-field="true" name="max" kind="length">
+                    text "0pt"
+              <span data-typlite-field="true" name="linebreaks" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+                <span data-typlite-field="true" name="amount" kind="length">
+                  text "0pt"
+                <span data-typlite-field="true" name="all" kind="boolean">
+                  text "false"
+              <span data-typlite-field="true" name="hanging-indent" kind="length">
+                text "0pt"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "List item with"
+                text " "
+                tag
+                <span data-typlite="link">
+                  <span data-typlite-field="true" name="dest" kind="string">
+                    text "https://example.com"
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "a link"
+                tag
+            tag
+            tag
+            tag
+            <typlite-enum>
+              <span data-typlite-field="true" name="tight" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="numbering" kind="string">
+                text "1."
+              <span data-typlite-field="true" name="start" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="full" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="reversed" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="indent" kind="length">
+                text "0pt"
+              <span data-typlite-field="true" name="body-indent" kind="length">
+                text "0.5em"
+              <span data-typlite-field="true" name="spacing" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="number-align" kind="alignment">
+                text "end + top"
+              <span data-typlite-field="true" name="children" kind="array">
+                <span data-typlite-field="true" name="0" kind="enum.item">
+                  <span data-typlite-field="true" name="number" kind="integer">
+                    text "2"
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "starts with a number"
+                <span data-typlite-field="true" name="1" kind="enum.item">
+                  <span data-typlite-field="true" name="number" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "Enum item with"
+                    text " "
+                    tag
+                    <span data-typlite="strong">
+                      <span data-typlite-field="true" name="delta" kind="integer">
+                        text "300"
+                      <span data-typlite-field="true" name="body" kind="content">
+                        text "strong text"
+                    tag
+                <span data-typlite-field="true" name="2" kind="enum.item">
+                  <span data-typlite-field="true" name="number" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="body" kind="content">
+                    tag
+                    <typlite-paragraph>
+                      <span data-typlite-field="true" name="leading" kind="length">
+                        text "0.65em"
+                      <span data-typlite-field="true" name="spacing" kind="length">
+                        text "1.2em"
+                      <span data-typlite-field="true" name="justify" kind="boolean">
+                        text "false"
+                      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+                        <span data-typlite-field="true" name="spacing" kind="dictionary">
+                          <span data-typlite-field="true" name="min" kind="relative length">
+                            text "66.67% + 0pt"
+                          <span data-typlite-field="true" name="max" kind="relative length">
+                            text "150% + 0pt"
+                        <span data-typlite-field="true" name="tracking" kind="dictionary">
+                          <span data-typlite-field="true" name="min" kind="length">
+                            text "0pt"
+                          <span data-typlite-field="true" name="max" kind="length">
+                            text "0pt"
+                      <span data-typlite-field="true" name="linebreaks" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+                        <span data-typlite-field="true" name="amount" kind="length">
+                          text "0pt"
+                        <span data-typlite-field="true" name="all" kind="boolean">
+                          text "false"
+                      <span data-typlite-field="true" name="hanging-indent" kind="length">
+                        text "0pt"
+                      <span data-typlite-field="true" name="body" kind="content">
+                        text "Enum item with"
+                        text " "
+                        tag
+                        <span data-typlite="raw">
+                          <span data-typlite-field="true" name="text" kind="string">
+                            text "inline code"
+                          <span data-typlite-field="true" name="block" kind="boolean">
+                            text "false"
+                          <span data-typlite-field="true" name="lang" kind="none">
+                          <span data-typlite-field="true" name="align" kind="alignment">
+                            text "start"
+                          <span data-typlite-field="true" name="syntaxes" kind="array">
+                          <span data-typlite-field="true" name="theme" kind="auto">
+                            text "auto"
+                          <span data-typlite-field="true" name="tab-size" kind="integer">
+                            text "2"
+                          <span data-typlite-field="true" name="lines" kind="array">
+                            <span data-typlite-field="true" name="0" kind="content">
+                              tag
+                              <span data-typlite="raw-line">
+                                <span data-typlite-field="true" name="number" kind="integer">
+                                  text "1"
+                                <span data-typlite-field="true" name="count" kind="integer">
+                                  text "1"
+                                <span data-typlite-field="true" name="text" kind="string">
+                                  text "inline code"
+                                <span data-typlite-field="true" name="body" kind="content">
+                                  text "inline code"
+                              tag
+                        tag
+                    tag
+                    tag
+                    tag
+                    <typlite-list>
+                      <span data-typlite-field="true" name="tight" kind="boolean">
+                        text "true"
+                      <span data-typlite-field="true" name="marker" kind="array">
+                        <span data-typlite-field="true" name="0" kind="content">
+                          text "•"
+                        <span data-typlite-field="true" name="1" kind="content">
+                          text "‣"
+                        <span data-typlite-field="true" name="2" kind="content">
+                          text "–"
+                      <span data-typlite-field="true" name="indent" kind="length">
+                        text "0pt"
+                      <span data-typlite-field="true" name="body-indent" kind="length">
+                        text "0.5em"
+                      <span data-typlite-field="true" name="spacing" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="children" kind="array">
+                        <span data-typlite-field="true" name="0" kind="list.item">
+                          <span data-typlite-field="true" name="body" kind="content">
+                            text "Nested list item with"
+                            text " "
+                            tag
+                            <span data-typlite="underline">
+                              <span data-typlite-field="true" name="stroke" kind="auto">
+                                text "auto"
+                              <span data-typlite-field="true" name="offset" kind="auto">
+                                text "auto"
+                              <span data-typlite-field="true" name="extent" kind="length">
+                                text "0pt"
+                              <span data-typlite-field="true" name="evade" kind="boolean">
+                                text "true"
+                              <span data-typlite-field="true" name="background" kind="boolean">
+                                text "false"
+                              <span data-typlite-field="true" name="body" kind="content">
+                                text "underlined text"
+                            tag
+                    tag
+                    tag
+                    tag
+                    tag
+                    <typlite-enum>
+                      <span data-typlite-field="true" name="tight" kind="boolean">
+                        text "true"
+                      <span data-typlite-field="true" name="numbering" kind="string">
+                        text "1."
+                      <span data-typlite-field="true" name="start" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="full" kind="boolean">
+                        text "false"
+                      <span data-typlite-field="true" name="reversed" kind="boolean">
+                        text "false"
+                      <span data-typlite-field="true" name="indent" kind="length">
+                        text "0pt"
+                      <span data-typlite-field="true" name="body-indent" kind="length">
+                        text "0.5em"
+                      <span data-typlite-field="true" name="spacing" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="number-align" kind="alignment">
+                        text "end + top"
+                      <span data-typlite-field="true" name="children" kind="array">
+                        <span data-typlite-field="true" name="0" kind="enum.item">
+                          <span data-typlite-field="true" name="number" kind="auto">
+                            text "auto"
+                          <span data-typlite-field="true" name="body" kind="content">
+                            text "Enum item"
+                    tag
+                    tag
+            tag
+            tag
+            tag
+            tag
+            tag
+            tag
+        <span data-typlite-field="true" name="2" kind="list.item">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "back to the first level"
+    tag
+    tag
+    tag
+    tag
+    tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="quote">
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="attribution" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "A block quote with"
+            text " "
+            tag
+            <span data-typlite="underline">
+              <span data-typlite-field="true" name="stroke" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="offset" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="extent" kind="length">
+                text "0pt"
+              <span data-typlite-field="true" name="evade" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="background" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "underlined text"
+            tag
+            text "."
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        <span data-typlite="figure">
+          <span data-typlite-field="true" name="body" kind="content">
+            <span data-typlite="rect">
+              <span data-typlite-field="true" name="width" kind="relative length">
+                text "0% + 16pt"
+              <span data-typlite-field="true" name="height" kind="relative length">
+                text "0% + 8pt"
+              <span data-typlite-field="true" name="fill" kind="none">
+              <span data-typlite-field="true" name="stroke" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="radius" kind="dictionary">
+              <span data-typlite-field="true" name="inset" kind="relative length">
+                text "0% + 5pt"
+              <span data-typlite-field="true" name="outset" kind="dictionary">
+              <span data-typlite-field="true" name="body" kind="none">
+          <span data-typlite-field="true" name="alt" kind="none">
+          <span data-typlite-field="true" name="placement" kind="none">
+          <span data-typlite-field="true" name="scope" kind="string">
+            text "column"
+          <span data-typlite-field="true" name="caption" kind="content">
+            tag
+            <span data-typlite="figure-caption">
+              <span data-typlite-field="true" name="position" kind="alignment">
+                text "bottom"
+              <span data-typlite-field="true" name="separator" kind="content">
+                text ":"
+                text " "
+              <span data-typlite-field="true" name="body" kind="content">
+                text "A rectangle"
+              <span data-typlite-field="true" name="kind" kind="function">
+                text "image"
+              <span data-typlite-field="true" name="supplement" kind="content">
+                text "Figure"
+              <span data-typlite-field="true" name="numbering" kind="string">
+                text "1"
+              <span data-typlite-field="true" name="counter" kind="counter">
+                text "counter(figure.where(kind: image))"
+            tag
+          <span data-typlite-field="true" name="kind" kind="function">
+            text "image"
+          <span data-typlite-field="true" name="supplement" kind="content">
+            text "Figure"
+          <span data-typlite-field="true" name="numbering" kind="string">
+            text "1"
+          <span data-typlite-field="true" name="gap" kind="length">
+            text "0.65em"
+          <span data-typlite-field="true" name="outlined" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="counter" kind="counter">
+            text "counter(figure.where(kind: image))"
+    tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-table>
+      <span data-typlite-field="true" name="columns" kind="array">
+        <span data-typlite-field="true" name="0" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="1" kind="auto">
+          text "auto"
+      <span data-typlite-field="true" name="rows" kind="array">
+      <span data-typlite-field="true" name="gutter" kind="none">
+      <span data-typlite-field="true" name="column-gutter" kind="array">
+      <span data-typlite-field="true" name="row-gutter" kind="array">
+      <span data-typlite-field="true" name="inset" kind="relative length">
+        text "0% + 5pt"
+      <span data-typlite-field="true" name="align" kind="array">
+        <span data-typlite-field="true" name="0" kind="alignment">
+          text "left"
+        <span data-typlite-field="true" name="1" kind="alignment">
+          text "right"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="stroke">
+        text "1pt + black"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          <span data-typlite="table-header">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="level" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "A"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "B"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+        <span data-typlite-field="true" name="1" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              tag
+              <span data-typlite="emph">
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "C"
+              tag
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="2" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              tag
+              <span data-typlite="strong">
+                <span data-typlite-field="true" name="delta" kind="integer">
+                  text "300"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "D"
+              tag
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="alignment">
+              text "center"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="3" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "E"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "2"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="4" kind="content">
+          <span data-typlite="table-footer">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "F"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "G"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-grid>
+      <span data-typlite-field="true" name="columns" kind="array">
+        <span data-typlite-field="true" name="0" kind="fraction">
+          text "1fr"
+        <span data-typlite-field="true" name="1" kind="fraction">
+          text "1fr"
+      <span data-typlite-field="true" name="rows" kind="array">
+      <span data-typlite-field="true" name="gutter" kind="none">
+      <span data-typlite-field="true" name="column-gutter" kind="array">
+      <span data-typlite-field="true" name="row-gutter" kind="array">
+      <span data-typlite-field="true" name="inset" kind="dictionary">
+      <span data-typlite-field="true" name="align" kind="alignment">
+        text "horizon"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="dictionary">
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          <span data-typlite="grid-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "G1"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="1" kind="content">
+          <span data-typlite="grid-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "G2"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="alignment">
+              text "right"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        <span data-typlite="align">
+          <span data-typlite-field="true" name="alignment" kind="alignment">
+            text "center"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Centered"
+        text " "
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="dictionary">
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Boxed"
+        text " "
+        <span data-typlite="pad">
+          <span data-typlite-field="true" name="left" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="top" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="right" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="bottom" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="x" kind="none">
+          <span data-typlite-field="true" name="y" kind="none">
+          <span data-typlite-field="true" name="rest" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Padded"
+        text " "
+        <span data-typlite="move">
+          <span data-typlite-field="true" name="dx" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="dy" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Moved"
+        text " "
+        <span data-typlite="rotate">
+          <span data-typlite-field="true" name="angle" kind="angle">
+            text "10deg"
+          <span data-typlite-field="true" name="origin" kind="alignment">
+            text "center + horizon"
+          <span data-typlite-field="true" name="reflow" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Rotated"
+        text " "
+        <span data-typlite="scale">
+          <span data-typlite-field="true" name="factor" kind="none">
+          <span data-typlite-field="true" name="x" kind="ratio">
+            text "80%"
+          <span data-typlite-field="true" name="y" kind="ratio">
+            text "80%"
+          <span data-typlite-field="true" name="origin" kind="alignment">
+            text "center + horizon"
+          <span data-typlite-field="true" name="reflow" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Scaled"
+        text " "
+        <span data-typlite="skew">
+          <span data-typlite-field="true" name="ax" kind="angle">
+            text "10deg"
+          <span data-typlite-field="true" name="ay" kind="angle">
+            text "0deg"
+          <span data-typlite-field="true" name="origin" kind="alignment">
+            text "center + horizon"
+          <span data-typlite-field="true" name="reflow" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Skewed"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="highlight">
+          <span data-typlite-field="true" name="fill" kind="color">
+            text "rgb(\\\"#fffd11a1\\\")"
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="top-edge" kind="string">
+            text "ascender"
+          <span data-typlite-field="true" name="bottom-edge" kind="string">
+            text "descender"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Highlighted"
+        tag
+        text " "
+        <span data-typlite="smallcaps">
+          <span data-typlite-field="true" name="all" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Small caps"
+        text " "
+        tag
+        <span data-typlite="strike">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="offset" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="background" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Struck"
+        tag
+        text " "
+        tag
+        <span data-typlite="sub">
+          <span data-typlite-field="true" name="typographic" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="baseline" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="size" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Subscript"
+        tag
+        text " "
+        tag
+        <span data-typlite="super">
+          <span data-typlite-field="true" name="typographic" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="baseline" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="size" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Superscript"
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        <span data-typlite="math-equation">
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="numbering" kind="none">
+          <span data-typlite-field="true" name="number-align" kind="alignment">
+            text "end + horizon"
+          <span data-typlite-field="true" name="supplement" kind="content">
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+            text "\"func\": \"text\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+            text "\"text\": \"Equation\""
+            <br>
+            text "}"
+          <span data-typlite-field="true" name="alt" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+            text "\"func\": \"sequence\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+            text "\"children\": ["
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"attach\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"base\": {"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"symbol\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"x\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"t\": {"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"text\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"2\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"b\": {"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"text\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"1\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "}"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"space\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"symbol\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"+\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"space\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"symbol\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"y\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"space\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"symbol\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"=\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"space\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "},"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "{"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"root\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"radicand\": {"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"func\": \"text\","
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "\"text\": \"4\""
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+              text " "
+            text "}"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+              text " "
+              text " "
+            text "}"
+            <br>
+            <span style="white-space: pre-wrap">
+              text " "
+              text " "
+            text "]"
+            <br>
+            text "}"
+    tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-raw>
+      <span data-typlite-field="true" name="text" kind="string">
+        text "fn main() {}"
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="lang" kind="string">
+        text "rust"
+      <span data-typlite-field="true" name="align" kind="alignment">
+        text "start"
+      <span data-typlite-field="true" name="syntaxes" kind="array">
+      <span data-typlite-field="true" name="theme" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="tab-size" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="lines" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          tag
+          <span data-typlite="raw-line">
+            <span data-typlite-field="true" name="number" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="count" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="text" kind="string">
+              text "fn main() {}"
+            <span data-typlite-field="true" name="body" kind="content">
+              <span style="color: #d73948">
+                text "fn"
+              text " "
+              <span style="color: #4b69c6">
+                text "main"
+              text "("
+              text ")"
+              text " "
+              text "{"
+              text "}"
+          tag
+    tag

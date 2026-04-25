@@ -10,6 +10,7 @@ input_file: crates/typlite/fixtures/convert/document_set.typ
     <title>
       text "Demo"
   <body>
+    <typlite-parbreak>
     tag
     <typlite-heading>
       <span data-typlite-field="true" name="level" kind="integer">
@@ -30,6 +31,7 @@ input_file: crates/typlite/fixtures/convert/document_set.typ
       <span data-typlite-field="true" name="body" kind="content">
         text "Title"
     tag
+    <typlite-parbreak>
     tag
     <typlite-paragraph>
       <span data-typlite-field="true" name="leading" kind="length">

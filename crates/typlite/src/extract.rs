@@ -3,7 +3,7 @@
 use ecow::EcoString;
 use typst_html::{HtmlElement, HtmlNode};
 
-use crate::ir::{Block, Document, Inline};
+use crate::ir::{Block, Document, Inline, ListItem};
 
 /// Extracts typlite IR nodes from an HTML document root.
 pub fn extract_document(root: &HtmlElement) -> Document {
@@ -13,38 +13,115 @@ pub fn extract_document(root: &HtmlElement) -> Document {
 }
 
 fn collect_blocks(element: &HtmlElement, blocks: &mut Vec<Block>) {
+    if let Some(block) = block_from_element(element) {
+        blocks.push(block);
+        return;
+    }
+
+    if is_field(element) {
+        return;
+    }
+
+    for child in &element.children {
+        if let HtmlNode::Element(child) = child {
+            collect_blocks(child, blocks);
+        }
+    }
+}
+
+fn block_from_element(element: &HtmlElement) -> Option<Block> {
     match tag_name(element).as_deref() {
-        Some("typlite-heading") => {
+        Some("typlite-heading") => Some({
             let level = field_value(element, "level")
                 .and_then(|level| level.parse::<u8>().ok())
                 .unwrap_or(1);
-            blocks.push(Block::Heading {
+            Block::Heading {
                 level,
                 body: field_children(element, "body")
                     .map(collect_inlines)
                     .unwrap_or_default(),
-            });
-        }
-        Some("typlite-paragraph") => {
-            blocks.push(Block::Paragraph(
-                field_children(element, "body")
-                    .map(collect_inlines)
-                    .unwrap_or_default(),
-            ));
-        }
-        Some("typlite-raw") => {
-            blocks.push(Block::Raw {
-                lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
-                text: field_value(element, "text").unwrap_or_default(),
-            });
-        }
-        _ => {
-            for child in &element.children {
-                if let HtmlNode::Element(child) = child {
-                    collect_blocks(child, blocks);
+            }
+        }),
+        Some("typlite-paragraph") => Some(Block::Paragraph(
+            field_children(element, "body")
+                .map(collect_inlines)
+                .unwrap_or_default(),
+        )),
+        Some("typlite-raw") => Some(Block::Raw {
+            lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
+            text: field_value(element, "text").unwrap_or_default(),
+        }),
+        Some("typlite-list") => Some(Block::List {
+            ordered: false,
+            items: collect_list_items(element, false),
+        }),
+        Some("typlite-enum") => Some(Block::List {
+            ordered: true,
+            items: collect_list_items(element, true),
+        }),
+        _ => None,
+    }
+}
+
+fn collect_list_items(element: &HtmlElement, ordered: bool) -> Vec<ListItem> {
+    let Some(children) = field_children(element, "children") else {
+        return Vec::new();
+    };
+
+    children
+        .iter()
+        .filter_map(|node| {
+            let HtmlNode::Element(item) = node else {
+                return None;
+            };
+
+            let body = field_children(item, "body")
+                .map(collect_item_blocks)
+                .unwrap_or_default();
+            let number = ordered
+                .then(|| field_value(item, "number").filter(|value| value.as_str() != "auto"))
+                .flatten();
+
+            Some(ListItem { number, body })
+        })
+        .collect()
+}
+
+fn collect_item_blocks(nodes: &[HtmlNode]) -> Vec<Block> {
+    let mut blocks = Vec::new();
+    let mut inlines = Vec::new();
+
+    for node in nodes {
+        match node {
+            HtmlNode::Text(text, _) => inlines.push(Inline::Text(text.clone())),
+            HtmlNode::Element(element) => {
+                if is_field(element) {
+                    continue;
+                }
+
+                if let Some(block) = block_from_element(element) {
+                    flush_paragraph(&mut inlines, &mut blocks);
+                    blocks.push(block);
+                } else {
+                    inlines.extend(collect_inlines(std::slice::from_ref(node)));
                 }
             }
+            HtmlNode::Tag(_) | HtmlNode::Frame(_) => {}
         }
+    }
+
+    flush_paragraph(&mut inlines, &mut blocks);
+    blocks
+}
+
+fn flush_paragraph(inlines: &mut Vec<Inline>, blocks: &mut Vec<Block>) {
+    if inlines.iter().any(|inline| match inline {
+        Inline::Text(text) => !text.trim().is_empty(),
+        _ => true,
+    }) {
+        blocks.push(Block::Paragraph(std::mem::take(inlines)));
+    } else {
+        inlines.clear();
     }
 }
 
@@ -74,7 +151,13 @@ fn collect_inlines(nodes: &[HtmlNode]) -> Vec<Inline> {
                         lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
                         text: field_value(element, "text").unwrap_or_default(),
                     }),
-                    _ => out.extend(collect_inlines(&element.children)),
+                    _ => {
+                        if let Some(body) = field_children(element, "body") {
+                            out.extend(collect_inlines(body));
+                        } else {
+                            out.extend(collect_inlines(&element.children));
+                        }
+                    }
                 }
             }
             HtmlNode::Tag(_) | HtmlNode::Frame(_) => {}

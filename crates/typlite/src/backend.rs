@@ -4,25 +4,82 @@ use crate::ir::{Block, Document, Inline};
 
 /// Renders a document IR as Markdown.
 pub fn render_markdown(doc: &Document) -> String {
+    render_blocks(&doc.blocks, 0)
+}
+
+fn render_blocks(blocks: &[Block], indent: usize) -> String {
     let mut out = String::new();
 
-    for (idx, block) in doc.blocks.iter().enumerate() {
+    for (idx, block) in blocks.iter().enumerate() {
         if idx > 0 {
             out.push_str("\n\n");
         }
 
-        match block {
-            Block::Heading { level, body } => {
-                out.push_str(&"#".repeat(*level as usize));
-                out.push(' ');
-                render_inlines(body, &mut out);
-            }
-            Block::Paragraph(body) => render_inlines(body, &mut out),
-            Block::Raw { text, .. } => out.push_str(text),
-        }
+        render_block(block, indent, &mut out);
     }
 
     out
+}
+
+fn render_block(block: &Block, indent: usize, out: &mut String) {
+    match block {
+        Block::Heading { level, body } => {
+            out.push_str(&" ".repeat(indent));
+            out.push_str(&"#".repeat(*level as usize));
+            out.push(' ');
+            render_inlines(body, out);
+        }
+        Block::Paragraph(body) => {
+            out.push_str(&" ".repeat(indent));
+            render_inlines(body, out);
+        }
+        Block::Raw { text, .. } => {
+            out.push_str(&" ".repeat(indent));
+            out.push_str(text);
+        }
+        Block::List { ordered, items } => render_list(*ordered, items, indent, out),
+    }
+}
+
+fn render_list(ordered: bool, items: &[crate::ir::ListItem], indent: usize, out: &mut String) {
+    let mut next_number = 1usize;
+
+    for (index, item) in items.iter().enumerate() {
+        if index > 0 {
+            out.push('\n');
+        }
+
+        let marker = if ordered {
+            let number = item
+                .number
+                .as_ref()
+                .and_then(|number| number.parse::<usize>().ok())
+                .unwrap_or(next_number);
+            next_number = number + 1;
+            format!("{number}.")
+        } else {
+            "-".to_owned()
+        };
+        let prefix = format!("{}{} ", " ".repeat(indent), marker);
+        let continuation = indent + marker.len() + 1;
+        let body = render_blocks(&item.body, continuation);
+
+        if body.is_empty() {
+            out.push_str(&prefix);
+            continue;
+        }
+
+        let mut lines = body.lines();
+        if let Some(first) = lines.next() {
+            out.push_str(&prefix);
+            out.push_str(first.trim_start());
+        }
+
+        for line in lines {
+            out.push('\n');
+            out.push_str(line);
+        }
+    }
 }
 
 fn render_inlines(nodes: &[Inline], out: &mut String) {
