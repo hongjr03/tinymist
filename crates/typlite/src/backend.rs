@@ -1249,12 +1249,12 @@ fn render_inlines(
             | Inline::MathUnderline(_)
             | Inline::MathUnderparen(_)
             | Inline::MathUndershell(_)
-            | Inline::MathVec(_)
-            | Inline::CurveClose(_)
+            | Inline::MathVec(_) => render_math_inline(node, true, out)?,
+            Inline::CurveClose(_)
             | Inline::CurveCubic(_)
             | Inline::CurveLine(_)
             | Inline::CurveMove(_)
-            | Inline::CurveQuad(_) => render_unimplemented_inline(node)?,
+            | Inline::CurveQuad(_) => render_curve_component_warning(node, out)?,
             Inline::OutlineEntry(_) => {}
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
@@ -1427,15 +1427,116 @@ fn render_inlines_html(
             | Inline::MathUnderline(_)
             | Inline::MathUnderparen(_)
             | Inline::MathUndershell(_)
-            | Inline::MathVec(_)
-            | Inline::CurveClose(_)
+            | Inline::MathVec(_) => render_math_inline(node, true, out)?,
+            Inline::CurveClose(_)
             | Inline::CurveCubic(_)
             | Inline::CurveLine(_)
             | Inline::CurveMove(_)
-            | Inline::CurveQuad(_) => render_unimplemented_inline(node)?,
+            | Inline::CurveQuad(_) => render_curve_component_warning(node, out)?,
         }
     }
 
+    Ok(())
+}
+
+fn render_math_inline(node: &Inline, inline: bool, out: &mut String) -> Result<()> {
+    if inline {
+        out.push('$');
+    } else {
+        out.push_str("$$");
+    }
+
+    render_math_inline_body(node, out)?;
+
+    if inline {
+        out.push('$');
+    } else {
+        out.push_str("$$");
+    }
+    Ok(())
+}
+
+fn render_math_inline_body(node: &Inline, out: &mut String) -> Result<()> {
+    match node {
+        Inline::MathAccent(data) => render_math_inline_accent(data, out)?,
+        Inline::MathAttach(data) => render_math_inline_attach(data, out)?,
+        Inline::MathBinom(data) => render_math_inline_binom(data, out)?,
+        Inline::MathCancel(data) => render_math_inline_cancel(data, out)?,
+        Inline::MathCases(data) => render_math_inline_cases(data, out)?,
+        Inline::MathClass(data) => render_math_inline_expr(data.body.as_deref(), out)?,
+        Inline::MathFrac(data) => render_math_inline_frac(data, out)?,
+        Inline::MathLimits(data) => render_math_inline_limits(data, out)?,
+        Inline::MathLr(data) => render_math_inline_expr(data.body.as_deref(), out)?,
+        Inline::MathMat(data) => render_math_inline_matrix(data, out)?,
+        Inline::MathMid(data) => render_math_inline_expr(data.body.as_deref(), out)?,
+        Inline::MathOp(data) => render_math_inline_op(data, out)?,
+        Inline::MathOverbrace(data) => render_math_inline_annotated(
+            "overbrace",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            '^',
+            out,
+        )?,
+        Inline::MathOverbracket(data) => render_math_inline_annotated(
+            "overbrace",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            '^',
+            out,
+        )?,
+        Inline::MathOverline(data) => {
+            render_math_inline_one_arg("overline", data.body.as_deref(), out)?
+        }
+        Inline::MathOverparen(data) => render_math_inline_annotated(
+            "overbrace",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            '^',
+            out,
+        )?,
+        Inline::MathOvershell(data) => render_math_inline_annotation(
+            "overset",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            out,
+        )?,
+        Inline::MathPrimes(data) => render_math_inline_primes(data, out)?,
+        Inline::MathRoot(data) => render_math_inline_root(data, out)?,
+        Inline::MathScripts(data) => render_math_inline_expr(data.body.as_deref(), out)?,
+        Inline::MathStretch(data) => render_math_inline_expr(data.body.as_deref(), out)?,
+        Inline::MathUnderbrace(data) => render_math_inline_annotated(
+            "underbrace",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            '_',
+            out,
+        )?,
+        Inline::MathUnderbracket(data) => render_math_inline_annotated(
+            "underbrace",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            '_',
+            out,
+        )?,
+        Inline::MathUnderline(data) => {
+            render_math_inline_one_arg("underline", data.body.as_deref(), out)?
+        }
+        Inline::MathUnderparen(data) => render_math_inline_annotated(
+            "underbrace",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            '_',
+            out,
+        )?,
+        Inline::MathUndershell(data) => render_math_inline_annotation(
+            "underset",
+            data.body.as_deref(),
+            data.annotation.as_deref(),
+            out,
+        )?,
+        Inline::MathVec(data) => render_math_inline_vec(data, out)?,
+        _ => unreachable!("render_math_inline only receives math inline nodes"),
+    }
     Ok(())
 }
 
@@ -1486,6 +1587,323 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
         "undershell" => render_math_annotation_command(node, "underset", out),
         "vec" => render_math_vec(node, out),
         _ => render_unimplemented(&format!("math.{}", node.func)),
+    }
+}
+
+fn render_math_inline_expr(value: Option<&str>, out: &mut String) -> Result<()> {
+    let Some(value) = value.filter(|value| !is_auto_or_none(value)) else {
+        return Ok(());
+    };
+
+    if let Ok(json) = serde_json::from_str::<serde_json::Value>(value) {
+        return render_math_value(&parse_math_json_value(&json)?, out);
+    }
+
+    render_math_symbol(value, out);
+    Ok(())
+}
+
+fn render_math_inline_one_arg(command: &str, value: Option<&str>, out: &mut String) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math_inline_expr(value, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_inline_accent(data: &MathAccentInline, out: &mut String) -> Result<()> {
+    let command = match data.accent.as_deref().unwrap_or("") {
+        "\u{0300}" | "`" => "grave",
+        "\u{0301}" | "'" => "acute",
+        "\u{302}" | "hat" => "hat",
+        "\u{303}" | "tilde" => "tilde",
+        "\u{304}" | "\u{305}" | "macron" | "dash" => "bar",
+        "\u{033f}" => "overline",
+        "\u{0306}" | "breve" => "breve",
+        "\u{307}" | "dot" => "dot",
+        "\u{308}" => "ddot",
+        "\u{20db}" => "dddot",
+        "\u{20dc}" => "ddddot",
+        "\u{030a}" | "circle" => "mathring",
+        "\u{030b}" => "H",
+        "\u{030c}" | "caron" => "check",
+        "\u{20d7}" | "\u{20d6}" | "\u{20e1}" | "\u{20d1}" | "\u{20d0}" | "arrow" => "vec",
+        _ => {
+            out.push_str(r"\overset{");
+            push_latex_text_escaped(data.accent.as_deref().unwrap_or(""), out);
+            out.push_str("}{");
+            render_math_inline_expr(data.base.as_deref(), out)?;
+            out.push('}');
+            return Ok(());
+        }
+    };
+    render_math_inline_one_arg(command, data.base.as_deref(), out)
+}
+
+fn render_math_inline_attach(data: &MathAttachInline, out: &mut String) -> Result<()> {
+    if data.bl.is_some() || data.tl.is_some() {
+        out.push_str("{}");
+        render_math_inline_script_pair(data.bl.as_deref(), data.tl.as_deref(), out)?;
+    }
+    render_math_inline_expr(data.base.as_deref(), out)?;
+    render_math_inline_script_pair(data.b.as_deref(), data.t.as_deref(), out)?;
+    if data.br.is_some() || data.tr.is_some() {
+        render_math_inline_script_pair(data.br.as_deref(), data.tr.as_deref(), out)?;
+    }
+    Ok(())
+}
+
+fn render_math_inline_script_pair(
+    bottom: Option<&str>,
+    top: Option<&str>,
+    out: &mut String,
+) -> Result<()> {
+    if bottom.is_some() {
+        out.push_str("_{");
+        render_math_inline_expr(bottom, out)?;
+        out.push('}');
+    }
+    if top.is_some() {
+        out.push_str("^{");
+        render_math_inline_expr(top, out)?;
+        out.push('}');
+    }
+    Ok(())
+}
+
+fn render_math_inline_binom(data: &MathBinomInline, out: &mut String) -> Result<()> {
+    out.push_str(r"\binom{");
+    render_math_inline_expr(data.upper.as_deref(), out)?;
+    out.push_str("}{");
+    render_math_inline_expr(data.lower.as_deref(), out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_inline_cancel(data: &MathCancelInline, out: &mut String) -> Result<()> {
+    let command = if data.cross {
+        "xcancel"
+    } else if data.inverted {
+        "bcancel"
+    } else {
+        "cancel"
+    };
+    render_math_inline_one_arg(command, data.body.as_deref(), out)
+}
+
+fn render_math_inline_cases(data: &MathCasesInline, out: &mut String) -> Result<()> {
+    let (open, close) = inline_delim_pair(data.delim.as_deref(), Some("{"), Some("}"));
+    out.push_str(r"\left");
+    out.push_str(if !data.reverse {
+        open.as_deref().unwrap_or(".")
+    } else {
+        "."
+    });
+    out.push_str(r"\begin{array}{l}");
+    for (index, child) in data.children.iter().enumerate() {
+        if index > 0 {
+            out.push_str(r" \\ ");
+        }
+        render_inline_node_as_math(child, out)?;
+    }
+    out.push_str(r"\end{array}\right");
+    out.push_str(if data.reverse {
+        close.as_deref().unwrap_or(".")
+    } else {
+        "."
+    });
+    Ok(())
+}
+
+fn render_math_inline_frac(data: &MathFracInline, out: &mut String) -> Result<()> {
+    match data.style.as_deref() {
+        Some("skewed") | Some("horizontal") => {
+            out.push('{');
+            render_math_inline_expr(data.num.as_deref(), out)?;
+            out.push_str("}/{");
+            render_math_inline_expr(data.denom.as_deref(), out)?;
+            out.push('}');
+            Ok(())
+        }
+        _ => {
+            out.push_str(r"\frac{");
+            render_math_inline_expr(data.num.as_deref(), out)?;
+            out.push_str("}{");
+            render_math_inline_expr(data.denom.as_deref(), out)?;
+            out.push('}');
+            Ok(())
+        }
+    }
+}
+
+fn render_math_inline_limits(data: &MathLimitsInline, out: &mut String) -> Result<()> {
+    render_math_inline_expr(data.body.as_deref(), out)?;
+    if data.inline {
+        out.push_str(r"\nolimits");
+    } else {
+        out.push_str(r"\limits");
+    }
+    Ok(())
+}
+
+fn render_math_inline_matrix(data: &MathMatInline, out: &mut String) -> Result<()> {
+    let (open, close) = inline_delim_pair(data.delim.as_deref(), Some("("), Some(")"));
+    let env = matrix_env(open.as_deref(), close.as_deref()).unwrap_or("matrix");
+    out.push_str(r"\begin{");
+    out.push_str(env);
+    out.push('}');
+    if let Some(rows) = data.rows.as_deref() {
+        if let Ok(json) = serde_json::from_str::<serde_json::Value>(rows)
+            && let MathValue::Rows(rows) = parse_math_json_value(&json)?
+        {
+            render_math_rows(&rows, out)?;
+        } else {
+            push_latex_text_escaped(rows, out);
+        }
+    }
+    out.push_str(r"\end{");
+    out.push_str(env);
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_inline_op(data: &MathOpInline, out: &mut String) -> Result<()> {
+    out.push_str(r"\operatorname{");
+    render_math_inline_expr(data.text.as_deref(), out)?;
+    out.push('}');
+    if data.limits {
+        out.push_str(r"\limits");
+    }
+    Ok(())
+}
+
+fn render_math_inline_annotated(
+    command: &str,
+    body: Option<&str>,
+    annotation: Option<&str>,
+    script: char,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math_inline_expr(body, out)?;
+    out.push('}');
+    if annotation.is_some() {
+        out.push(script);
+        out.push('{');
+        render_math_inline_expr(annotation, out)?;
+        out.push('}');
+    }
+    Ok(())
+}
+
+fn render_math_inline_annotation(
+    command: &str,
+    body: Option<&str>,
+    annotation: Option<&str>,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math_inline_expr(annotation, out)?;
+    out.push_str("}{");
+    render_math_inline_expr(body, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_inline_primes(data: &MathPrimesInline, out: &mut String) -> Result<()> {
+    let count = data
+        .count
+        .as_deref()
+        .unwrap_or("1")
+        .parse::<usize>()
+        .context_ut("math.primes count must be a number")?;
+    for _ in 0..count {
+        out.push('\'');
+    }
+    Ok(())
+}
+
+fn render_math_inline_root(data: &MathRootInline, out: &mut String) -> Result<()> {
+    out.push_str(r"\sqrt");
+    if data.index.is_some() {
+        out.push('[');
+        render_math_inline_expr(data.index.as_deref(), out)?;
+        out.push(']');
+    }
+    out.push('{');
+    render_math_inline_expr(data.radicand.as_deref(), out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_inline_vec(data: &MathVecInline, out: &mut String) -> Result<()> {
+    let (open, close) = inline_delim_pair(data.delim.as_deref(), Some("("), Some(")"));
+    render_math_delimited_matrix(
+        open.as_deref(),
+        close.as_deref(),
+        &data
+            .children
+            .iter()
+            .map(|child| {
+                let mut rendered = String::new();
+                render_inline_node_as_math(child, &mut rendered)?;
+                Ok(vec![MathNode {
+                    func: "text".into(),
+                    fields: vec![MathField {
+                        name: "text".into(),
+                        value: MathValue::Scalar(rendered.into()),
+                    }],
+                }])
+            })
+            .collect::<Result<Vec<_>>>()?,
+        out,
+    )
+}
+
+fn render_inline_node_as_math(node: &Inline, out: &mut String) -> Result<()> {
+    match node {
+        Inline::Text(data) => {
+            render_math_symbol(&data.text, out);
+            Ok(())
+        }
+        Inline::Raw(data) => {
+            render_math_symbol(&data.text, out);
+            Ok(())
+        }
+        Inline::Math(data) => render_math(&data.body, out),
+        Inline::MathAccent(_)
+        | Inline::MathAttach(_)
+        | Inline::MathBinom(_)
+        | Inline::MathCancel(_)
+        | Inline::MathCases(_)
+        | Inline::MathClass(_)
+        | Inline::MathFrac(_)
+        | Inline::MathLimits(_)
+        | Inline::MathLr(_)
+        | Inline::MathMat(_)
+        | Inline::MathMid(_)
+        | Inline::MathOp(_)
+        | Inline::MathOverbrace(_)
+        | Inline::MathOverbracket(_)
+        | Inline::MathOverline(_)
+        | Inline::MathOverparen(_)
+        | Inline::MathOvershell(_)
+        | Inline::MathPrimes(_)
+        | Inline::MathRoot(_)
+        | Inline::MathScripts(_)
+        | Inline::MathStretch(_)
+        | Inline::MathUnderbrace(_)
+        | Inline::MathUnderbracket(_)
+        | Inline::MathUnderline(_)
+        | Inline::MathUnderparen(_)
+        | Inline::MathUndershell(_)
+        | Inline::MathVec(_) => render_math_inline_body(node, out),
+        _ => render_unimplemented_inline(node),
     }
 }
 
@@ -1923,6 +2341,74 @@ fn render_math_value(value: &MathValue, out: &mut String) -> Result<()> {
     }
 }
 
+fn parse_math_json_value(value: &serde_json::Value) -> Result<MathValue> {
+    match value {
+        serde_json::Value::Null => Ok(MathValue::None),
+        serde_json::Value::Bool(value) => Ok(MathValue::Bool(*value)),
+        serde_json::Value::Number(value) => Ok(MathValue::Scalar(value.to_string().into())),
+        serde_json::Value::String(value) => Ok(MathValue::Scalar(value.as_str().into())),
+        serde_json::Value::Object(_) => Ok(MathValue::Node(Box::new(parse_math_json_node(value)?))),
+        serde_json::Value::Array(values) => parse_math_json_array(values),
+    }
+}
+
+fn parse_math_json_node(value: &serde_json::Value) -> Result<MathNode> {
+    let Some(object) = value.as_object() else {
+        bail!("math node must be encoded as an object, got {value}");
+    };
+    let func = object
+        .get("func")
+        .and_then(serde_json::Value::as_str)
+        .context("math node is missing string field `func`")?;
+    let mut fields = Vec::new();
+    for (name, value) in object {
+        if name == "func" {
+            continue;
+        }
+        fields.push(MathField {
+            name: name.as_str().into(),
+            value: parse_math_json_value(value)?,
+        });
+    }
+    Ok(MathNode {
+        func: func.into(),
+        fields,
+    })
+}
+
+fn parse_math_json_array(values: &[serde_json::Value]) -> Result<MathValue> {
+    if values.is_empty() {
+        return Ok(MathValue::Nodes(Vec::new()));
+    }
+
+    if values.iter().all(serde_json::Value::is_object) {
+        return values
+            .iter()
+            .map(parse_math_json_node)
+            .collect::<Result<Vec<_>>>()
+            .map(MathValue::Nodes);
+    }
+
+    if values.iter().all(serde_json::Value::is_array) {
+        let mut rows = Vec::new();
+        for row in values {
+            let Some(row) = row.as_array() else {
+                unreachable!("checked by all(Value::is_array)");
+            };
+            rows.push(
+                row.iter()
+                    .map(parse_math_json_node)
+                    .collect::<Result<Vec<_>>>()?,
+            );
+        }
+        return Ok(MathValue::Rows(rows));
+    }
+
+    Ok(MathValue::Scalar(
+        serde_json::Value::Array(values.to_vec()).to_string().into(),
+    ))
+}
+
 fn push_latex_text_escaped(value: &str, out: &mut String) {
     for ch in value.chars() {
         match ch {
@@ -2020,6 +2506,44 @@ fn math_delim_pair(
         Some(open.to_owned()),
         Some(math_matching_delim(open).to_owned()),
     ))
+}
+
+fn inline_delim_pair(
+    value: Option<&str>,
+    default_open: Option<&str>,
+    default_close: Option<&str>,
+) -> (Option<String>, Option<String>) {
+    let Some(value) = value.filter(|value| !is_auto_or_none(value)) else {
+        return (
+            default_open.map(math_delim).map(str::to_owned),
+            default_close.map(math_delim).map(str::to_owned),
+        );
+    };
+
+    if value == "none" {
+        return (None, None);
+    }
+
+    if let Ok(serde_json::Value::Array(values)) = serde_json::from_str::<serde_json::Value>(value) {
+        return (
+            values
+                .first()
+                .and_then(json_delim)
+                .map(math_delim)
+                .map(str::to_owned),
+            values
+                .get(1)
+                .and_then(json_delim)
+                .map(math_delim)
+                .map(str::to_owned),
+        );
+    }
+
+    let open = math_delim(value);
+    (
+        Some(open.to_owned()),
+        Some(math_matching_delim(open).to_owned()),
+    )
 }
 
 fn json_delim(value: &serde_json::Value) -> Option<&str> {
@@ -2745,6 +3269,17 @@ fn is_none_inlines(value: &[Inline]) -> bool {
 
 fn render_unimplemented_inline(node: &Inline) -> Result<()> {
     render_unimplemented(inline_kind(node)?)
+}
+
+fn render_curve_component_warning(node: &Inline, out: &mut String) -> Result<()> {
+    let kind = inline_kind(node)?;
+    eprintln!(
+        "warning: typlite markdown rendering for `{kind}` requires wrapping the parent curve in html.frame"
+    );
+    out.push_str("<!-- typlite-warning: ");
+    push_html_comment_escaped(kind, out);
+    out.push_str(" requires wrapping the parent curve in html.frame -->");
+    Ok(())
 }
 
 fn render_unimplemented(feature: &str) -> Result<()> {

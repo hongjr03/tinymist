@@ -5,10 +5,7 @@ use std::sync::Arc;
 
 use tinymist_tests::run_with_sources;
 use typlite::element_spec::{ELEMENTS, ElementKind, ElementMode};
-use typlite::ir::{
-    Block, CiteInline, Document, Inline, MathField, MathInline, MathNode, MathValue,
-    ParagraphBlock, PdfEmbedInline, RefInline, TextInline,
-};
+use typlite::ir::*;
 use typlite::{Format, Typlite, TypliteFeat};
 use typst_html::{HtmlElement, HtmlNode};
 
@@ -114,6 +111,173 @@ fn markdown_backend_renders_resilient_gap_paths() {
     assert!(markdown.contains("[@missing](#ref-missing)"));
     assert!(markdown.contains("[unknown](#unknown)"));
     assert!(markdown.contains("<!-- typlite-pdf: asset.pdf -->"));
+}
+
+#[test]
+fn markdown_backend_renders_dedicated_math_inline_nodes() {
+    let doc = Document {
+        blocks: vec![Block::Paragraph(ParagraphBlock {
+            body: vec![
+                Inline::MathAccent(MathAccentInline {
+                    base: Some("x".into()),
+                    accent: Some("hat".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathAttach(MathAttachInline {
+                    base: Some("x".into()),
+                    b: Some("1".into()),
+                    t: Some("2".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathBinom(MathBinomInline {
+                    upper: Some("n".into()),
+                    lower: Some("k".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathCancel(MathCancelInline {
+                    body: Some("x".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathCases(MathCasesInline {
+                    children: vec![
+                        Inline::Text(TextInline { text: "1".into() }),
+                        Inline::Text(TextInline { text: "2".into() }),
+                    ],
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathClass(MathClassInline {
+                    body: Some("x".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathFrac(MathFracInline {
+                    num: Some("1".into()),
+                    denom: Some("2".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathLimits(MathLimitsInline {
+                    body: Some(r"\sum".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathLr(MathLrInline {
+                    body: Some("(x)".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathMat(MathMatInline {
+                    rows: Some(
+                        r#"[ [{"func":"text","text":"1"}], [{"func":"text","text":"2"}] ]"#.into(),
+                    ),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathMid(MathMidInline {
+                    body: Some("|".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathOp(MathOpInline {
+                    text: Some("lim".into()),
+                    limits: true,
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathOverbrace(MathOverbraceInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathOverbracket(MathOverbracketInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathOverline(MathOverlineInline {
+                    body: Some("x".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathOverparen(MathOverparenInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathOvershell(MathOvershellInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathPrimes(MathPrimesInline {
+                    count: Some("3".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathRoot(MathRootInline {
+                    index: Some("3".into()),
+                    radicand: Some("x".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathScripts(MathScriptsInline {
+                    body: Some("x".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathStretch(MathStretchInline {
+                    body: Some(r"\to".into()),
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathUnderbrace(MathUnderbraceInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathUnderbracket(MathUnderbracketInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathUnderline(MathUnderlineInline {
+                    body: Some("x".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathUnderparen(MathUnderparenInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathUndershell(MathUndershellInline {
+                    body: Some("x".into()),
+                    annotation: Some("1".into()),
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::MathVec(MathVecInline {
+                    children: vec![
+                        Inline::Text(TextInline { text: "1".into() }),
+                        Inline::Text(TextInline { text: "2".into() }),
+                    ],
+                    ..Default::default()
+                }),
+                Inline::Text(TextInline { text: " ".into() }),
+                Inline::CurveLine(CurveLineInline {
+                    end: Some("(1pt, 1pt)".into()),
+                    ..Default::default()
+                }),
+            ],
+        })],
+    };
+
+    let markdown = typlite::backend::render_markdown(&doc).unwrap();
+    assert!(markdown.contains(r"$\hat{x}$"));
+    assert!(markdown.contains(r"$\frac{1}{2}$"));
+    assert!(markdown.contains(r"$\sqrt[3]{x}$"));
+    assert!(markdown.contains(r"$\left(\begin{matrix}1 \\ 2\end{matrix}\right)$"));
+    assert!(
+        markdown.contains(
+            "typlite-warning: curve.line requires wrapping the parent curve in html.frame"
+        )
+    );
 }
 
 fn element(selector: &str) -> &'static typlite::element_spec::ElementSpec {
