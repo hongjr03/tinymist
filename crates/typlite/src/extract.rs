@@ -675,48 +675,32 @@ fn collect_element_fields(
 ) -> Result<Vec<ElementField>> {
     let mut fields = Vec::new();
 
-    if let Some(object) = encoded_object(element)? {
-        for name in spec.fields.iter().copied() {
-            if is_content_field_name(name)
-                && let Some(children) = field_children(element, name)
-            {
-                fields.push(ElementField {
-                    name,
-                    value: collect_element_field_value(name, children, mode, introspector)?,
-                });
-            } else if let Some(value) = object.get(name) {
-                fields.push(ElementField {
-                    name,
-                    value: encoded::element_field_value(name, value, mode, introspector)?,
-                });
-            }
-        }
-
-        let mut frames = Vec::new();
-        collect_frames(&element.children, &mut frames);
-        for frame in frames {
-            fields.push(ElementField {
-                name: "frame",
-                value: ElementFieldValue::Inlines(vec![frame_to_inline(frame, introspector)]),
-            });
-        }
-
+    let Some(object) = encoded_object(element)? else {
         return Ok(fields);
-    }
+    };
 
     for name in spec.fields.iter().copied() {
-        if let Some(children) = field_children(element, name) {
+        if is_content_field_name(name)
+            && let Some(children) = field_children(element, name)
+        {
             fields.push(ElementField {
                 name,
                 value: collect_element_field_value(name, children, mode, introspector)?,
             });
+        } else if let Some(value) = object.get(name) {
+            fields.push(ElementField {
+                name,
+                value: encoded::element_field_value(name, value, mode, introspector)?,
+            });
         }
     }
 
-    if let Some(children) = field_children(element, "frame") {
+    let mut frames = Vec::new();
+    collect_frames(&element.children, &mut frames);
+    for frame in frames {
         fields.push(ElementField {
             name: "frame",
-            value: ElementFieldValue::Inlines(collect_inlines(children, introspector)?),
+            value: ElementFieldValue::Inlines(vec![frame_to_inline(frame, introspector)]),
         });
     }
 
