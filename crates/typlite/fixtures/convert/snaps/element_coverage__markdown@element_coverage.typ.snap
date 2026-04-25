@@ -57,7 +57,7 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
   Centered
 </div>
 
-Boxed Padded Moved Rotated Scaled Skewed
+<span style="display: inline-block">Boxed</span> <span style="display: inline-block; padding-left: calc(0% + 1pt); padding-top: calc(0% + 1pt); padding-right: calc(0% + 1pt); padding-bottom: calc(0% + 1pt)">Padded</span> <span style="display: inline-block; transform: translate(calc(0% + 1pt), calc(0% + 1pt))">Moved</span> <span style="display: inline-block; transform: rotate(10deg)">Rotated</span> <span style="display: inline-block; transform: scale(0.8, 0.8)">Scaled</span> <span style="display: inline-block; transform: skew(10deg, 0deg)">Skewed</span>
 
 <mark>Highlighted</mark> <span style="font-variant: small-caps">Small caps</span> ~~Struck~~ <sub>Subscript</sub> <sup>Superscript</sup>
 

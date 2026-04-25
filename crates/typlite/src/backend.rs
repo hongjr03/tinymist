@@ -28,7 +28,7 @@ fn render_blocks(blocks: &[Block], indent: usize) -> Result<String> {
             out.push_str("\n\n");
         }
         rendered_count += 1;
-        out.push_str(&rendered);
+        out.push_str(rendered.trim_end_matches([' ', '\t']));
     }
 
     Ok(out)
@@ -139,7 +139,7 @@ fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) -> Resu
             out.push_str("\n\n");
         }
         rendered_count += 1;
-        out.push_str(&rendered);
+        out.push_str(rendered.trim_end_matches([' ', '\t']));
     }
 
     Ok(())
@@ -580,14 +580,7 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
                 out.push_str(text);
                 out.push('`');
             }
-            Inline::Box(data)
-            | Inline::Move(data)
-            | Inline::Pad(data)
-            | Inline::Place(data)
-            | Inline::Repeat(data)
-            | Inline::Rotate(data)
-            | Inline::Scale(data)
-            | Inline::Skew(data)
+            Inline::Repeat(data)
             | Inline::TableCell(data)
             | Inline::TableFooter(data)
             | Inline::TableHeader(data)
@@ -597,6 +590,13 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::ParLine(data)
             | Inline::PdfArtifact(data)
             | Inline::RawLine(data) => render_inlines(&data.body, out)?,
+            Inline::Box(data) => render_box(data, out)?,
+            Inline::Move(data) => render_move(data, out)?,
+            Inline::Pad(data) => render_pad(data, out)?,
+            Inline::Place(data) => render_place(data, out)?,
+            Inline::Rotate(data) => render_transform(data, "rotate", &["angle"], out)?,
+            Inline::Scale(data) => render_scale(data, out)?,
+            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], out)?,
             Inline::Quote(data) => render_inline_quote(data, out)?,
             Inline::Circle(data)
             | Inline::Curve(data)
@@ -760,14 +760,7 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
                 render_inlines_html(&data.body, out)?;
                 out.push_str("</u>");
             }
-            Inline::Box(data)
-            | Inline::Move(data)
-            | Inline::Pad(data)
-            | Inline::Place(data)
-            | Inline::Repeat(data)
-            | Inline::Rotate(data)
-            | Inline::Scale(data)
-            | Inline::Skew(data)
+            Inline::Repeat(data)
             | Inline::TableCell(data)
             | Inline::TableFooter(data)
             | Inline::TableHeader(data)
@@ -779,6 +772,13 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::RawLine(data)
             | Inline::FigureCaption(data)
             | Inline::OutlineEntry(data) => render_inlines_html(&data.body, out)?,
+            Inline::Box(data) => render_box(data, out)?,
+            Inline::Move(data) => render_move(data, out)?,
+            Inline::Pad(data) => render_pad(data, out)?,
+            Inline::Place(data) => render_place(data, out)?,
+            Inline::Rotate(data) => render_transform(data, "rotate", &["angle"], out)?,
+            Inline::Scale(data) => render_scale(data, out)?,
+            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], out)?,
             Inline::Quote(data) => render_inline_quote_html(data, out)?,
             Inline::FootnoteEntry(_) => {}
             Inline::Circle(data)
@@ -1177,6 +1177,130 @@ fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
     out.push_str("\">");
 
     Ok(())
+}
+
+fn render_box(data: &InlineElementData, out: &mut String) -> Result<()> {
+    render_layout_span(data, out, |data, out| {
+        out.push_str("display: inline-block");
+        push_optional_css_length(data, "width", "width", out);
+        push_optional_css_length(data, "height", "height", out);
+    })
+}
+
+fn render_pad(data: &InlineElementData, out: &mut String) -> Result<()> {
+    render_layout_span(data, out, |data, out| {
+        out.push_str("display: inline-block");
+        push_optional_css_length(data, "left", "padding-left", out);
+        push_optional_css_length(data, "top", "padding-top", out);
+        push_optional_css_length(data, "right", "padding-right", out);
+        push_optional_css_length(data, "bottom", "padding-bottom", out);
+    })
+}
+
+fn render_move(data: &InlineElementData, out: &mut String) -> Result<()> {
+    render_layout_span(data, out, |data, out| {
+        out.push_str("display: inline-block; transform: translate(");
+        push_css_length(data.scalar("dx").unwrap_or("0pt"), out);
+        out.push_str(", ");
+        push_css_length(data.scalar("dy").unwrap_or("0pt"), out);
+        out.push(')');
+    })
+}
+
+fn render_place(data: &InlineElementData, out: &mut String) -> Result<()> {
+    render_layout_span(data, out, |data, out| {
+        out.push_str("display: inline-block; position: relative");
+        if let Some(dx) = data.scalar("dx").filter(|value| !is_auto_or_none(value)) {
+            out.push_str("; left: ");
+            push_css_length(dx, out);
+        }
+        if let Some(dy) = data.scalar("dy").filter(|value| !is_auto_or_none(value)) {
+            out.push_str("; top: ");
+            push_css_length(dy, out);
+        }
+    })
+}
+
+fn render_transform(
+    data: &InlineElementData,
+    function: &str,
+    fields: &[&str],
+    out: &mut String,
+) -> Result<()> {
+    render_layout_span(data, out, |data, out| {
+        out.push_str("display: inline-block; transform: ");
+        out.push_str(function);
+        out.push('(');
+        for (index, field) in fields.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            push_html_escaped(data.scalar(field).unwrap_or("0deg"), out);
+        }
+        out.push(')');
+    })
+}
+
+fn render_scale(data: &InlineElementData, out: &mut String) -> Result<()> {
+    render_layout_span(data, out, |data, out| {
+        out.push_str("display: inline-block; transform: scale(");
+        push_css_scale(
+            data.scalar("x")
+                .or_else(|| data.scalar("factor"))
+                .unwrap_or("100%"),
+            out,
+        );
+        out.push_str(", ");
+        push_css_scale(
+            data.scalar("y")
+                .or_else(|| data.scalar("factor"))
+                .unwrap_or("100%"),
+            out,
+        );
+        out.push(')');
+    })
+}
+
+fn render_layout_span(
+    data: &InlineElementData,
+    out: &mut String,
+    push_style: impl FnOnce(&InlineElementData, &mut String),
+) -> Result<()> {
+    out.push_str("<span style=\"");
+    push_style(data, out);
+    out.push_str("\">");
+    render_inlines_html(&data.body, out)?;
+    out.push_str("</span>");
+    Ok(())
+}
+
+fn push_optional_css_length(
+    data: &InlineElementData,
+    field: &str,
+    property: &str,
+    out: &mut String,
+) {
+    if let Some(value) = data.scalar(field).filter(|value| !is_auto_or_none(value)) {
+        out.push_str("; ");
+        out.push_str(property);
+        out.push_str(": ");
+        push_css_length(value, out);
+    }
+}
+
+fn push_css_scale(value: &str, out: &mut String) {
+    if let Some(percent) = value
+        .strip_suffix('%')
+        .and_then(|value| value.parse::<f64>().ok())
+    {
+        out.push_str(&(percent / 100.0).to_string());
+    } else {
+        push_html_escaped(value, out);
+    }
+}
+
+fn is_auto_or_none(value: &str) -> bool {
+    value.is_empty() || value == "auto" || value == "none"
 }
 
 fn render_cite(data: &InlineElementData, out: &mut String) -> Result<()> {
