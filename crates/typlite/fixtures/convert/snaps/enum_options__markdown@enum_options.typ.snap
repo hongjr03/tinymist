@@ -1,0 +1,13 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/enum_options.typ
+---
+# Enum Options
+
+5. five
+6. six
+
+3. three
+2. two
+1. one

@@ -6,7 +6,7 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
 # Coverage
 
 - List item with *emphasis*
-- List item with a link
+- List item with [a link](https://example.com)
 
   2. starts with a number
   3. Enum item with **strong text**
@@ -17,18 +17,25 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
      1. Enum item
 - back to the first level
 
-
-
 > A block quote with underlined text.
 
 Figure: A rectangle
+
+| A | B |
+| --- | --- |
+| *C* | **D** |
+| E |  |
+| F | G |
+
+| G1 | G2 |
+| --- | --- |
 
 Centered
 
 Boxed Padded Moved Rotated Scaled Skewed
 
-Highlighted Small caps Struck Subscript Superscript
+Highlighted Small caps ~~Struck~~ <sub>Subscript</sub> <sup>Superscript</sup>
 
-{  "func": "sequence",  "children": [    {      "func": "attach",      "base": {        "func": "symbol",        "text": "x"      },      "t": {        "func": "text",        "text": "2"      },      "b": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "y"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "="    },    {      "func": "space"    },    {      "func": "root",      "radicand": {        "func": "text",        "text": "4"      }    }  ]}
+$${  "func": "sequence",  "children": [    {      "func": "attach",      "base": {        "func": "symbol",        "text": "x"      },      "t": {        "func": "text",        "text": "2"      },      "b": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "y"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "="    },    {      "func": "space"    },    {      "func": "root",      "radicand": {        "func": "text",        "text": "4"      }    }  ]}$$
 
 fn main() {}

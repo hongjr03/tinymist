@@ -3,6 +3,7 @@ source: crates/typlite/tests/convert.rs
 expression: render_element_spec()
 ---
 align
+  enum: Align
   kind: align
   mode: block
   fields:
@@ -10,6 +11,7 @@ align
     - body
 
 bibliography
+  enum: Bibliography
   kind: bibliography
   mode: block
   fields:
@@ -19,6 +21,7 @@ bibliography
     - style
 
 block
+  enum: Block
   kind: block
   mode: block
   fields:
@@ -38,6 +41,7 @@ block
     - body
 
 box
+  enum: Box
   kind: box
   mode: inline
   fields:
@@ -53,6 +57,7 @@ box
     - body
 
 circle
+  enum: Circle
   kind: circle
   mode: inline
   fields:
@@ -66,6 +71,7 @@ circle
     - body
 
 cite
+  enum: Cite
   kind: cite
   mode: inline
   fields:
@@ -75,12 +81,14 @@ cite
     - style
 
 colbreak
+  enum: Colbreak
   kind: colbreak
   mode: block
   fields:
     - weak
 
 columns
+  enum: Columns
   kind: columns
   mode: block
   fields:
@@ -89,6 +97,7 @@ columns
     - body
 
 curve
+  enum: Curve
   kind: curve
   mode: inline
   fields:
@@ -98,12 +107,14 @@ curve
     - components
 
 curve.close
+  enum: CurveClose
   kind: curve-close
   mode: inline
   fields:
     - mode
 
 curve.cubic
+  enum: CurveCubic
   kind: curve-cubic
   mode: inline
   fields:
@@ -113,6 +124,7 @@ curve.cubic
     - relative
 
 curve.line
+  enum: CurveLine
   kind: curve-line
   mode: inline
   fields:
@@ -120,6 +132,7 @@ curve.line
     - relative
 
 curve.move
+  enum: CurveMove
   kind: curve-move
   mode: inline
   fields:
@@ -127,6 +140,7 @@ curve.move
     - relative
 
 curve.quad
+  enum: CurveQuad
   kind: curve-quad
   mode: inline
   fields:
@@ -135,6 +149,7 @@ curve.quad
     - relative
 
 document
+  enum: Document
   kind: document
   mode: inline
   fields:
@@ -145,6 +160,7 @@ document
     - date
 
 ellipse
+  enum: Ellipse
   kind: ellipse
   mode: inline
   fields:
@@ -157,12 +173,14 @@ ellipse
     - body
 
 emph
+  enum: Emph
   kind: emph
   mode: inline
   fields:
     - body
 
 enum
+  enum: Enum
   kind: enum
   mode: block
   fields:
@@ -178,6 +196,7 @@ enum
     - children
 
 figure
+  enum: Figure
   kind: figure
   mode: block
   fields:
@@ -194,6 +213,7 @@ figure
     - counter
 
 figure.caption
+  enum: FigureCaption
   kind: figure-caption
   mode: inline
   fields:
@@ -206,6 +226,7 @@ figure.caption
     - counter
 
 footnote
+  enum: Footnote
   kind: footnote
   mode: inline
   fields:
@@ -213,6 +234,7 @@ footnote
     - body
 
 footnote.entry
+  enum: FootnoteEntry
   kind: footnote-entry
   mode: inline
   fields:
@@ -223,6 +245,7 @@ footnote.entry
     - indent
 
 grid
+  enum: Grid
   kind: grid
   mode: block
   fields:
@@ -238,6 +261,7 @@ grid
     - children
 
 grid.cell
+  enum: GridCell
   kind: grid-cell
   mode: inline
   fields:
@@ -253,6 +277,7 @@ grid.cell
     - breakable
 
 grid.footer
+  enum: GridFooter
   kind: grid-footer
   mode: inline
   fields:
@@ -260,6 +285,7 @@ grid.footer
     - children
 
 grid.header
+  enum: GridHeader
   kind: grid-header
   mode: inline
   fields:
@@ -268,6 +294,7 @@ grid.header
     - children
 
 grid.hline
+  enum: GridHline
   kind: grid-hline
   mode: inline
   fields:
@@ -278,6 +305,7 @@ grid.hline
     - position
 
 grid.vline
+  enum: GridVline
   kind: grid-vline
   mode: inline
   fields:
@@ -288,6 +316,7 @@ grid.vline
     - position
 
 h
+  enum: H
   kind: h
   mode: inline
   fields:
@@ -295,6 +324,7 @@ h
     - weak
 
 heading
+  enum: Heading
   kind: heading
   mode: block
   fields:
@@ -309,12 +339,14 @@ heading
     - body
 
 hide
+  enum: Hide
   kind: hide
   mode: inline
   fields:
     - body
 
 highlight
+  enum: Highlight
   kind: highlight
   mode: inline
   fields:
@@ -327,6 +359,7 @@ highlight
     - body
 
 image
+  enum: Image
   kind: image
   mode: inline
   fields:
@@ -341,6 +374,7 @@ image
     - icc
 
 line
+  enum: Line
   kind: line
   mode: inline
   fields:
@@ -351,12 +385,14 @@ line
     - stroke
 
 linebreak
+  enum: Linebreak
   kind: linebreak
   mode: inline
   fields:
     - justify
 
 link
+  enum: Link
   kind: link
   mode: inline
   fields:
@@ -364,6 +400,7 @@ link
     - body
 
 list
+  enum: List
   kind: list
   mode: block
   fields:
@@ -375,6 +412,7 @@ list
     - children
 
 math.accent
+  enum: MathAccent
   kind: math-accent
   mode: inline
   fields:
@@ -384,6 +422,7 @@ math.accent
     - dotless
 
 math.attach
+  enum: MathAttach
   kind: math-attach
   mode: inline
   fields:
@@ -396,6 +435,7 @@ math.attach
     - br
 
 math.binom
+  enum: MathBinom
   kind: math-binom
   mode: inline
   fields:
@@ -403,6 +443,7 @@ math.binom
     - lower
 
 math.cancel
+  enum: MathCancel
   kind: math-cancel
   mode: inline
   fields:
@@ -414,6 +455,7 @@ math.cancel
     - stroke
 
 math.cases
+  enum: MathCases
   kind: math-cases
   mode: inline
   fields:
@@ -423,6 +465,7 @@ math.cases
     - children
 
 math.class
+  enum: MathClass
   kind: math-class
   mode: inline
   fields:
@@ -430,6 +473,7 @@ math.class
     - body
 
 math.equation
+  enum: MathEquation
   kind: math-equation
   mode: block-or-inline
   fields:
@@ -441,6 +485,7 @@ math.equation
     - body
 
 math.frac
+  enum: MathFrac
   kind: math-frac
   mode: inline
   fields:
@@ -449,6 +494,7 @@ math.frac
     - style
 
 math.limits
+  enum: MathLimits
   kind: math-limits
   mode: inline
   fields:
@@ -456,6 +502,7 @@ math.limits
     - inline
 
 math.lr
+  enum: MathLr
   kind: math-lr
   mode: inline
   fields:
@@ -463,6 +510,7 @@ math.lr
     - body
 
 math.mat
+  enum: MathMat
   kind: math-mat
   mode: inline
   fields:
@@ -475,12 +523,14 @@ math.mat
     - rows
 
 math.mid
+  enum: MathMid
   kind: math-mid
   mode: inline
   fields:
     - body
 
 math.op
+  enum: MathOp
   kind: math-op
   mode: inline
   fields:
@@ -488,6 +538,7 @@ math.op
     - limits
 
 math.overbrace
+  enum: MathOverbrace
   kind: math-overbrace
   mode: inline
   fields:
@@ -495,6 +546,7 @@ math.overbrace
     - annotation
 
 math.overbracket
+  enum: MathOverbracket
   kind: math-overbracket
   mode: inline
   fields:
@@ -502,12 +554,14 @@ math.overbracket
     - annotation
 
 math.overline
+  enum: MathOverline
   kind: math-overline
   mode: inline
   fields:
     - body
 
 math.overparen
+  enum: MathOverparen
   kind: math-overparen
   mode: inline
   fields:
@@ -515,6 +569,7 @@ math.overparen
     - annotation
 
 math.overshell
+  enum: MathOvershell
   kind: math-overshell
   mode: inline
   fields:
@@ -522,12 +577,14 @@ math.overshell
     - annotation
 
 math.primes
+  enum: MathPrimes
   kind: math-primes
   mode: inline
   fields:
     - count
 
 math.root
+  enum: MathRoot
   kind: math-root
   mode: inline
   fields:
@@ -535,12 +592,14 @@ math.root
     - radicand
 
 math.scripts
+  enum: MathScripts
   kind: math-scripts
   mode: inline
   fields:
     - body
 
 math.stretch
+  enum: MathStretch
   kind: math-stretch
   mode: inline
   fields:
@@ -548,6 +607,7 @@ math.stretch
     - size
 
 math.underbrace
+  enum: MathUnderbrace
   kind: math-underbrace
   mode: inline
   fields:
@@ -555,6 +615,7 @@ math.underbrace
     - annotation
 
 math.underbracket
+  enum: MathUnderbracket
   kind: math-underbracket
   mode: inline
   fields:
@@ -562,12 +623,14 @@ math.underbracket
     - annotation
 
 math.underline
+  enum: MathUnderline
   kind: math-underline
   mode: inline
   fields:
     - body
 
 math.underparen
+  enum: MathUnderparen
   kind: math-underparen
   mode: inline
   fields:
@@ -575,6 +638,7 @@ math.underparen
     - annotation
 
 math.undershell
+  enum: MathUndershell
   kind: math-undershell
   mode: inline
   fields:
@@ -582,6 +646,7 @@ math.undershell
     - annotation
 
 math.vec
+  enum: MathVec
   kind: math-vec
   mode: inline
   fields:
@@ -591,12 +656,14 @@ math.vec
     - children
 
 metadata
+  enum: Metadata
   kind: metadata
   mode: inline
   fields:
     - value
 
 move
+  enum: Move
   kind: move
   mode: inline
   fields:
@@ -605,6 +672,7 @@ move
     - body
 
 outline
+  enum: Outline
   kind: outline
   mode: block
   fields:
@@ -614,6 +682,7 @@ outline
     - indent
 
 outline.entry
+  enum: OutlineEntry
   kind: outline-entry
   mode: inline
   fields:
@@ -622,6 +691,7 @@ outline.entry
     - fill
 
 overline
+  enum: Overline
   kind: overline
   mode: inline
   fields:
@@ -633,6 +703,7 @@ overline
     - body
 
 pad
+  enum: Pad
   kind: pad
   mode: inline
   fields:
@@ -646,6 +717,7 @@ pad
     - body
 
 page
+  enum: Page
   kind: page
   mode: inline
   fields:
@@ -669,6 +741,7 @@ page
     - body
 
 pagebreak
+  enum: Pagebreak
   kind: pagebreak
   mode: block
   fields:
@@ -676,6 +749,7 @@ pagebreak
     - to
 
 par
+  enum: Par
   kind: paragraph
   mode: block
   fields:
@@ -689,6 +763,7 @@ par
     - body
 
 par.line
+  enum: ParLine
   kind: par-line
   mode: inline
   fields:
@@ -699,11 +774,13 @@ par.line
     - numbering-scope
 
 parbreak
+  enum: Parbreak
   kind: parbreak
   mode: block
   fields: []
 
 path
+  enum: Path
   kind: path
   mode: inline
   fields:
@@ -714,6 +791,7 @@ path
     - vertices
 
 pdf.artifact
+  enum: PdfArtifact
   kind: pdf-artifact
   mode: inline
   fields:
@@ -721,6 +799,7 @@ pdf.artifact
     - body
 
 pdf.attach
+  enum: PdfAttach
   kind: pdf-attach
   mode: inline
   fields:
@@ -731,6 +810,7 @@ pdf.attach
     - description
 
 pdf.embed
+  enum: PdfEmbed
   kind: pdf-embed
   mode: inline
   fields:
@@ -741,6 +821,7 @@ pdf.embed
     - description
 
 place
+  enum: Place
   kind: place
   mode: inline
   fields:
@@ -753,11 +834,13 @@ place
     - body
 
 place.flush
+  enum: PlaceFlush
   kind: place-flush
   mode: inline
   fields: []
 
 polygon
+  enum: Polygon
   kind: polygon
   mode: inline
   fields:
@@ -767,6 +850,7 @@ polygon
     - vertices
 
 quote
+  enum: Quote
   kind: quote
   mode: block-or-inline
   fields:
@@ -776,6 +860,7 @@ quote
     - body
 
 raw
+  enum: Raw
   kind: raw
   mode: block-or-inline
   fields:
@@ -789,6 +874,7 @@ raw
     - lines
 
 raw.line
+  enum: RawLine
   kind: raw-line
   mode: inline
   fields:
@@ -798,6 +884,7 @@ raw.line
     - body
 
 rect
+  enum: Rect
   kind: rect
   mode: inline
   fields:
@@ -811,6 +898,7 @@ rect
     - body
 
 ref
+  enum: Ref
   kind: ref
   mode: inline
   fields:
@@ -821,6 +909,7 @@ ref
     - element
 
 repeat
+  enum: Repeat
   kind: repeat
   mode: inline
   fields:
@@ -829,6 +918,7 @@ repeat
     - justify
 
 rotate
+  enum: Rotate
   kind: rotate
   mode: inline
   fields:
@@ -838,6 +928,7 @@ rotate
     - body
 
 scale
+  enum: Scale
   kind: scale
   mode: inline
   fields:
@@ -849,6 +940,7 @@ scale
     - body
 
 skew
+  enum: Skew
   kind: skew
   mode: inline
   fields:
@@ -859,6 +951,7 @@ skew
     - body
 
 smallcaps
+  enum: Smallcaps
   kind: smallcaps
   mode: inline
   fields:
@@ -866,6 +959,7 @@ smallcaps
     - body
 
 smartquote
+  enum: Smartquote
   kind: smartquote
   mode: inline
   fields:
@@ -875,6 +969,7 @@ smartquote
     - quotes
 
 square
+  enum: Square
   kind: square
   mode: inline
   fields:
@@ -889,6 +984,7 @@ square
     - body
 
 stack
+  enum: Stack
   kind: stack
   mode: block
   fields:
@@ -897,6 +993,7 @@ stack
     - children
 
 strike
+  enum: Strike
   kind: strike
   mode: inline
   fields:
@@ -907,6 +1004,7 @@ strike
     - body
 
 strong
+  enum: Strong
   kind: strong
   mode: inline
   fields:
@@ -914,6 +1012,7 @@ strong
     - body
 
 sub
+  enum: Sub
   kind: sub
   mode: inline
   fields:
@@ -923,6 +1022,7 @@ sub
     - body
 
 super
+  enum: Super
   kind: super
   mode: inline
   fields:
@@ -932,6 +1032,7 @@ super
     - body
 
 table
+  enum: Table
   kind: table
   mode: block
   fields:
@@ -947,6 +1048,7 @@ table
     - children
 
 table.cell
+  enum: TableCell
   kind: table-cell
   mode: inline
   fields:
@@ -962,6 +1064,7 @@ table.cell
     - breakable
 
 table.footer
+  enum: TableFooter
   kind: table-footer
   mode: inline
   fields:
@@ -969,6 +1072,7 @@ table.footer
     - children
 
 table.header
+  enum: TableHeader
   kind: table-header
   mode: inline
   fields:
@@ -977,6 +1081,7 @@ table.header
     - children
 
 table.hline
+  enum: TableHline
   kind: table-hline
   mode: inline
   fields:
@@ -987,6 +1092,7 @@ table.hline
     - position
 
 table.vline
+  enum: TableVline
   kind: table-vline
   mode: inline
   fields:
@@ -997,6 +1103,7 @@ table.vline
     - position
 
 terms
+  enum: Terms
   kind: terms
   mode: block
   fields:
@@ -1008,12 +1115,14 @@ terms
     - children
 
 title
+  enum: Title
   kind: title
   mode: block
   fields:
     - body
 
 underline
+  enum: Underline
   kind: underline
   mode: inline
   fields:
@@ -1025,6 +1134,7 @@ underline
     - body
 
 v
+  enum: V
   kind: v
   mode: block
   fields:

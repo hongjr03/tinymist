@@ -4,20 +4,20 @@ use std::path::Path;
 use std::sync::Arc;
 
 use tinymist_tests::run_with_sources;
-use typlite::element_spec::{ELEMENTS, ElementMode};
+use typlite::element_spec::{ELEMENTS, ElementKind, ElementMode};
 use typlite::{Format, Typlite, TypliteFeat};
 use typst_html::{HtmlElement, HtmlNode};
 
 #[test]
 fn generated_element_spec_covers_core_elements() {
     let table = element("table");
-    assert_eq!(table.kind, "table");
+    assert_eq!(table.kind, ElementKind::Table);
     assert_eq!(table.mode, ElementMode::Block);
     assert!(table.fields.contains(&"align"));
     assert!(table.fields.contains(&"children"));
 
     let grid = element("grid");
-    assert_eq!(grid.kind, "grid");
+    assert_eq!(grid.kind, ElementKind::Grid);
     assert_eq!(grid.mode, ElementMode::Block);
     assert!(grid.fields.contains(&"children"));
 
@@ -27,7 +27,7 @@ fn generated_element_spec_covers_core_elements() {
     assert!(link.fields.contains(&"body"));
 
     let math = element("math.equation");
-    assert_eq!(math.kind, "math-equation");
+    assert_eq!(math.kind, ElementKind::MathEquation);
     assert_eq!(math.mode, ElementMode::BlockOrInline);
     assert!(math.fields.contains(&"body"));
 }
@@ -58,8 +58,11 @@ fn render_element_spec() -> String {
     for element in ELEMENTS {
         out.push_str(element.selector);
         out.push('\n');
+        out.push_str("  enum: ");
+        out.push_str(&format!("{:?}", element.kind));
+        out.push('\n');
         out.push_str("  kind: ");
-        out.push_str(element.kind);
+        out.push_str(element.kind.name());
         out.push('\n');
         out.push_str("  mode: ");
         out.push_str(match element.mode {

@@ -1,0 +1,96 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/enum_options.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Enum Options"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-enum>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1."
+      <span data-typlite-field="true" name="start" kind="integer">
+        text "5"
+      <span data-typlite-field="true" name="full" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="reversed" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body-indent" kind="length">
+        text "0.5em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + top"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="enum.item">
+          <span data-typlite-field="true" name="number" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "five"
+        <span data-typlite-field="true" name="1" kind="enum.item">
+          <span data-typlite-field="true" name="number" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "six"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-enum>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1."
+      <span data-typlite-field="true" name="start" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="full" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="reversed" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body-indent" kind="length">
+        text "0.5em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + top"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="enum.item">
+          <span data-typlite-field="true" name="number" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "three"
+        <span data-typlite-field="true" name="1" kind="enum.item">
+          <span data-typlite-field="true" name="number" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "two"
+        <span data-typlite-field="true" name="2" kind="enum.item">
+          <span data-typlite-field="true" name="number" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "one"
+    tag

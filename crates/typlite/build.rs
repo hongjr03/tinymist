@@ -154,6 +154,55 @@ fn write_element_spec(out_dir: &Path, elements: &[ElementSpec]) {
     let mut out = String::new();
     out.push_str(
         r#"#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ElementKind {
+"#,
+    );
+
+    for element in elements {
+        let variant = element.variant();
+        out.push_str(&format!("    {variant},\n"));
+    }
+
+    out.push_str(
+        r#"}
+
+impl ElementKind {
+    pub fn selector(self) -> &'static str {
+        match self {
+"#,
+    );
+
+    for element in elements {
+        let variant = element.variant();
+        let selector = element.selector();
+        out.push_str(&format!(
+            "            ElementKind::{variant} => {selector:?},\n"
+        ));
+    }
+
+    out.push_str(
+        r#"        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+"#,
+    );
+
+    for element in elements {
+        let variant = element.variant();
+        let kind = element.kind();
+        out.push_str(&format!(
+            "            ElementKind::{variant} => {kind:?},\n"
+        ));
+    }
+
+    out.push_str(
+        r#"        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ElementMode {
     Block,
     Inline,
@@ -163,7 +212,7 @@ pub enum ElementMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ElementSpec {
     pub selector: &'static str,
-    pub kind: &'static str,
+    pub kind: ElementKind,
     pub mode: ElementMode,
     pub fields: &'static [&'static str],
 }
@@ -174,7 +223,7 @@ pub static ELEMENTS: &[ElementSpec] = &[
 
     for element in elements {
         let selector = element.selector();
-        let kind = element.kind();
+        let variant = element.variant();
         let mode = match element.mode() {
             Mode::Block => "ElementMode::Block",
             Mode::Inline => "ElementMode::Inline",
@@ -184,7 +233,7 @@ pub static ELEMENTS: &[ElementSpec] = &[
 
         out.push_str("    ElementSpec {\n");
         out.push_str(&format!("        selector: {selector:?},\n"));
-        out.push_str(&format!("        kind: {kind:?},\n"));
+        out.push_str(&format!("        kind: ElementKind::{variant},\n"));
         out.push_str(&format!("        mode: {mode},\n"));
         out.push_str("        fields: &[\n");
         for field in fields {
@@ -216,6 +265,15 @@ impl ElementSpec {
             "par" => "paragraph".to_owned(),
             selector => selector.replace('.', "-"),
         }
+    }
+
+    fn variant(&self) -> String {
+        self.path
+            .iter()
+            .flat_map(|part| part.split(['-', '_']))
+            .filter(|part| !part.is_empty())
+            .map(upper_camel)
+            .collect()
     }
 
     fn mode(&self) -> Mode {
@@ -364,4 +422,15 @@ fn should_generate(spec: &ElementSpec) -> bool {
 
 fn element_fields(elem: Element) -> impl Iterator<Item = &'static str> {
     (0..u8::MAX).filter_map(move |id| elem.field_name(id))
+}
+
+fn upper_camel(part: &str) -> String {
+    let mut out = String::new();
+    let mut chars = part.chars();
+
+    if let Some(first) = chars.next() {
+        out.extend(first.to_uppercase());
+    }
+    out.extend(chars);
+    out
 }
