@@ -3,6 +3,7 @@ source: crates/typlite/tests/convert.rs
 expression: markdown
 input_file: crates/typlite/fixtures/convert/all_elements.typ
 ---
+<a id="sweep"></a>
 # Element Sweep
 
 <!-- typlite-metadata: {"fixture":"all-elements"} -->

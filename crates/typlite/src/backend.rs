@@ -16,6 +16,7 @@ pub struct BibliographyContext {
     entries: BTreeMap<EcoString, EcoString>,
     citations: BTreeMap<EcoString, EcoString>,
     citation_offsets: RefCell<BTreeMap<EcoString, usize>>,
+    reference_anchors: RefCell<BTreeMap<String, Vec<EcoString>>>,
     order: Vec<EcoString>,
 }
 
@@ -39,12 +40,16 @@ impl BibliographyContext {
             entries: map,
             citations: citations.into_iter().collect(),
             citation_offsets: RefCell::default(),
+            reference_anchors: RefCell::default(),
             order,
         }
     }
 
-    fn reset_render_state(&self) {
+    fn reset_render_state(&self, doc: &Document) {
         self.citation_offsets.borrow_mut().clear();
+        let mut anchors = self.reference_anchors.borrow_mut();
+        anchors.clear();
+        collect_reference_anchors(&doc.blocks, &mut anchors);
     }
 
     fn ordered_entries(&self) -> impl Iterator<Item = (&str, &str)> {
@@ -77,6 +82,16 @@ impl BibliographyContext {
             .copied()
             .unwrap_or_default()
     }
+
+    fn take_reference_anchors(&self, block: &Block) -> Vec<EcoString> {
+        let Some(key) = reference_anchor_key(block) else {
+            return Vec::new();
+        };
+        self.reference_anchors
+            .borrow_mut()
+            .remove(&key)
+            .unwrap_or_default()
+    }
 }
 
 /// Renders a document IR as Markdown.
@@ -89,8 +104,124 @@ pub fn render_markdown_with_bibliography(
     doc: &Document,
     bibliography: &BibliographyContext,
 ) -> Result<String> {
-    bibliography.reset_render_state();
+    bibliography.reset_render_state(doc);
     render_blocks(&doc.blocks, 0, bibliography)
+}
+
+fn collect_reference_anchors(blocks: &[Block], out: &mut BTreeMap<String, Vec<EcoString>>) {
+    for block in blocks {
+        match block {
+            Block::Heading { body, .. } | Block::Paragraph(body) => {
+                collect_reference_anchors_in_inlines(body, out);
+            }
+            Block::Quote(blocks) => collect_reference_anchors(blocks, out),
+            Block::Figure { body, caption, .. } => {
+                collect_reference_anchors(body, out);
+                collect_reference_anchors_in_inlines(caption, out);
+            }
+            Block::Align { body, .. } => collect_reference_anchors(body, out),
+            Block::Table { rows, .. } => {
+                for row in rows {
+                    for cell in &row.cells {
+                        collect_reference_anchors_in_inlines(&cell.body, out);
+                    }
+                }
+            }
+            Block::List { items, .. } => {
+                for item in items {
+                    collect_reference_anchors(&item.body, out);
+                }
+            }
+            Block::Terms { items } => {
+                for item in items {
+                    collect_reference_anchors_in_inlines(&item.term, out);
+                    collect_reference_anchors(&item.description, out);
+                }
+            }
+            Block::Math(_) | Block::Raw { .. } => {}
+            _ => {
+                if let Some(body) = block.generated_body() {
+                    collect_reference_anchors(body, out);
+                }
+            }
+        }
+    }
+}
+
+fn collect_reference_anchors_in_inlines(
+    inlines: &[Inline],
+    out: &mut BTreeMap<String, Vec<EcoString>>,
+) {
+    for inline in inlines {
+        match inline {
+            Inline::Ref(data) => {
+                if let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) {
+                    if let Some(element) = data.blocks("element").and_then(|blocks| blocks.first())
+                    {
+                        if let Some(key) = reference_anchor_key(element) {
+                            push_reference_anchor(out, key, normalized_label(target).into());
+                        }
+                    }
+                }
+                collect_reference_anchors_in_fields(&data.fields, out);
+            }
+            Inline::Emph(children)
+            | Inline::Strong(children)
+            | Inline::Strike(children)
+            | Inline::Sub(children)
+            | Inline::Super(children)
+            | Inline::Link { body: children, .. } => {
+                collect_reference_anchors_in_inlines(children, out);
+            }
+            Inline::Text(_)
+            | Inline::Math(_)
+            | Inline::Linebreak
+            | Inline::Frame(_)
+            | Inline::Raw { .. } => {}
+            _ => {
+                if let Some(body) = inline.generated_body() {
+                    collect_reference_anchors_in_inlines(body, out);
+                }
+            }
+        }
+    }
+}
+
+fn collect_reference_anchors_in_fields(
+    fields: &[crate::ir::ElementField],
+    out: &mut BTreeMap<String, Vec<EcoString>>,
+) {
+    for field in fields {
+        match &field.value {
+            ElementFieldValue::Inlines(inlines) => {
+                collect_reference_anchors_in_inlines(inlines, out)
+            }
+            ElementFieldValue::Blocks(blocks) => collect_reference_anchors(blocks, out),
+            ElementFieldValue::Scalar(_) => {}
+        }
+    }
+}
+
+fn push_reference_anchor(
+    out: &mut BTreeMap<String, Vec<EcoString>>,
+    key: String,
+    anchor: EcoString,
+) {
+    let anchors = out.entry(key).or_default();
+    if !anchors.iter().any(|existing| existing == &anchor) {
+        anchors.push(anchor);
+    }
+}
+
+fn reference_anchor_key(block: &Block) -> Option<String> {
+    match block {
+        Block::Heading { .. } | Block::Figure { .. } => Some(format!("{block:?}")),
+        _ => None,
+    }
+}
+
+fn normalized_label(label: &str) -> &str {
+    label.trim_start_matches('<').trim_end_matches('>')
 }
 
 fn render_blocks(
@@ -127,6 +258,7 @@ fn render_block(
 ) -> Result<()> {
     match block {
         Block::Heading { level, body } => {
+            render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
             out.push_str(&" ".repeat(indent));
             out.push_str(&"#".repeat(*level as usize));
             out.push(' ');
@@ -138,6 +270,7 @@ fn render_block(
         }
         Block::Quote(blocks) => render_quote(blocks, indent, bibliography, out)?,
         Block::Figure { body, caption, alt } => {
+            render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
             out.push_str(&" ".repeat(indent));
             out.push_str("<figure");
             if let Some(alt) = alt {
@@ -259,6 +392,15 @@ fn render_blocks_into(
     }
 
     Ok(())
+}
+
+fn render_reference_anchors(anchors: Vec<EcoString>, indent: usize, out: &mut String) {
+    for anchor in anchors {
+        out.push_str(&" ".repeat(indent));
+        out.push_str("<a id=\"");
+        push_html_escaped(&anchor, out);
+        out.push_str("\"></a>\n");
+    }
 }
 
 fn render_blocks_html_into(

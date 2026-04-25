@@ -3,6 +3,7 @@ source: crates/typlite/tests/convert.rs
 expression: markdown
 input_file: crates/typlite/fixtures/convert/element_coverage.typ
 ---
+<a id="title"></a>
 # Coverage
 
 - List item with *emphasis*
