@@ -572,7 +572,14 @@ fn collect_inline_element_body(
     spec: &'static ElementSpec,
     introspector: &Introspector,
 ) -> Result<Vec<Inline>> {
+    if let Some(children) = field_children(element, "body") {
+        return collect_inlines(children, introspector);
+    }
+
     for field in content_fields(spec) {
+        if field == "body" {
+            continue;
+        }
         if let Some(children) = field_children(element, field) {
             return collect_inlines(children, introspector);
         }
@@ -651,6 +658,7 @@ fn is_content_field_name(field: &str) -> bool {
             | "children"
             | "title"
             | "caption"
+            | "attribution"
             | "term"
             | "description"
             | "supplement"

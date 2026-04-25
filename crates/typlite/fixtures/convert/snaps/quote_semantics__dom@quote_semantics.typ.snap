@@ -1,0 +1,249 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/quote_semantics.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Inline quote"
+        text ":"
+        text " "
+        tag
+        <span data-typlite="quote">
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="attribution" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "quoted text"
+        tag
+        text "."
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Inline quote without marks"
+        text ":"
+        text " "
+        tag
+        <span data-typlite="quote">
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="attribution" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "bare quote"
+        tag
+        text "."
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Inline quote with attribution"
+        text ":"
+        text " "
+        tag
+        <span data-typlite="quote">
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="attribution" kind="content">
+            text "Author"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "attributed quote"
+        tag
+        text "."
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Inline quote with markup"
+        text ":"
+        text " "
+        tag
+        <span data-typlite="quote">
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="attribution" kind="none">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "quoted"
+            text " "
+            tag
+            <span data-typlite="emph">
+              <span data-typlite-field="true" name="body" kind="content">
+                text "text"
+            tag
+        tag
+        text "."
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Smart quotes"
+        text ":"
+        text " "
+        <span data-typlite="smartquote">
+          <span data-typlite-field="true" name="double" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="enabled" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="alternative" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+        <span data-typlite="smartquote">
+          <span data-typlite-field="true" name="double" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="enabled" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="alternative" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+        text "."
+    tag

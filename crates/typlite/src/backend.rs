@@ -470,8 +470,8 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::GridHeader(data)
             | Inline::ParLine(data)
             | Inline::PdfArtifact(data)
-            | Inline::Quote(data)
             | Inline::RawLine(data) => render_inlines(&data.body, out)?,
+            Inline::Quote(data) => render_inline_quote(data, out)?,
             Inline::Circle(data)
             | Inline::Curve(data)
             | Inline::Ellipse(data)
@@ -548,7 +548,7 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
                 render_inlines(&data.body, out)?;
                 out.push_str("</span>");
             }
-            Inline::Smartquote(_) => {}
+            Inline::Smartquote(data) => render_smartquote(data, out)?,
             Inline::Underline(data) => {
                 out.push_str("<u>");
                 render_inlines(&data.body, out)?;
@@ -650,10 +650,10 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::GridHeader(data)
             | Inline::ParLine(data)
             | Inline::PdfArtifact(data)
-            | Inline::Quote(data)
             | Inline::RawLine(data)
             | Inline::FigureCaption(data)
             | Inline::OutlineEntry(data) => render_inlines_html(&data.body, out)?,
+            Inline::Quote(data) => render_inline_quote_html(data, out)?,
             Inline::FootnoteEntry(_) => {}
             Inline::Circle(data)
             | Inline::Curve(data)
@@ -675,7 +675,7 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
                 bail!("typlite markdown PDF embedding rendering is not implemented")
             }
             Inline::Ref(data) => render_ref(data, out)?,
-            Inline::Smartquote(_) => {}
+            Inline::Smartquote(data) => render_smartquote_html(data, out)?,
             Inline::MathAccent(_)
             | Inline::MathAttach(_)
             | Inline::MathBinom(_)
@@ -1111,6 +1111,84 @@ fn render_ref_link(target: &str, body: &[Inline], out: &mut String) -> Result<()
     out.push_str(target);
     out.push(')');
     Ok(())
+}
+
+fn render_inline_quote(data: &InlineElementData, out: &mut String) -> Result<()> {
+    let quoted = match data.scalar("quotes").unwrap_or("auto") {
+        "auto" | "true" => true,
+        "false" => false,
+        value => bail!("typlite markdown quote rendering does not support quotes `{value}`"),
+    };
+
+    if quoted {
+        out.push('"');
+    }
+    render_inlines(&data.body, out)?;
+    if quoted {
+        out.push('"');
+    }
+
+    if let Some(attribution) = data
+        .inlines("attribution")
+        .filter(|value| has_semantic_inlines(value))
+    {
+        out.push_str(" (");
+        render_inlines(attribution, out)?;
+        out.push(')');
+    }
+
+    Ok(())
+}
+
+fn render_inline_quote_html(data: &InlineElementData, out: &mut String) -> Result<()> {
+    let quoted = match data.scalar("quotes").unwrap_or("auto") {
+        "auto" | "true" => true,
+        "false" => false,
+        value => bail!("typlite HTML quote rendering does not support quotes `{value}`"),
+    };
+
+    if quoted {
+        out.push_str("<q>");
+    }
+    render_inlines_html(&data.body, out)?;
+    if quoted {
+        out.push_str("</q>");
+    }
+
+    if let Some(attribution) = data
+        .inlines("attribution")
+        .filter(|value| has_semantic_inlines(value))
+    {
+        out.push_str(" <cite>");
+        render_inlines_html(attribution, out)?;
+        out.push_str("</cite>");
+    }
+
+    Ok(())
+}
+
+fn render_smartquote(data: &InlineElementData, out: &mut String) -> Result<()> {
+    out.push(smartquote_char(data)?);
+    Ok(())
+}
+
+fn render_smartquote_html(data: &InlineElementData, out: &mut String) -> Result<()> {
+    match smartquote_char(data)? {
+        '"' => out.push_str("&quot;"),
+        '\'' => out.push_str("&#39;"),
+        _ => unreachable!(),
+    }
+    Ok(())
+}
+
+fn smartquote_char(data: &InlineElementData) -> Result<char> {
+    match data.scalar("double").unwrap_or("true") {
+        "true" => Ok('"'),
+        "false" => Ok('\''),
+        value => {
+            bail!("typlite markdown smartquote rendering requires boolean double, got `{value}`")
+        }
+    }
 }
 
 fn has_semantic_inlines(value: &[Inline]) -> bool {

@@ -1,0 +1,14 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/quote_semantics.typ
+---
+Inline quote: "quoted text".
+
+Inline quote without marks: bare quote.
+
+Inline quote with attribution: "attributed quote" (Author).
+
+Inline quote with markup: "quoted *text*".
+
+Smart quotes: "'.
