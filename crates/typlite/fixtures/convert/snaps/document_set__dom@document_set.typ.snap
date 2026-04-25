@@ -1,0 +1,21 @@
+---
+source: crates/typlite/tests/convert.rs
+assertion_line: 36
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/document_set.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      text "Demo"
+  <body>
+    tag
+    <typlite-heading level="1">
+      text "Title"
+    tag
+    tag
+    <typlite-paragraph>
+      text "Hello world."
+    tag

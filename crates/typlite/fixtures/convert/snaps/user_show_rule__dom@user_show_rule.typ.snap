@@ -1,0 +1,24 @@
+---
+source: crates/typlite/tests/convert.rs
+assertion_line: 36
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/user_show_rule.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-paragraph>
+      tag
+      tag
+      <span data-typlite="strong">
+        text "Title"
+      tag
+      tag
+    tag
+    tag
+    <typlite-paragraph>
+      text "Hello world."
+    tag

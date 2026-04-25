@@ -1,0 +1,9 @@
+---
+source: crates/typlite/tests/convert.rs
+assertion_line: 27
+expression: markdown
+input_file: crates/typlite/fixtures/convert/inline_markup.typ
+---
+# Title
+
+Hello *em* and **strong** and `code`.

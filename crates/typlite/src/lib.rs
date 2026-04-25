@@ -2,14 +2,26 @@
 
 #![allow(missing_docs)]
 
+pub mod backend;
+mod extract;
+pub mod ir;
+
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::sync::Arc;
 
 use ecow::EcoString;
-use tinymist_project::LspWorld;
+use tinymist_project::{EntryReader, LspWorld, TaskInputs, base::ShadowApi};
 use tinymist_std::error::prelude::*;
+use typst::World;
 use typst::WorldExt;
+use typst::foundations::Bytes;
+use typst_syntax::VirtualPath;
+use typst_syntax::package::PackageSpec;
 use typst_syntax::{FileId, Span};
+
+use crate::backend::render_markdown;
+use crate::extract::extract_document;
 
 pub use tinymist_project::CompileOnceArgs;
 
@@ -82,9 +94,66 @@ impl TypliteFeat {
     pub fn prepare_world(
         &self,
         world: &LspWorld,
-        _format: Format,
+        format: Format,
     ) -> Result<(LspWorld, Option<WrapInfo>)> {
-        Ok((world.clone(), self.wrap_info.clone()))
+        let entry = world.entry_state();
+        let current = entry.main().context("no main file in workspace")?;
+        let wrap_main_id = current.join("__typlite_main.typ");
+        let wrapped_source_id = current.join("__typlite_source.typ");
+
+        let original_source = world
+            .source(current)
+            .context_ut("cannot fetch main source")?
+            .text()
+            .to_owned();
+
+        let wrap_content = format!(
+            r#"#import "@local/typlite-ir:0.1.0": typlite
+#typlite(include "__typlite_source.typ")
+"#
+        );
+
+        let task_inputs = TaskInputs {
+            entry: Some(entry.select_in_workspace(wrap_main_id.vpath().as_rooted_path())),
+            inputs: None,
+        };
+        let mut world = world.task(task_inputs).html_task().into_owned();
+
+        let package_id = FileId::new(
+            Some(
+                PackageSpec::from_str("@local/typlite-ir:0.1.0")
+                    .context_ut("failed to create typlite IR package spec")?,
+            ),
+            VirtualPath::new("lib.typ"),
+        );
+
+        world
+            .map_shadow_by_id(
+                package_id.join("typst.toml"),
+                Bytes::from_string(include_str!("typlite-ir.toml")),
+            )
+            .context_ut("cannot map typlite IR package manifest")?;
+        world
+            .map_shadow_by_id(package_id, Bytes::new(include_bytes!("typlite-ir.typ")))
+            .context_ut("cannot map typlite IR package")?;
+        world
+            .map_shadow_by_id(wrapped_source_id, Bytes::from_string(original_source))
+            .context_ut("cannot map wrapped source")?;
+        world
+            .map_shadow_by_id(wrap_main_id, Bytes::from_string(wrap_content))
+            .context_ut("cannot map typlite wrapper")?;
+
+        let wrap_info = if format == Format::Md {
+            Some(WrapInfo {
+                wrap_file_id: wrapped_source_id,
+                original_file_id: current,
+                prefix_len_bytes: 0,
+            })
+        } else {
+            None
+        };
+
+        Ok((world, wrap_info))
     }
 }
 
@@ -115,8 +184,18 @@ impl Typlite {
     }
 
     pub fn convert(self) -> Result<EcoString> {
-        let _ = (self.world, self.feat, self.format);
-        bail!("typlite conversion is not implemented in the placeholder crate")
+        let (world, _) = self.feat.prepare_world(&self.world, self.format)?;
+        let compiled = typst::compile::<typst_html::HtmlDocument>(&world);
+        let html = compiled.output?;
+        let ir = extract_document(&html.root);
+
+        match self.format {
+            Format::Md => Ok(render_markdown(&ir).into()),
+            Format::LaTeX => bail!("typlite LaTeX conversion is not implemented"),
+            Format::Text => bail!("typlite text conversion is not implemented"),
+            #[cfg(feature = "docx")]
+            Format::Docx => bail!("typlite DOCX conversion is not implemented"),
+        }
     }
 
     #[cfg(feature = "docx")]

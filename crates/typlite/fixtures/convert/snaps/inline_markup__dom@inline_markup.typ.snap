@@ -1,0 +1,39 @@
+---
+source: crates/typlite/tests/convert.rs
+assertion_line: 36
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/inline_markup.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-heading level="1">
+      text "Title"
+    tag
+    tag
+    <typlite-paragraph>
+      text "Hello"
+      text " "
+      tag
+      <span data-typlite="emph">
+        text "em"
+      tag
+      text " "
+      text "and"
+      text " "
+      tag
+      <span data-typlite="strong">
+        text "strong"
+      tag
+      text " "
+      text "and"
+      text " "
+      tag
+      <span lang="" data-typlite="raw">
+        text "code"
+      tag
+      text "."
+    tag

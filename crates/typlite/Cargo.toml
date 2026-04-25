@@ -25,7 +25,12 @@ ecow.workspace = true
 tinymist-project = { workspace = true, features = ["lsp"] }
 tinymist-std.workspace = true
 typst.workspace = true
+typst-html.workspace = true
 typst-syntax.workspace = true
+
+[dev-dependencies]
+insta.workspace = true
+tinymist-tests.workspace = true
 
 [features]
 default = ["no-content-hint", "cli"]
