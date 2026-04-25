@@ -1,0 +1,13 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/bibliography_semantics.typ
+---
+Reference citation: @doe2020.
+
+Function citation: [@doe2020].
+
+<section data-typlite-bibliography="true">
+  <h2>References</h2>
+  <div id="ref-doe2020" class="csl-entry">Doe, J. (2020). A Tiny Reference. Journal of Small Documents.</div>
+</section>

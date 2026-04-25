@@ -326,6 +326,9 @@ impl ElementSpec {
             ("metadata", "value") => {
                 format!("    opaque_value_node({field:?}, field(it, {field:?}))\n")
             }
+            ("bibliography", "sources") => {
+                format!("    opaque_value_node({field:?}, field(it, {field:?}))\n")
+            }
             _ => format!("    {value_node}({field:?}, field(it, {field:?}))\n"),
         }
     }

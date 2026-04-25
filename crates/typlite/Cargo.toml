@@ -22,6 +22,7 @@ doc = false
 
 [dependencies]
 ecow.workspace = true
+hayagriva.workspace = true
 serde_json.workspace = true
 tinymist-project = { workspace = true, features = ["lsp"] }
 tinymist-std.workspace = true

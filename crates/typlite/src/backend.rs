@@ -5,21 +5,74 @@ use crate::ir::{
     Block, BlockElementData, Document, ElementFieldValue, FrameImage, Inline, InlineElementData,
     MathNode, MathValue, TableAlign, TableRow, TermItem,
 };
+use ecow::EcoString;
+use std::collections::BTreeMap;
 use tinymist_std::error::prelude::*;
+
+/// Rendered bibliography entries available to the Markdown backend.
+#[derive(Debug, Default, Clone)]
+pub struct BibliographyContext {
+    entries: BTreeMap<EcoString, EcoString>,
+    order: Vec<EcoString>,
+}
+
+impl BibliographyContext {
+    /// Creates a bibliography context from rendered entries.
+    pub fn new(entries: impl IntoIterator<Item = (EcoString, EcoString)>) -> Self {
+        let mut map = BTreeMap::new();
+        let mut order = Vec::new();
+
+        for (key, rendered) in entries {
+            if !map.contains_key(&key) {
+                order.push(key.clone());
+            }
+            map.insert(key, rendered);
+        }
+
+        Self {
+            entries: map,
+            order,
+        }
+    }
+
+    fn ordered_entries(&self) -> impl Iterator<Item = (&str, &str)> {
+        self.order.iter().filter_map(|key| {
+            self.entries
+                .get(key)
+                .map(|rendered| (key.as_str(), rendered.as_str()))
+        })
+    }
+
+    fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+}
 
 /// Renders a document IR as Markdown.
 pub fn render_markdown(doc: &Document) -> Result<String> {
-    render_blocks(&doc.blocks, 0)
+    render_markdown_with_bibliography(doc, &BibliographyContext::default())
 }
 
-fn render_blocks(blocks: &[Block], indent: usize) -> Result<String> {
+/// Renders a document IR as Markdown with a bibliography context.
+pub fn render_markdown_with_bibliography(
+    doc: &Document,
+    bibliography: &BibliographyContext,
+) -> Result<String> {
+    render_blocks(&doc.blocks, 0, bibliography)
+}
+
+fn render_blocks(
+    blocks: &[Block],
+    indent: usize,
+    bibliography: &BibliographyContext,
+) -> Result<String> {
     let mut out = String::new();
 
     let mut rendered_count = 0usize;
 
     for block in blocks {
         let mut rendered = String::new();
-        render_block(block, indent, &mut rendered)?;
+        render_block(block, indent, bibliography, &mut rendered)?;
         if rendered.is_empty() {
             continue;
         }
@@ -34,7 +87,12 @@ fn render_blocks(blocks: &[Block], indent: usize) -> Result<String> {
     Ok(out)
 }
 
-fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
+fn render_block(
+    block: &Block,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     match block {
         Block::Heading { level, body } => {
             out.push_str(&" ".repeat(indent));
@@ -46,7 +104,7 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             out.push_str(&" ".repeat(indent));
             render_inlines(body, out)?;
         }
-        Block::Quote(blocks) => render_quote(blocks, indent, out)?,
+        Block::Quote(blocks) => render_quote(blocks, indent, bibliography, out)?,
         Block::Figure { body, caption, alt } => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<figure");
@@ -56,7 +114,7 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
                 out.push('"');
             }
             out.push_str(">\n");
-            render_blocks_html_into(body, indent, out)?;
+            render_blocks_html_into(body, indent, bibliography, out)?;
             if !caption.is_empty() {
                 out.push('\n');
                 out.push_str(&" ".repeat(indent));
@@ -68,7 +126,9 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             out.push_str(&" ".repeat(indent));
             out.push_str("</figure>");
         }
-        Block::Align { alignment, body } => render_align(alignment.as_deref(), body, indent, out)?,
+        Block::Align { alignment, body } => {
+            render_align(alignment.as_deref(), body, indent, bibliography, out)?
+        }
         Block::Math(body) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("$$");
@@ -96,16 +156,30 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             reversed,
             items,
             ..
-        } => render_list(*ordered, *start, *reversed, items, indent, out)?,
-        Block::Columns(data) => render_columns(data, indent, out)?,
-        Block::Move(data) => render_move_block(data, indent, out)?,
-        Block::Pad(data) => render_pad_block(data, indent, out)?,
-        Block::Rotate(data) => render_transform_block(data, "rotate", &["angle"], indent, out)?,
-        Block::Scale(data) => render_scale_block(data, indent, out)?,
-        Block::Skew(data) => render_transform_block(data, "skew", &["ax", "ay"], indent, out)?,
-        Block::Stack(data) => render_stack(data, indent, out)?,
-        Block::Block(data) | Block::Title(data) => render_blocks_into(&data.body, indent, out)?,
-        Block::Terms { items } => render_terms(items, indent, out)?,
+        } => render_list(
+            *ordered,
+            *start,
+            *reversed,
+            items,
+            indent,
+            bibliography,
+            out,
+        )?,
+        Block::Columns(data) => render_columns(data, indent, bibliography, out)?,
+        Block::Move(data) => render_move_block(data, indent, bibliography, out)?,
+        Block::Pad(data) => render_pad_block(data, indent, bibliography, out)?,
+        Block::Rotate(data) => {
+            render_transform_block(data, "rotate", &["angle"], indent, bibliography, out)?
+        }
+        Block::Scale(data) => render_scale_block(data, indent, bibliography, out)?,
+        Block::Skew(data) => {
+            render_transform_block(data, "skew", &["ax", "ay"], indent, bibliography, out)?
+        }
+        Block::Stack(data) => render_stack(data, indent, bibliography, out)?,
+        Block::Block(data) | Block::Title(data) => {
+            render_blocks_into(&data.body, indent, bibliography, out)?
+        }
+        Block::Terms { items } => render_terms(items, indent, bibliography, out)?,
         Block::Colbreak(_) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<div style=\"break-after: column\"></div>");
@@ -122,20 +196,23 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             out.push_str(&" ".repeat(indent));
             out.push_str("<div style=\"break-after: page\"></div>");
         }
-        Block::Bibliography(_) => {
-            bail!("typlite markdown bibliography rendering is not implemented")
-        }
+        Block::Bibliography(data) => render_bibliography(data, bibliography, indent, out)?,
     }
 
     Ok(())
 }
 
-fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
+fn render_blocks_into(
+    blocks: &[Block],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let mut rendered_count = 0usize;
 
     for block in blocks {
         let mut rendered = String::new();
-        render_block(block, indent, &mut rendered)?;
+        render_block(block, indent, bibliography, &mut rendered)?;
         if rendered.is_empty() {
             continue;
         }
@@ -150,12 +227,17 @@ fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) -> Resu
     Ok(())
 }
 
-fn render_blocks_html_into(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
+fn render_blocks_html_into(
+    blocks: &[Block],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let mut rendered_count = 0usize;
 
     for block in blocks {
         let mut rendered = String::new();
-        render_block_html(block, indent, &mut rendered)?;
+        render_block_html(block, indent, bibliography, &mut rendered)?;
         if rendered.is_empty() {
             continue;
         }
@@ -170,7 +252,12 @@ fn render_blocks_html_into(blocks: &[Block], indent: usize, out: &mut String) ->
     Ok(())
 }
 
-fn render_block_html(block: &Block, indent: usize, out: &mut String) -> Result<()> {
+fn render_block_html(
+    block: &Block,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     match block {
         Block::Paragraph(body) => {
             out.push_str(&" ".repeat(indent));
@@ -189,7 +276,7 @@ fn render_block_html(block: &Block, indent: usize, out: &mut String) -> Result<(
             out.push_str("</code></pre>");
             Ok(())
         }
-        _ => render_block(block, indent, out),
+        _ => render_block(block, indent, bibliography, out),
     }
 }
 
@@ -197,17 +284,18 @@ fn render_align(
     alignment: Option<&str>,
     body: &[Block],
     indent: usize,
+    bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
     let Some(text_align) = alignment.and_then(css_text_align) else {
-        return render_blocks_into(body, indent, out);
+        return render_blocks_into(body, indent, bibliography, out);
     };
 
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"text-align: ");
     out.push_str(text_align);
     out.push_str("\">\n");
-    render_blocks_html_into(body, indent + 2, out)?;
+    render_blocks_html_into(body, indent + 2, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push_str("</div>");
@@ -215,7 +303,12 @@ fn render_align(
     Ok(())
 }
 
-fn render_columns(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+fn render_columns(
+    data: &BlockElementData,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"");
     let mut has_style = false;
@@ -232,7 +325,7 @@ fn render_columns(data: &BlockElementData, indent: usize, out: &mut String) -> R
         push_css_length(gutter, out);
     }
     out.push_str("\">\n");
-    render_blocks_html_into(&data.body, indent + 2, out)?;
+    render_blocks_html_into(&data.body, indent + 2, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push_str("</div>");
@@ -240,7 +333,12 @@ fn render_columns(data: &BlockElementData, indent: usize, out: &mut String) -> R
     Ok(())
 }
 
-fn render_stack(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+fn render_stack(
+    data: &BlockElementData,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push_str("<div style=\"display: flex");
     if let Some(direction) = data.scalar("dir").and_then(css_stack_direction) {
@@ -252,7 +350,7 @@ fn render_stack(data: &BlockElementData, indent: usize, out: &mut String) -> Res
         push_css_length(spacing, out);
     }
     out.push_str("\">\n");
-    render_blocks_html_into(&data.body, indent + 2, out)?;
+    render_blocks_html_into(&data.body, indent + 2, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push_str("</div>");
@@ -273,8 +371,63 @@ fn render_vertical_space(data: &BlockElementData, indent: usize, out: &mut Strin
     Ok(())
 }
 
-fn render_pad_block(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
-    render_layout_div(data, indent, out, |data, out| {
+fn render_bibliography(
+    data: &BlockElementData,
+    bibliography: &BibliographyContext,
+    indent: usize,
+    out: &mut String,
+) -> Result<()> {
+    out.push_str(&" ".repeat(indent));
+    out.push_str("<section data-typlite-bibliography=\"true\">");
+    if let Some(title) = bibliography_title(data)? {
+        out.push('\n');
+        out.push_str(&" ".repeat(indent + 2));
+        out.push_str("<h2>");
+        push_html_escaped(&title, out);
+        out.push_str("</h2>");
+    }
+    if bibliography.is_empty() {
+        out.push('\n');
+        out.push_str(&" ".repeat(indent + 2));
+        out.push_str("<!-- typlite-bibliography: no rendered entries -->");
+    } else {
+        for (key, entry) in bibliography.ordered_entries() {
+            out.push('\n');
+            out.push_str(&" ".repeat(indent + 2));
+            out.push_str("<div id=\"ref-");
+            push_html_escaped(key, out);
+            out.push_str("\" class=\"csl-entry\">");
+            push_html_escaped(entry, out);
+            out.push_str("</div>");
+        }
+    }
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out.push_str("</section>");
+    Ok(())
+}
+
+fn bibliography_title(data: &BlockElementData) -> Result<Option<String>> {
+    let Some(title) = data.field("title") else {
+        return Ok(None);
+    };
+
+    let mut rendered = String::new();
+    render_field_value(title, &mut rendered)?;
+    if rendered.is_empty() || rendered == "auto" || rendered == "none" {
+        Ok(None)
+    } else {
+        Ok(Some(rendered))
+    }
+}
+
+fn render_pad_block(
+    data: &BlockElementData,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_div(data, indent, bibliography, out, |data, out| {
         out.push_str("display: block");
         push_optional_block_css_length(data, "left", "padding-left", out);
         push_optional_block_css_length(data, "top", "padding-top", out);
@@ -283,8 +436,13 @@ fn render_pad_block(data: &BlockElementData, indent: usize, out: &mut String) ->
     })
 }
 
-fn render_move_block(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
-    render_layout_div(data, indent, out, |data, out| {
+fn render_move_block(
+    data: &BlockElementData,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_div(data, indent, bibliography, out, |data, out| {
         out.push_str("display: block; transform: translate(");
         push_css_length(data.scalar("dx").unwrap_or("0pt"), out);
         out.push_str(", ");
@@ -298,9 +456,10 @@ fn render_transform_block(
     function: &str,
     fields: &[&str],
     indent: usize,
+    bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_div(data, indent, out, |data, out| {
+    render_layout_div(data, indent, bibliography, out, |data, out| {
         out.push_str("display: block; transform: ");
         out.push_str(function);
         out.push('(');
@@ -314,8 +473,13 @@ fn render_transform_block(
     })
 }
 
-fn render_scale_block(data: &BlockElementData, indent: usize, out: &mut String) -> Result<()> {
-    render_layout_div(data, indent, out, |data, out| {
+fn render_scale_block(
+    data: &BlockElementData,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_div(data, indent, bibliography, out, |data, out| {
         out.push_str("display: block; transform: scale(");
         push_css_scale(
             data.scalar("x")
@@ -337,6 +501,7 @@ fn render_scale_block(data: &BlockElementData, indent: usize, out: &mut String) 
 fn render_layout_div(
     data: &BlockElementData,
     indent: usize,
+    bibliography: &BibliographyContext,
     out: &mut String,
     push_style: impl FnOnce(&BlockElementData, &mut String),
 ) -> Result<()> {
@@ -344,7 +509,7 @@ fn render_layout_div(
     out.push_str("<div style=\"");
     push_style(data, out);
     out.push_str("\">\n");
-    render_blocks_html_into(&data.body, indent + 2, out)?;
+    render_blocks_html_into(&data.body, indent + 2, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push_str("</div>");
@@ -384,8 +549,13 @@ fn push_css_length(value: &str, out: &mut String) {
     }
 }
 
-fn render_quote(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
-    let body = render_blocks(blocks, 0)?;
+fn render_quote(
+    blocks: &[Block],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    let body = render_blocks(blocks, 0, bibliography)?;
     let prefix = format!("{}> ", " ".repeat(indent));
 
     for (index, line) in body.lines().enumerate() {
@@ -530,6 +700,7 @@ fn render_list(
     reversed: bool,
     items: &[crate::ir::ListItem],
     indent: usize,
+    bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
     let mut next_number = if reversed {
@@ -556,7 +727,7 @@ fn render_list(
         };
         let prefix = format!("{}{} ", " ".repeat(indent), marker);
         let continuation = indent + marker.len() + 1;
-        let body = render_blocks(&item.body, continuation)?;
+        let body = render_blocks(&item.body, continuation, bibliography)?;
 
         if body.is_empty() {
             out.push_str(&prefix);
@@ -578,7 +749,12 @@ fn render_list(
     Ok(())
 }
 
-fn render_terms(items: &[TermItem], indent: usize, out: &mut String) -> Result<()> {
+fn render_terms(
+    items: &[TermItem],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     for (index, item) in items.iter().enumerate() {
         if index > 0 {
             out.push('\n');
@@ -588,7 +764,7 @@ fn render_terms(items: &[TermItem], indent: usize, out: &mut String) -> Result<(
         out.push_str(&" ".repeat(indent));
         render_inlines(&item.term, out)?;
 
-        let description = render_blocks(&item.description, indent + 2)?;
+        let description = render_blocks(&item.description, indent + 2, bibliography)?;
         if !description.is_empty() {
             out.push('\n');
             out.push_str(&" ".repeat(indent));
@@ -1622,7 +1798,9 @@ fn render_field_value(value: &ElementFieldValue, out: &mut String) -> Result<()>
     match value {
         ElementFieldValue::Scalar(value) => out.push_str(value),
         ElementFieldValue::Inlines(value) => render_inlines(value, out)?,
-        ElementFieldValue::Blocks(value) => out.push_str(&render_blocks(value, 0)?),
+        ElementFieldValue::Blocks(value) => {
+            out.push_str(&render_blocks(value, 0, &BibliographyContext::default())?)
+        }
     }
 
     Ok(())

@@ -7304,6 +7304,7 @@ name = "typlite"
 version = "0.14.16"
 dependencies = [
  "ecow",
+ "hayagriva",
  "insta",
  "serde_json",
  "tinymist-project",
