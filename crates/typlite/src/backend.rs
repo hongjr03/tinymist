@@ -3,11 +3,13 @@
 use crate::Result;
 use crate::ir::*;
 use base64::Engine;
-use ecow::EcoString;
+use ecow::{EcoString, EcoVec};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use tinymist_std::error::prelude::*;
+use typst::diag::SourceDiagnostic;
 use typst::visualize::{ExchangeFormat, ImageFormat, RasterFormat, VectorFormat};
+use typst_syntax::Span;
 
 /// Rendered bibliography entries available to the Markdown backend.
 #[derive(Debug, Default, Clone)]
@@ -16,6 +18,7 @@ pub struct BibliographyContext {
     citations: BTreeMap<EcoString, EcoString>,
     citation_offsets: RefCell<BTreeMap<EcoString, usize>>,
     reference_anchors: RefCell<BTreeMap<String, Vec<EcoString>>>,
+    warnings: RefCell<EcoVec<SourceDiagnostic>>,
     order: Vec<EcoString>,
 }
 
@@ -40,12 +43,14 @@ impl BibliographyContext {
             citations: citations.into_iter().collect(),
             citation_offsets: RefCell::default(),
             reference_anchors: RefCell::default(),
+            warnings: RefCell::default(),
             order,
         }
     }
 
     fn reset_render_state(&self, doc: &Document) {
         self.citation_offsets.borrow_mut().clear();
+        self.warnings.borrow_mut().clear();
         let mut anchors = self.reference_anchors.borrow_mut();
         anchors.clear();
         collect_reference_anchors(&doc.blocks, &mut anchors);
@@ -88,6 +93,23 @@ impl BibliographyContext {
             .remove(&reference_anchor_key(block))
             .unwrap_or_default()
     }
+
+    fn warn(&self, warning: SourceDiagnostic) {
+        self.warnings.borrow_mut().push(warning);
+    }
+
+    fn take_warnings(&self) -> EcoVec<SourceDiagnostic> {
+        std::mem::take(&mut *self.warnings.borrow_mut())
+    }
+}
+
+/// Rendered Markdown and diagnostics produced while rendering.
+#[derive(Debug, Clone)]
+pub struct RenderedMarkdown {
+    /// Markdown output.
+    pub output: String,
+    /// Non-fatal rendering diagnostics.
+    pub warnings: EcoVec<SourceDiagnostic>,
 }
 
 /// Renders a document IR as Markdown.
@@ -100,8 +122,18 @@ pub fn render_markdown_with_bibliography(
     doc: &Document,
     bibliography: &BibliographyContext,
 ) -> Result<String> {
+    Ok(render_markdown_with_diagnostics(doc, bibliography)?.output)
+}
+
+/// Renders a document IR as Markdown with diagnostics.
+pub fn render_markdown_with_diagnostics(
+    doc: &Document,
+    bibliography: &BibliographyContext,
+) -> Result<RenderedMarkdown> {
     bibliography.reset_render_state(doc);
-    render_blocks(&doc.blocks, 0, bibliography)
+    let output = render_blocks(&doc.blocks, 0, bibliography)?;
+    let warnings = bibliography.take_warnings();
+    Ok(RenderedMarkdown { output, warnings })
 }
 
 fn collect_reference_anchors(blocks: &[Block], out: &mut BTreeMap<String, Vec<EcoString>>) {
@@ -1254,7 +1286,7 @@ fn render_inlines(
             | Inline::CurveCubic(_)
             | Inline::CurveLine(_)
             | Inline::CurveMove(_)
-            | Inline::CurveQuad(_) => render_curve_component_warning(node, out)?,
+            | Inline::CurveQuad(_) => render_curve_component_warning(node, bibliography, out)?,
             Inline::OutlineEntry(_) => {}
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
@@ -1432,7 +1464,7 @@ fn render_inlines_html(
             | Inline::CurveCubic(_)
             | Inline::CurveLine(_)
             | Inline::CurveMove(_)
-            | Inline::CurveQuad(_) => render_curve_component_warning(node, out)?,
+            | Inline::CurveQuad(_) => render_curve_component_warning(node, bibliography, out)?,
         }
     }
 
@@ -3271,15 +3303,35 @@ fn render_unimplemented_inline(node: &Inline) -> Result<()> {
     render_unimplemented(inline_kind(node)?)
 }
 
-fn render_curve_component_warning(node: &Inline, out: &mut String) -> Result<()> {
+fn render_curve_component_warning(
+    node: &Inline,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let kind = inline_kind(node)?;
-    eprintln!(
-        "warning: typlite markdown rendering for `{kind}` requires wrapping the parent curve in html.frame"
-    );
+    if let Some(span) = curve_component_span(node) {
+        bibliography.warn(SourceDiagnostic::warning(
+            span,
+            format!(
+                "typlite markdown rendering for `{kind}` requires wrapping the parent curve in html.frame"
+            ),
+        ));
+    }
     out.push_str("<!-- typlite-warning: ");
     push_html_comment_escaped(kind, out);
     out.push_str(" requires wrapping the parent curve in html.frame -->");
     Ok(())
+}
+
+fn curve_component_span(node: &Inline) -> Option<Span> {
+    match node {
+        Inline::CurveClose(data) => data.span,
+        Inline::CurveCubic(data) => data.span,
+        Inline::CurveLine(data) => data.span,
+        Inline::CurveMove(data) => data.span,
+        Inline::CurveQuad(data) => data.span,
+        _ => None,
+    }
 }
 
 fn render_unimplemented(feature: &str) -> Result<()> {

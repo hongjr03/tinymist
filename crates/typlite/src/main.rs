@@ -7,6 +7,7 @@ use clap::{ArgAction, Parser, builder::ValueParser};
 use tinymist_project::{
     CompileFontArgs, CompileOnceArgs, CompilePackageArgs, Feature, WorldProvider, parse_input_pair,
     parse_source_date_epoch,
+    world::{DiagnosticFormat, system::print_diagnostics},
 };
 use tinymist_std::error::prelude::*;
 use typlite::{Format, Typlite};
@@ -128,16 +129,20 @@ fn main() -> typlite::Result<()> {
     let compile = CompileOnceArgs::from(args.compile);
     let universe = compile.resolve()?;
     let world = universe.snapshot();
-    let output = Typlite::new(world.into())
+    let output = Typlite::new(world.clone().into())
         .with_format(args.format.into())
-        .convert()?;
+        .convert_with_diagnostics()?;
+
+    if !output.warnings.is_empty() {
+        print_diagnostics(&world, output.warnings.iter(), DiagnosticFormat::Human)
+            .context_ut("failed to print typlite warnings")?;
+    }
 
     match args.output.as_deref() {
-        None => write_stdout(output.as_bytes()),
-        Some(path) if path == std::path::Path::new("-") => write_stdout(output.as_bytes()),
-        Some(path) => {
-            std::fs::write(path, output.as_bytes()).context_ut("failed to write typlite output")
-        }
+        None => write_stdout(output.output.as_bytes()),
+        Some(path) if path == std::path::Path::new("-") => write_stdout(output.output.as_bytes()),
+        Some(path) => std::fs::write(path, output.output.as_bytes())
+            .context_ut("failed to write typlite output"),
     }
 }
 

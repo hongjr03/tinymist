@@ -1,6 +1,7 @@
 //! Experimental intermediate representation for typlite.
 
 use ecow::EcoString;
+use typst_syntax::Span;
 
 /// A converted Typst document.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -790,6 +791,8 @@ pub struct CurveInline {
 pub struct CurveCloseInline {
     /// Close mode.
     pub mode: Option<EcoString>,
+    /// Source span.
+    pub span: Option<Span>,
 }
 
 /// Curve cubic component.
@@ -803,6 +806,8 @@ pub struct CurveCubicInline {
     pub end: Option<EcoString>,
     /// Whether coordinates are relative.
     pub relative: bool,
+    /// Source span.
+    pub span: Option<Span>,
 }
 
 /// Curve line component.
@@ -812,6 +817,8 @@ pub struct CurveLineInline {
     pub end: Option<EcoString>,
     /// Whether coordinates are relative.
     pub relative: bool,
+    /// Source span.
+    pub span: Option<Span>,
 }
 
 /// Curve move component.
@@ -821,6 +828,8 @@ pub struct CurveMoveInline {
     pub start: Option<EcoString>,
     /// Whether coordinates are relative.
     pub relative: bool,
+    /// Source span.
+    pub span: Option<Span>,
 }
 
 /// Curve quadratic component.
@@ -832,6 +841,8 @@ pub struct CurveQuadInline {
     pub end: Option<EcoString>,
     /// Whether coordinates are relative.
     pub relative: bool,
+    /// Source span.
+    pub span: Option<Span>,
 }
 
 /// Document metadata.

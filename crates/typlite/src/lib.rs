@@ -26,6 +26,7 @@ use typst::Library as TypstLibrary;
 use typst::World;
 use typst::WorldExt;
 use typst::comemo::Tracked;
+use typst::diag::SourceDiagnostic;
 use typst::foundations::{
     Binding, Bytes, Content, Context, Func, NativeFunc, Repr, SequenceElem, Str, StyleChain,
     StyledElem, SymbolElem, Target, TargetElem, Value, func,
@@ -37,7 +38,7 @@ use typst_syntax::VirtualPath;
 use typst_syntax::package::PackageSpec;
 use typst_syntax::{FileId, Span};
 
-use crate::backend::{BibliographyContext, render_markdown_with_bibliography};
+use crate::backend::{BibliographyContext, render_markdown_with_diagnostics};
 use crate::extract::extract_document;
 use crate::ir::{BibliographyBlock, Block, Document, Inline};
 
@@ -45,6 +46,13 @@ pub use tinymist_project::CompileOnceArgs;
 
 /// Result type used by the typlite placeholder API.
 pub type Result<T, Err = tinymist_std::Error> = std::result::Result<T, Err>;
+
+/// Conversion output and non-fatal diagnostics.
+#[derive(Debug, Clone)]
+pub struct TypliteOutput {
+    pub output: EcoString,
+    pub warnings: ecow::EcoVec<SourceDiagnostic>,
+}
 
 /// A color theme for rendering converted content.
 #[derive(Debug, Default, Clone, Copy)]
@@ -747,24 +755,36 @@ impl Typlite {
     }
 
     pub fn convert(self) -> Result<EcoString> {
+        Ok(self.convert_with_diagnostics()?.output)
+    }
+
+    pub fn convert_with_diagnostics(self) -> Result<TypliteOutput> {
         let entry = self
             .world
             .entry_state()
             .main()
             .context("no main file in workspace")?;
-        let (world, _) = self.feat.prepare_world(&self.world, self.format)?;
+        let (world, wrap_info) = self.feat.prepare_world(&self.world, self.format)?;
         let compiled = typst::compile::<typst_html::HtmlDocument>(&world);
         let html = compiled.output?;
         let ir = extract_document(&html)?;
         let bibliography = BibliographyContext::from_document(&ir, &world, entry)?;
 
-        match self.format {
-            Format::Md => Ok(render_markdown_with_bibliography(&ir, &bibliography)?.into()),
+        let result = match self.format {
+            Format::Md => {
+                let rendered = render_markdown_with_diagnostics(&ir, &bibliography)?;
+                TypliteOutput {
+                    output: rendered.output.into(),
+                    warnings: remap_warnings(rendered.warnings, &world, wrap_info.as_ref()),
+                }
+            }
             Format::LaTeX => bail!("typlite LaTeX conversion is not implemented"),
             Format::Text => bail!("typlite text conversion is not implemented"),
             #[cfg(feature = "docx")]
             Format::Docx => bail!("typlite DOCX conversion is not implemented"),
-        }
+        };
+
+        Ok(result)
     }
 
     #[cfg(feature = "docx")]
@@ -772,4 +792,22 @@ impl Typlite {
         let _ = (self.world, self.feat, self.format);
         bail!("typlite DOCX conversion is not implemented in the placeholder crate")
     }
+}
+
+fn remap_warnings(
+    warnings: ecow::EcoVec<SourceDiagnostic>,
+    world: &dyn World,
+    wrap_info: Option<&WrapInfo>,
+) -> ecow::EcoVec<SourceDiagnostic> {
+    warnings
+        .into_iter()
+        .map(|mut warning| {
+            if let Some(wrap_info) = wrap_info
+                && let Some(span) = wrap_info.remap_span(world, warning.span)
+            {
+                warning.span = span;
+            }
+            warning
+        })
+        .collect()
 }

@@ -786,25 +786,30 @@ fn inline_from_element_kind(
         }),
         ElementKind::CurveClose => Inline::CurveClose(CurveCloseInline {
             mode: scalar_field(element, "mode"),
+            span: source_span(element),
         }),
         ElementKind::CurveCubic => Inline::CurveCubic(CurveCubicInline {
             control_start: scalar_field(element, "control-start"),
             control_end: scalar_field(element, "control-end"),
             end: scalar_field(element, "end"),
             relative: bool_field(element, "relative"),
+            span: source_span(element),
         }),
         ElementKind::CurveLine => Inline::CurveLine(CurveLineInline {
             end: scalar_field(element, "end"),
             relative: bool_field(element, "relative"),
+            span: source_span(element),
         }),
         ElementKind::CurveMove => Inline::CurveMove(CurveMoveInline {
             start: scalar_field(element, "start"),
             relative: bool_field(element, "relative"),
+            span: source_span(element),
         }),
         ElementKind::CurveQuad => Inline::CurveQuad(CurveQuadInline {
             control: scalar_field(element, "control"),
             end: scalar_field(element, "end"),
             relative: bool_field(element, "relative"),
+            span: source_span(element),
         }),
         ElementKind::Document => Inline::Document(DocumentInline {
             title: scalar_field(element, "title"),
@@ -1475,6 +1480,10 @@ fn source_field(element: &HtmlElement, name: &str) -> Option<EcoString> {
 
 fn bool_field(element: &HtmlElement, name: &str) -> bool {
     matches!(field_value(element, name).as_deref(), Some("true"))
+}
+
+fn source_span(element: &HtmlElement) -> Option<typst_syntax::Span> {
+    (!element.span.is_detached()).then_some(element.span)
 }
 
 fn inline_field(

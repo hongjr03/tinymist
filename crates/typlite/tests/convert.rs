@@ -7,7 +7,9 @@ use tinymist_tests::run_with_sources;
 use typlite::element_spec::{ELEMENTS, ElementKind, ElementMode};
 use typlite::ir::*;
 use typlite::{Format, Typlite, TypliteFeat};
+use typst::diag::Severity;
 use typst_html::{HtmlElement, HtmlNode};
+use typst_syntax::Span;
 
 #[test]
 fn generated_element_spec_covers_core_elements() {
@@ -262,13 +264,19 @@ fn markdown_backend_renders_dedicated_math_inline_nodes() {
                 Inline::Text(TextInline { text: " ".into() }),
                 Inline::CurveLine(CurveLineInline {
                     end: Some("(1pt, 1pt)".into()),
+                    span: Some(Span::detached()),
                     ..Default::default()
                 }),
             ],
         })],
     };
 
-    let markdown = typlite::backend::render_markdown(&doc).unwrap();
+    let rendered = typlite::backend::render_markdown_with_diagnostics(
+        &doc,
+        &typlite::backend::BibliographyContext::default(),
+    )
+    .unwrap();
+    let markdown = rendered.output;
     assert!(markdown.contains(r"$\hat{x}$"));
     assert!(markdown.contains(r"$\frac{1}{2}$"));
     assert!(markdown.contains(r"$\sqrt[3]{x}$"));
@@ -278,6 +286,9 @@ fn markdown_backend_renders_dedicated_math_inline_nodes() {
             "typlite-warning: curve.line requires wrapping the parent curve in html.frame"
         )
     );
+    assert_eq!(rendered.warnings.len(), 1);
+    assert_eq!(rendered.warnings[0].severity, Severity::Warning);
+    assert!(rendered.warnings[0].message.contains("curve.line"));
 }
 
 fn element(selector: &str) -> &'static typlite::element_spec::ElementSpec {
