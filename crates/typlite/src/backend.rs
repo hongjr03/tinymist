@@ -655,16 +655,16 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
                 out.push_str(text);
                 out.push('`');
             }
-            Inline::Repeat(data)
-            | Inline::TableCell(data)
+            Inline::Repeat(data) => render_repeat(data, out)?,
+            Inline::TableCell(data)
             | Inline::TableFooter(data)
             | Inline::TableHeader(data)
             | Inline::GridCell(data)
             | Inline::GridFooter(data)
             | Inline::GridHeader(data)
             | Inline::ParLine(data)
-            | Inline::PdfArtifact(data)
             | Inline::RawLine(data) => render_inlines(&data.body, out)?,
+            Inline::PdfArtifact(data) => render_pdf_artifact(data, out)?,
             Inline::Box(data) => render_box(data, out)?,
             Inline::Move(data) => render_move(data, out)?,
             Inline::Pad(data) => render_pad(data, out)?,
@@ -836,18 +836,18 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
                 render_inlines_html(&data.body, out)?;
                 out.push_str("</u>");
             }
-            Inline::Repeat(data)
-            | Inline::TableCell(data)
+            Inline::Repeat(data) => render_repeat(data, out)?,
+            Inline::TableCell(data)
             | Inline::TableFooter(data)
             | Inline::TableHeader(data)
             | Inline::GridCell(data)
             | Inline::GridFooter(data)
             | Inline::GridHeader(data)
             | Inline::ParLine(data)
-            | Inline::PdfArtifact(data)
             | Inline::RawLine(data)
             | Inline::FigureCaption(data)
             | Inline::OutlineEntry(data) => render_inlines_html(&data.body, out)?,
+            Inline::PdfArtifact(data) => render_pdf_artifact(data, out)?,
             Inline::Box(data) => render_box(data, out)?,
             Inline::Move(data) => render_move(data, out)?,
             Inline::Pad(data) => render_pad(data, out)?,
@@ -1262,6 +1262,42 @@ fn render_box(data: &InlineElementData, out: &mut String) -> Result<()> {
         push_optional_css_length(data, "width", "width", out);
         push_optional_css_length(data, "height", "height", out);
     })
+}
+
+fn render_repeat(data: &InlineElementData, out: &mut String) -> Result<()> {
+    out.push_str("<span data-typlite-repeat=\"true\"");
+    if let Some(gap) = data.scalar("gap").filter(|value| !is_auto_or_none(value)) {
+        out.push_str(" data-gap=\"");
+        push_html_escaped(gap, out);
+        out.push('"');
+    }
+    if let Some(justify) = data.scalar("justify").filter(|value| !value.is_empty()) {
+        out.push_str(" data-justify=\"");
+        push_html_escaped(justify, out);
+        out.push('"');
+    }
+
+    out.push_str(" style=\"display: inline-flex");
+    if let Some(gap) = data.scalar("gap").filter(|value| !is_auto_or_none(value)) {
+        out.push_str("; gap: ");
+        push_css_length(gap, out);
+    }
+    if data.scalar("justify") == Some("true") {
+        out.push_str("; justify-content: space-between");
+    }
+    out.push_str("\">");
+    render_inlines_html(&data.body, out)?;
+    out.push_str("</span>");
+    Ok(())
+}
+
+fn render_pdf_artifact(data: &InlineElementData, out: &mut String) -> Result<()> {
+    out.push_str("<span data-typlite-pdf-artifact=\"");
+    push_html_escaped(data.scalar("kind").unwrap_or("artifact"), out);
+    out.push_str("\">");
+    render_inlines_html(&data.body, out)?;
+    out.push_str("</span>");
+    Ok(())
 }
 
 fn render_pad(data: &InlineElementData, out: &mut String) -> Result<()> {
