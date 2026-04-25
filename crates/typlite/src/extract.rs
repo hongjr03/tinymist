@@ -46,11 +46,18 @@ fn collect_blocks(
 
 fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Result<Option<Block>> {
     Ok(match tag_name(element).as_deref() {
+        Some("nav") if attr(element, "role").as_deref() == Some("doc-toc") => {
+            Some(Block::Block(BlockElementData {
+                fields: Vec::new(),
+                body: collect_outline_nav_blocks(element, introspector)?,
+            }))
+        }
         Some("typlite-heading") => Some({
             let level = field_value(element, "level")
                 .and_then(|level| level.parse::<u8>().ok())
                 .unwrap_or(1);
             Block::Heading {
+                id: attr(element, "id"),
                 level,
                 body: field_children(element, "body")
                     .map(|children| collect_inlines(children, introspector))
@@ -66,7 +73,7 @@ fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Res
         )),
         Some("typlite-raw") => Some(Block::Raw {
             lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
-            text: field_value(element, "text").unwrap_or_default(),
+            text: raw_text(element),
         }),
         Some("typlite-quote") => Some(Block::Quote(
             field_children(element, "body")
@@ -139,6 +146,85 @@ fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Res
     })
 }
 
+fn collect_outline_nav_blocks(
+    element: &HtmlElement,
+    introspector: &Introspector,
+) -> Result<Vec<Block>> {
+    let mut blocks = Vec::new();
+
+    for child in &element.children {
+        let HtmlNode::Element(child) = child else {
+            continue;
+        };
+
+        if let Some(block) = block_from_element(child, introspector)? {
+            blocks.push(block);
+        } else if tag_name(child).as_deref() == Some("ol") {
+            blocks.push(outline_list_from_ol(child, introspector)?);
+        }
+    }
+
+    Ok(blocks)
+}
+
+fn outline_list_from_ol(element: &HtmlElement, introspector: &Introspector) -> Result<Block> {
+    let mut items = Vec::new();
+
+    for child in &element.children {
+        let HtmlNode::Element(child) = child else {
+            continue;
+        };
+        if tag_name(child).as_deref() == Some("li") {
+            items.push(ListItem {
+                number: None,
+                body: collect_outline_li_blocks(child, introspector)?,
+            });
+        }
+    }
+
+    Ok(Block::List {
+        ordered: false,
+        tight: true,
+        numbering: None,
+        start: None,
+        reversed: false,
+        full: false,
+        items,
+    })
+}
+
+fn collect_outline_li_blocks(
+    element: &HtmlElement,
+    introspector: &Introspector,
+) -> Result<Vec<Block>> {
+    let mut blocks = Vec::new();
+    let mut run_start = 0usize;
+
+    for (index, child) in element.children.iter().enumerate() {
+        if let HtmlNode::Element(child) = child
+            && tag_name(child).as_deref() == Some("ol")
+        {
+            if run_start < index {
+                blocks.extend(collect_item_blocks(
+                    &element.children[run_start..index],
+                    introspector,
+                )?);
+            }
+            blocks.push(outline_list_from_ol(child, introspector)?);
+            run_start = index + 1;
+        }
+    }
+
+    if run_start < element.children.len() {
+        blocks.extend(collect_item_blocks(
+            &element.children[run_start..],
+            introspector,
+        )?);
+    }
+
+    Ok(blocks)
+}
+
 fn block_spec_from_tag(tag: &str) -> Option<&'static ElementSpec> {
     let kind = tag.strip_prefix("typlite-")?;
     let spec = spec_by_kind(kind)?;
@@ -163,17 +249,22 @@ fn collect_block_element_body(
 
 fn collect_field_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Result<Vec<Block>> {
     let mut blocks = Vec::new();
+    let mut run_start = 0usize;
 
-    for node in nodes {
-        match node {
-            HtmlNode::Element(element) if is_field(element) => {
-                blocks.extend(collect_item_blocks(&element.children, introspector)?);
+    for (index, node) in nodes.iter().enumerate() {
+        if let HtmlNode::Element(element) = node
+            && is_field(element)
+        {
+            if run_start < index {
+                blocks.extend(collect_item_blocks(&nodes[run_start..index], introspector)?);
             }
-            _ => blocks.extend(collect_item_blocks(
-                std::slice::from_ref(node),
-                introspector,
-            )?),
+            blocks.extend(collect_item_blocks(&element.children, introspector)?);
+            run_start = index + 1;
         }
+    }
+
+    if run_start < nodes.len() {
+        blocks.extend(collect_item_blocks(&nodes[run_start..], introspector)?);
     }
 
     Ok(blocks)
@@ -374,7 +465,9 @@ fn collect_item_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Resul
 
 fn flush_paragraph(inlines: &mut Vec<Inline>, blocks: &mut Vec<Block>) {
     if inlines.iter().any(inline_has_content) {
-        blocks.push(Block::Paragraph(std::mem::take(inlines)));
+        blocks.push(Block::Paragraph(coalesce_raw_inlines(std::mem::take(
+            inlines,
+        ))));
     } else {
         inlines.clear();
     }
@@ -493,6 +586,15 @@ fn collect_inlines(nodes: &[HtmlNode], introspector: &Introspector) -> Result<Ve
                     continue;
                 }
 
+                if tag_name(element).as_deref() == Some("a") {
+                    let body = collect_link_body(element, introspector)?;
+                    out.push(Inline::Link {
+                        dest: attr(element, "href").unwrap_or_default(),
+                        body,
+                    });
+                    continue;
+                }
+
                 match attr(element, "data-typlite").as_deref() {
                     Some("emph") => out.push(Inline::Emph(
                         field_children(element, "body")
@@ -535,7 +637,7 @@ fn collect_inlines(nodes: &[HtmlNode], introspector: &Introspector) -> Result<Ve
                     Some("linebreak") => out.push(Inline::Linebreak),
                     Some("raw") => out.push(Inline::Raw {
                         lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
-                        text: field_value(element, "text").unwrap_or_default(),
+                        text: raw_text(element),
                     }),
                     Some(kind) => {
                         if let Some(spec) = spec_by_kind(kind) {
@@ -565,7 +667,104 @@ fn collect_inlines(nodes: &[HtmlNode], introspector: &Introspector) -> Result<Ve
         }
     }
 
-    Ok(out)
+    Ok(coalesce_raw_inlines(out))
+}
+
+fn coalesce_raw_inlines(inlines: Vec<Inline>) -> Vec<Inline> {
+    let mut out = Vec::with_capacity(inlines.len());
+
+    for inline in inlines {
+        match (out.last_mut(), inline) {
+            (
+                Some(Inline::Raw {
+                    lang: prev_lang,
+                    text: prev_text,
+                }),
+                Inline::Raw { lang, text },
+            ) if *prev_lang == lang => {
+                prev_text.push_str(&text);
+            }
+            (_, inline) => out.push(inline),
+        }
+    }
+
+    out
+}
+
+fn collect_link_body(element: &HtmlElement, introspector: &Introspector) -> Result<Vec<Inline>> {
+    let body = collect_inlines(&element.children, introspector)?;
+    if body.iter().any(inline_has_content) {
+        return Ok(body);
+    }
+
+    let blocks = collect_item_blocks(&element.children, introspector)?;
+    let text = plain_text_blocks(&blocks);
+    if text.trim().is_empty() {
+        Ok(body)
+    } else {
+        Ok(vec![Inline::Text(text.trim().into())])
+    }
+}
+
+fn plain_text_blocks(blocks: &[Block]) -> EcoString {
+    let mut out = EcoString::new();
+    for block in blocks {
+        match block {
+            Block::Heading { body, .. } | Block::Paragraph(body) => {
+                push_plain_text_inlines(body, &mut out)
+            }
+            Block::Quote(blocks) => out.push_str(&plain_text_blocks(blocks)),
+            Block::Figure { body, caption, .. } => {
+                out.push_str(&plain_text_blocks(body));
+                push_plain_text_inlines(caption, &mut out);
+            }
+            Block::Align { body, .. } => out.push_str(&plain_text_blocks(body)),
+            Block::Table { rows, .. } => {
+                for row in rows {
+                    for cell in &row.cells {
+                        push_plain_text_inlines(&cell.body, &mut out);
+                    }
+                }
+            }
+            Block::List { items, .. } => {
+                for item in items {
+                    out.push_str(&plain_text_blocks(&item.body));
+                }
+            }
+            Block::Terms { items } => {
+                for item in items {
+                    push_plain_text_inlines(&item.term, &mut out);
+                    out.push_str(&plain_text_blocks(&item.description));
+                }
+            }
+            _ => {
+                if let Some(body) = block.generated_body() {
+                    out.push_str(&plain_text_blocks(body));
+                }
+            }
+        }
+    }
+    out
+}
+
+fn push_plain_text_inlines(inlines: &[Inline], out: &mut EcoString) {
+    for inline in inlines {
+        match inline {
+            Inline::Text(text) | Inline::Raw { text, .. } => out.push_str(text),
+            Inline::Linebreak | Inline::H(_) => out.push(' '),
+            Inline::Emph(body)
+            | Inline::Strong(body)
+            | Inline::Strike(body)
+            | Inline::Sub(body)
+            | Inline::Super(body)
+            | Inline::Link { body, .. } => push_plain_text_inlines(body, out),
+            _ => {
+                if let Some(body) = inline.generated_body() {
+                    push_plain_text_inlines(body, out);
+                }
+            }
+        }
+    }
 }
 
 fn collect_inline_element_body(
@@ -842,6 +1041,37 @@ fn collect_text_without_frames(nodes: &[HtmlNode]) -> EcoString {
 
 fn field_bool(element: &HtmlElement, name: &str) -> bool {
     field_value(element, name).is_some_and(|value| value.as_str() == "true")
+}
+
+fn raw_text(element: &HtmlElement) -> EcoString {
+    collect_raw_lines(element)
+        .filter(|lines| !lines.is_empty())
+        .map(|lines| lines.join("\n").into())
+        .unwrap_or_else(|| field_value(element, "text").unwrap_or_default())
+}
+
+fn collect_raw_lines(element: &HtmlElement) -> Option<Vec<EcoString>> {
+    let children = field_children(element, "lines")?;
+    let mut lines = Vec::new();
+    for child in children {
+        collect_raw_lines_from_node(child, &mut lines);
+    }
+    Some(lines)
+}
+
+fn collect_raw_lines_from_node(node: &HtmlNode, out: &mut Vec<EcoString>) {
+    let HtmlNode::Element(element) = node else {
+        return;
+    };
+
+    if attr(element, "data-typlite").as_deref() == Some("raw-line") {
+        out.push(field_value(element, "text").unwrap_or_default());
+        return;
+    }
+
+    for child in &element.children {
+        collect_raw_lines_from_node(child, out);
+    }
 }
 
 fn field_children<'a>(element: &'a HtmlElement, name: &str) -> Option<&'a [HtmlNode]> {

@@ -1,0 +1,142 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/outline_render.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <nav role="doc-toc">
+      tag
+      <typlite-heading>
+        <span data-typlite-field="true" name="level" kind="integer">
+          text "1"
+        <span data-typlite-field="true" name="depth" kind="integer">
+          text "1"
+        <span data-typlite-field="true" name="offset" kind="integer">
+          text "0"
+        <span data-typlite-field="true" name="numbering" kind="none">
+        <span data-typlite-field="true" name="supplement" kind="content">
+          text "Section"
+        <span data-typlite-field="true" name="outlined" kind="boolean">
+          text "false"
+        <span data-typlite-field="true" name="bookmarked" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="hanging-indent" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="body" kind="content">
+          text "Contents"
+      tag
+      <ol style="list-style-type: none">
+        <li>
+          <div>
+            tag
+            tag
+            <a href="#loc-1">
+              text "Alpha"
+            tag
+            tag
+          <ol style="list-style-type: none">
+            <li>
+              tag
+              tag
+              <a href="#loc-2">
+                text "Beta"
+              tag
+              tag
+        <li>
+          tag
+          tag
+          <a href="#loc-3">
+            text "Alpha"
+          tag
+          tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading id="loc-1">
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Alpha"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading id="loc-2">
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Beta"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "3"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "3"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Gamma"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-heading id="loc-3">
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Alpha"
+    tag
+    <typlite-parbreak>

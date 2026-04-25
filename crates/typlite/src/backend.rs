@@ -248,6 +248,31 @@ fn render_blocks(
     Ok(out)
 }
 
+fn render_blocks_compact_into(
+    blocks: &[Block],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    let mut rendered_count = 0usize;
+
+    for block in blocks {
+        let mut rendered = String::new();
+        render_block(block, indent, bibliography, &mut rendered)?;
+        if rendered.is_empty() {
+            continue;
+        }
+
+        if rendered_count > 0 {
+            out.push('\n');
+        }
+        rendered_count += 1;
+        out.push_str(rendered.trim_end_matches([' ', '\t']));
+    }
+
+    Ok(())
+}
+
 fn render_block(
     block: &Block,
     indent: usize,
@@ -256,7 +281,13 @@ fn render_block(
 ) -> Result<()> {
     render_reference_anchors(bibliography.take_reference_anchors(block), indent, out);
     match block {
-        Block::Heading { level, body } => {
+        Block::Heading { id, level, body } => {
+            if let Some(id) = id {
+                out.push_str(&" ".repeat(indent));
+                out.push_str("<a id=\"");
+                push_html_escaped(id, out);
+                out.push_str("\"></a>\n");
+            }
             out.push_str(&" ".repeat(indent));
             out.push_str(&"#".repeat(*level as usize));
             out.push(' ');
@@ -340,9 +371,8 @@ fn render_block(
             render_transform_block(data, "skew", &["ax", "ay"], indent, bibliography, out)?
         }
         Block::Stack(data) => render_stack(data, indent, bibliography, out)?,
-        Block::Block(data) | Block::Title(data) => {
-            render_blocks_into(&data.body, indent, bibliography, out)?
-        }
+        Block::Block(data) => render_blocks_compact_into(&data.body, indent, bibliography, out)?,
+        Block::Title(data) => render_blocks_into(&data.body, indent, bibliography, out)?,
         Block::Terms { items } => render_terms(items, indent, bibliography, out)?,
         Block::Colbreak(_) => {
             out.push_str(&" ".repeat(indent));
@@ -351,7 +381,10 @@ fn render_block(
         Block::V(data) => render_vertical_space(data, indent, out)?,
         Block::Parbreak(_) => {}
         Block::Outline(data) => {
-            if let Some(title) = data.field("title") {
+            if let Some(title) = data
+                .field("title")
+                .filter(|title| !matches!(title.as_scalar(), Some(value) if is_auto_or_none(value)))
+            {
                 out.push_str(&" ".repeat(indent));
                 render_field_value(title, out)?;
             }
@@ -796,9 +829,26 @@ fn render_table(
 
 fn requires_html_table(rows: &[TableRow]) -> bool {
     rows.iter().any(|row| {
-        row.cells
-            .iter()
-            .any(|cell| cell.colspan != 1 || cell.rowspan != 1 || cell.align != TableAlign::Default)
+        row.cells.iter().any(|cell| {
+            cell.colspan != 1
+                || cell.rowspan != 1
+                || cell.align != TableAlign::Default
+                || table_cell_requires_html(&cell.body)
+        })
+    })
+}
+
+fn table_cell_requires_html(body: &[Inline]) -> bool {
+    body.iter().any(|inline| match inline {
+        Inline::Raw { lang, text } => lang.is_some() || text.contains('\n'),
+        Inline::Linebreak | Inline::Frame(_) => true,
+        Inline::TableCell(_)
+        | Inline::TableFooter(_)
+        | Inline::TableHeader(_)
+        | Inline::GridCell(_)
+        | Inline::GridFooter(_)
+        | Inline::GridHeader(_) => true,
+        _ => false,
     })
 }
 
@@ -836,7 +886,7 @@ fn render_html_table(
                 out.push('"');
             }
             out.push('>');
-            render_inlines_html(&cell.body, bibliography, out)?;
+            render_table_cell_html(&cell.body, bibliography, out)?;
             out.push_str("</td>");
         }
         out.push('\n');
@@ -848,6 +898,28 @@ fn render_html_table(
     out.push_str(&indentation);
     out.push_str("</table>");
     Ok(())
+}
+
+fn render_table_cell_html(
+    body: &[Inline],
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    match body {
+        [Inline::Raw { lang, text }] if lang.is_some() || text.contains('\n') => {
+            out.push_str("<pre><code");
+            if let Some(lang) = lang {
+                out.push_str(" class=\"language-");
+                push_html_escaped(lang, out);
+                out.push('"');
+            }
+            out.push('>');
+            push_html_escaped(text, out);
+            out.push_str("</code></pre>");
+            Ok(())
+        }
+        _ => render_inlines_html(body, bibliography, out),
+    }
 }
 
 fn table_align_style(align: TableAlign) -> Option<&'static str> {
@@ -1022,7 +1094,7 @@ fn render_inlines(
                 render_math(children, out)?;
                 out.push('$');
             }
-            Inline::Linebreak => out.push('\n'),
+            Inline::Linebreak => out.push_str("  \n"),
             Inline::Frame(frame) => render_frame_image("frame", frame, out)?,
             Inline::Raw { text, .. } => {
                 out.push('`');

@@ -16,6 +16,8 @@ pub struct Document {
 pub enum Block {
     /// A section heading.
     Heading {
+        /// Optional HTML anchor id emitted by Typst.
+        id: Option<EcoString>,
         /// Heading depth.
         level: u8,
         /// Heading body.

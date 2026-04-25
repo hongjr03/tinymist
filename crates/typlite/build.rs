@@ -158,6 +158,9 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
 
     for element in elements {
         let selector = element.selector();
+        if matches!(selector.as_str(), "link" | "outline" | "outline.entry") {
+            continue;
+        }
         let kind = element.kind();
         let value_node = if selector.starts_with("math.") {
             "opaque_value_node"

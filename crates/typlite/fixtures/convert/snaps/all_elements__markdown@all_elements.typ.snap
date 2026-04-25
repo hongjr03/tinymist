@@ -4,15 +4,13 @@ expression: markdown
 input_file: crates/typlite/fixtures/convert/all_elements.typ
 ---
 <a id="sweep"></a>
+<a id="sweep"></a>
 # Element Sweep
 
 <!-- typlite-metadata: {"fixture":"all-elements"} -->
 
-Block body with
-
-horizontal spacing and a
-
-line break.
+Block body with   horizontal spacing and a   
+ line break.
 
 <div style="column-count: 2; column-gap: calc(0% + 4pt)">
   Column one
@@ -31,7 +29,8 @@ Term A
 Term B
 : Description B
 
-Outline
+# Outline
+- [1. Element Sweep](#sweep)
 
 <div style="break-after: page"></div>
 

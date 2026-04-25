@@ -93,11 +93,8 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
                 text "List item with"
                 text " "
                 tag
-                <span data-typlite="link">
-                  <span data-typlite-field="true" name="dest" kind="string">
-                    text "https://example.com"
-                  <span data-typlite-field="true" name="body" kind="content">
-                    text "a link"
+                <a href="https://example.com">
+                  text "a link"
                 tag
             tag
             tag
@@ -334,11 +331,8 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
             text "and"
             text " "
             tag
-            <span data-typlite="link">
-              <span data-typlite-field="true" name="dest" kind="string">
-                text "https://example.com"
-              <span data-typlite-field="true" name="body" kind="content">
-                text "a link"
+            <a href="https://example.com">
+              text "a link"
             tag
           <span data-typlite-field="true" name="form" kind="string">
             text "normal"
@@ -359,11 +353,8 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
                 text "and"
                 text " "
                 tag
-                <span data-typlite="link">
-                  <span data-typlite-field="true" name="dest" kind="string">
-                    text "https://example.com"
-                  <span data-typlite-field="true" name="body" kind="content">
-                    text "a link"
+                <a href="https://example.com">
+                  text "a link"
                 tag
               <span data-typlite-field="true" name="form" kind="string">
                 text "normal"

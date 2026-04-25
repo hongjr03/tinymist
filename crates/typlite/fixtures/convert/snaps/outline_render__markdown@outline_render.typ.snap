@@ -1,0 +1,21 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/outline_render.typ
+---
+# Contents
+- [Alpha](#loc-1)
+
+  - [Beta](#loc-2)
+- [Alpha](#loc-3)
+
+<a id="loc-1"></a>
+# Alpha
+
+<a id="loc-2"></a>
+## Beta
+
+### Gamma
+
+<a id="loc-3"></a>
+# Alpha

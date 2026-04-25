@@ -1,0 +1,12 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/table_code_cell.typ
+---
+<table>
+  <tr>
+    <td></td>
+    <td><pre><code class="language-typc">// Draw a circle
+circle((0, 0))</code></pre></td>
+  </tr>
+</table>

@@ -1,0 +1,9 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/compact_block.typ
+---
+`canvas(`  
+  `length:` <span style="display: inline-block"><code>length</code></span>,  
+  `x:` <span style="display: inline-block"><code>number</code></span> <span style="display: inline-block"><code>vector</code></span>,  
+ `)` → <span style="display: inline-block"><code>content</code></span>

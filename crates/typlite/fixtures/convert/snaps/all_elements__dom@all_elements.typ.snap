@@ -12,7 +12,7 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
     <meta name="authors" content="Typlite">
   <body>
     tag
-    <typlite-heading>
+    <typlite-heading id="sweep">
       <span data-typlite-field="true" name="level" kind="integer">
         text "1"
       <span data-typlite-field="true" name="depth" kind="integer">
@@ -224,14 +224,38 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
     tag
     <typlite-parbreak>
     tag
-    <typlite-outline>
-      <span data-typlite-field="true" name="title" kind="content">
-        text "Outline"
-      <span data-typlite-field="true" name="target" kind="selector">
-        text "heading"
-      <span data-typlite-field="true" name="depth" kind="none">
-      <span data-typlite-field="true" name="indent" kind="auto">
-        text "auto"
+    <nav role="doc-toc">
+      tag
+      <typlite-heading>
+        <span data-typlite-field="true" name="level" kind="integer">
+          text "1"
+        <span data-typlite-field="true" name="depth" kind="integer">
+          text "1"
+        <span data-typlite-field="true" name="offset" kind="integer">
+          text "0"
+        <span data-typlite-field="true" name="numbering" kind="none">
+        <span data-typlite-field="true" name="supplement" kind="content">
+          text "Section"
+        <span data-typlite-field="true" name="outlined" kind="boolean">
+          text "false"
+        <span data-typlite-field="true" name="bookmarked" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="hanging-indent" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="body" kind="content">
+          text "Outline"
+      tag
+      <ol style="list-style-type: none">
+        <li>
+          tag
+          tag
+          <a href="#sweep">
+            <span class="prefix">
+              text "1."
+            text " "
+            text "Element Sweep"
+          tag
+          tag
     tag
     <typlite-parbreak>
     <typlite-pagebreak>
@@ -711,7 +735,7 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
             tag
           <span data-typlite-field="true" name="element" kind="content">
             tag
-            <typlite-heading>
+            <typlite-heading id="sweep">
               <span data-typlite-field="true" name="level" kind="integer">
                 text "1"
               <span data-typlite-field="true" name="depth" kind="integer">

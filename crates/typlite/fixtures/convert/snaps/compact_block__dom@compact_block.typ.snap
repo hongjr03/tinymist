@@ -1,0 +1,379 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/compact_block.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    <typlite-parbreak>
+    <typlite-block>
+      <span data-typlite-field="true" name="width" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="height" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="breakable" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="dictionary">
+      <span data-typlite-field="true" name="radius" kind="dictionary">
+      <span data-typlite-field="true" name="inset" kind="dictionary">
+      <span data-typlite-field="true" name="outset" kind="dictionary">
+      <span data-typlite-field="true" name="spacing" kind="none">
+      <span data-typlite-field="true" name="above" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="below" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="clip" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="sticky" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="raw">
+          <span data-typlite-field="true" name="text" kind="string">
+            text "canvas"
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="lang" kind="none">
+          <span data-typlite-field="true" name="align" kind="alignment">
+            text "start"
+          <span data-typlite-field="true" name="syntaxes" kind="array">
+          <span data-typlite-field="true" name="theme" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="tab-size" kind="integer">
+            text "2"
+          <span data-typlite-field="true" name="lines" kind="array">
+            <span data-typlite-field="true" name="0" kind="content">
+              tag
+              <span data-typlite="raw-line">
+                <span data-typlite-field="true" name="number" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="count" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="text" kind="string">
+                  text "canvas"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "canvas"
+              tag
+        tag
+        tag
+        <span data-typlite="raw">
+          <span data-typlite-field="true" name="text" kind="string">
+            text "("
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="lang" kind="none">
+          <span data-typlite-field="true" name="align" kind="alignment">
+            text "start"
+          <span data-typlite-field="true" name="syntaxes" kind="array">
+          <span data-typlite-field="true" name="theme" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="tab-size" kind="integer">
+            text "2"
+          <span data-typlite-field="true" name="lines" kind="array">
+            <span data-typlite-field="true" name="0" kind="content">
+              tag
+              <span data-typlite="raw-line">
+                <span data-typlite-field="true" name="number" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="count" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="text" kind="string">
+                  text "("
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "("
+              tag
+        tag
+        <span data-typlite="linebreak">
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "false"
+        text " "
+        <span data-typlite="h">
+          <span data-typlite-field="true" name="amount" kind="length">
+            text "1em"
+          <span data-typlite-field="true" name="weak" kind="boolean">
+            text "false"
+        tag
+        <span data-typlite="raw">
+          <span data-typlite-field="true" name="text" kind="string">
+            text "length:"
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="lang" kind="none">
+          <span data-typlite-field="true" name="align" kind="alignment">
+            text "start"
+          <span data-typlite-field="true" name="syntaxes" kind="array">
+          <span data-typlite-field="true" name="theme" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="tab-size" kind="integer">
+            text "2"
+          <span data-typlite-field="true" name="lines" kind="array">
+            <span data-typlite-field="true" name="0" kind="content">
+              tag
+              <span data-typlite="raw-line">
+                <span data-typlite-field="true" name="number" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="count" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="text" kind="string">
+                  text "length:"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "length:"
+              tag
+        tag
+        text " "
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            tag
+            <span data-typlite="raw">
+              <span data-typlite-field="true" name="text" kind="string">
+                text "length"
+              <span data-typlite-field="true" name="block" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="lang" kind="none">
+              <span data-typlite-field="true" name="align" kind="alignment">
+                text "start"
+              <span data-typlite-field="true" name="syntaxes" kind="array">
+              <span data-typlite-field="true" name="theme" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="tab-size" kind="integer">
+                text "2"
+              <span data-typlite-field="true" name="lines" kind="array">
+                <span data-typlite-field="true" name="0" kind="content">
+                  tag
+                  <span data-typlite="raw-line">
+                    <span data-typlite-field="true" name="number" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="count" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="text" kind="string">
+                      text "length"
+                    <span data-typlite-field="true" name="body" kind="content">
+                      text "length"
+                  tag
+            tag
+        text ","
+        <span data-typlite="linebreak">
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "false"
+        text " "
+        <span data-typlite="h">
+          <span data-typlite-field="true" name="amount" kind="length">
+            text "1em"
+          <span data-typlite-field="true" name="weak" kind="boolean">
+            text "false"
+        tag
+        <span data-typlite="raw">
+          <span data-typlite-field="true" name="text" kind="string">
+            text "x:"
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="lang" kind="none">
+          <span data-typlite-field="true" name="align" kind="alignment">
+            text "start"
+          <span data-typlite-field="true" name="syntaxes" kind="array">
+          <span data-typlite-field="true" name="theme" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="tab-size" kind="integer">
+            text "2"
+          <span data-typlite-field="true" name="lines" kind="array">
+            <span data-typlite-field="true" name="0" kind="content">
+              tag
+              <span data-typlite="raw-line">
+                <span data-typlite-field="true" name="number" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="count" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="text" kind="string">
+                  text "x:"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "x:"
+              tag
+        tag
+        text " "
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            tag
+            <span data-typlite="raw">
+              <span data-typlite-field="true" name="text" kind="string">
+                text "number"
+              <span data-typlite-field="true" name="block" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="lang" kind="none">
+              <span data-typlite-field="true" name="align" kind="alignment">
+                text "start"
+              <span data-typlite-field="true" name="syntaxes" kind="array">
+              <span data-typlite-field="true" name="theme" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="tab-size" kind="integer">
+                text "2"
+              <span data-typlite-field="true" name="lines" kind="array">
+                <span data-typlite-field="true" name="0" kind="content">
+                  tag
+                  <span data-typlite="raw-line">
+                    <span data-typlite-field="true" name="number" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="count" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="text" kind="string">
+                      text "number"
+                    <span data-typlite-field="true" name="body" kind="content">
+                      text "number"
+                  tag
+            tag
+        text " "
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            tag
+            <span data-typlite="raw">
+              <span data-typlite-field="true" name="text" kind="string">
+                text "vector"
+              <span data-typlite-field="true" name="block" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="lang" kind="none">
+              <span data-typlite-field="true" name="align" kind="alignment">
+                text "start"
+              <span data-typlite-field="true" name="syntaxes" kind="array">
+              <span data-typlite-field="true" name="theme" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="tab-size" kind="integer">
+                text "2"
+              <span data-typlite-field="true" name="lines" kind="array">
+                <span data-typlite-field="true" name="0" kind="content">
+                  tag
+                  <span data-typlite="raw-line">
+                    <span data-typlite-field="true" name="number" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="count" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="text" kind="string">
+                      text "vector"
+                    <span data-typlite-field="true" name="body" kind="content">
+                      text "vector"
+                  tag
+            tag
+        text ","
+        <span data-typlite="linebreak">
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "false"
+        text " "
+        tag
+        <span data-typlite="raw">
+          <span data-typlite-field="true" name="text" kind="string">
+            text ")"
+          <span data-typlite-field="true" name="block" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="lang" kind="none">
+          <span data-typlite-field="true" name="align" kind="alignment">
+            text "start"
+          <span data-typlite-field="true" name="syntaxes" kind="array">
+          <span data-typlite-field="true" name="theme" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="tab-size" kind="integer">
+            text "2"
+          <span data-typlite-field="true" name="lines" kind="array">
+            <span data-typlite-field="true" name="0" kind="content">
+              tag
+              <span data-typlite="raw-line">
+                <span data-typlite-field="true" name="number" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="count" kind="integer">
+                  text "1"
+                <span data-typlite-field="true" name="text" kind="string">
+                  text ")"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text ")"
+              tag
+        tag
+        text " "
+        text "→"
+        text " "
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            tag
+            <span data-typlite="raw">
+              <span data-typlite-field="true" name="text" kind="string">
+                text "content"
+              <span data-typlite-field="true" name="block" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="lang" kind="none">
+              <span data-typlite-field="true" name="align" kind="alignment">
+                text "start"
+              <span data-typlite-field="true" name="syntaxes" kind="array">
+              <span data-typlite-field="true" name="theme" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="tab-size" kind="integer">
+                text "2"
+              <span data-typlite-field="true" name="lines" kind="array">
+                <span data-typlite-field="true" name="0" kind="content">
+                  tag
+                  <span data-typlite="raw-line">
+                    <span data-typlite-field="true" name="number" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="count" kind="integer">
+                      text "1"
+                    <span data-typlite-field="true" name="text" kind="string">
+                      text "content"
+                    <span data-typlite-field="true" name="body" kind="content">
+                      text "content"
+                  tag
+            tag
