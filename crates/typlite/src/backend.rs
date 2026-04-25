@@ -33,11 +33,51 @@ fn render_block(block: &Block, indent: usize, out: &mut String) {
             out.push_str(&" ".repeat(indent));
             render_inlines(body, out);
         }
+        Block::Quote(blocks) => render_quote(blocks, indent, out),
+        Block::Figure { body, caption } => {
+            render_blocks_into(body, indent, out);
+            if !caption.is_empty() {
+                if !body.is_empty() {
+                    out.push('\n');
+                    out.push('\n');
+                }
+                out.push_str(&" ".repeat(indent));
+                out.push_str("Figure: ");
+                render_inlines(caption, out);
+            }
+        }
+        Block::Align(blocks) => render_blocks_into(blocks, indent, out),
+        Block::Math(body) => {
+            out.push_str(&" ".repeat(indent));
+            render_inlines(body, out);
+        }
         Block::Raw { text, .. } => {
             out.push_str(&" ".repeat(indent));
             out.push_str(text);
         }
         Block::List { ordered, items } => render_list(*ordered, items, indent, out),
+    }
+}
+
+fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) {
+    for (idx, block) in blocks.iter().enumerate() {
+        if idx > 0 {
+            out.push_str("\n\n");
+        }
+        render_block(block, indent, out);
+    }
+}
+
+fn render_quote(blocks: &[Block], indent: usize, out: &mut String) {
+    let body = render_blocks(blocks, 0);
+    let prefix = format!("{}> ", " ".repeat(indent));
+
+    for (index, line) in body.lines().enumerate() {
+        if index > 0 {
+            out.push('\n');
+        }
+        out.push_str(&prefix);
+        out.push_str(line);
     }
 }
 

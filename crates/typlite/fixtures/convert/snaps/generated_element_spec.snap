@@ -1,0 +1,1032 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_element_spec()
+---
+align
+  kind: align
+  mode: block
+  fields:
+    - alignment
+    - body
+
+bibliography
+  kind: bibliography
+  mode: block
+  fields:
+    - sources
+    - title
+    - full
+    - style
+
+block
+  kind: block
+  mode: block
+  fields:
+    - width
+    - height
+    - breakable
+    - fill
+    - stroke
+    - radius
+    - inset
+    - outset
+    - spacing
+    - above
+    - below
+    - clip
+    - sticky
+    - body
+
+box
+  kind: box
+  mode: inline
+  fields:
+    - width
+    - height
+    - baseline
+    - fill
+    - stroke
+    - radius
+    - inset
+    - outset
+    - clip
+    - body
+
+circle
+  kind: circle
+  mode: inline
+  fields:
+    - radius
+    - width
+    - height
+    - fill
+    - stroke
+    - inset
+    - outset
+    - body
+
+cite
+  kind: cite
+  mode: inline
+  fields:
+    - key
+    - supplement
+    - form
+    - style
+
+colbreak
+  kind: colbreak
+  mode: block
+  fields:
+    - weak
+
+columns
+  kind: columns
+  mode: block
+  fields:
+    - count
+    - gutter
+    - body
+
+curve
+  kind: curve
+  mode: inline
+  fields:
+    - fill
+    - fill-rule
+    - stroke
+    - components
+
+curve.close
+  kind: curve-close
+  mode: inline
+  fields:
+    - mode
+
+curve.cubic
+  kind: curve-cubic
+  mode: inline
+  fields:
+    - control-start
+    - control-end
+    - end
+    - relative
+
+curve.line
+  kind: curve-line
+  mode: inline
+  fields:
+    - end
+    - relative
+
+curve.move
+  kind: curve-move
+  mode: inline
+  fields:
+    - start
+    - relative
+
+curve.quad
+  kind: curve-quad
+  mode: inline
+  fields:
+    - control
+    - end
+    - relative
+
+document
+  kind: document
+  mode: inline
+  fields:
+    - title
+    - author
+    - description
+    - keywords
+    - date
+
+ellipse
+  kind: ellipse
+  mode: inline
+  fields:
+    - width
+    - height
+    - fill
+    - stroke
+    - inset
+    - outset
+    - body
+
+emph
+  kind: emph
+  mode: inline
+  fields:
+    - body
+
+enum
+  kind: enum
+  mode: block
+  fields:
+    - tight
+    - numbering
+    - start
+    - full
+    - reversed
+    - indent
+    - body-indent
+    - spacing
+    - number-align
+    - children
+
+figure
+  kind: figure
+  mode: block
+  fields:
+    - body
+    - alt
+    - placement
+    - scope
+    - caption
+    - kind
+    - supplement
+    - numbering
+    - gap
+    - outlined
+    - counter
+
+figure.caption
+  kind: figure-caption
+  mode: inline
+  fields:
+    - position
+    - separator
+    - body
+    - kind
+    - supplement
+    - numbering
+    - counter
+
+footnote
+  kind: footnote
+  mode: inline
+  fields:
+    - numbering
+    - body
+
+footnote.entry
+  kind: footnote-entry
+  mode: inline
+  fields:
+    - note
+    - separator
+    - clearance
+    - gap
+    - indent
+
+grid
+  kind: grid
+  mode: block
+  fields:
+    - columns
+    - rows
+    - gutter
+    - column-gutter
+    - row-gutter
+    - inset
+    - align
+    - fill
+    - stroke
+    - children
+
+grid.cell
+  kind: grid-cell
+  mode: inline
+  fields:
+    - body
+    - x
+    - y
+    - colspan
+    - rowspan
+    - inset
+    - align
+    - fill
+    - stroke
+    - breakable
+
+grid.footer
+  kind: grid-footer
+  mode: inline
+  fields:
+    - repeat
+    - children
+
+grid.header
+  kind: grid-header
+  mode: inline
+  fields:
+    - repeat
+    - level
+    - children
+
+grid.hline
+  kind: grid-hline
+  mode: inline
+  fields:
+    - y
+    - start
+    - end
+    - stroke
+    - position
+
+grid.vline
+  kind: grid-vline
+  mode: inline
+  fields:
+    - x
+    - start
+    - end
+    - stroke
+    - position
+
+h
+  kind: h
+  mode: inline
+  fields:
+    - amount
+    - weak
+
+heading
+  kind: heading
+  mode: block
+  fields:
+    - level
+    - depth
+    - offset
+    - numbering
+    - supplement
+    - outlined
+    - bookmarked
+    - hanging-indent
+    - body
+
+hide
+  kind: hide
+  mode: inline
+  fields:
+    - body
+
+highlight
+  kind: highlight
+  mode: inline
+  fields:
+    - fill
+    - stroke
+    - top-edge
+    - bottom-edge
+    - extent
+    - radius
+    - body
+
+image
+  kind: image
+  mode: inline
+  fields:
+    - source
+    - format
+    - width
+    - height
+    - alt
+    - page
+    - fit
+    - scaling
+    - icc
+
+line
+  kind: line
+  mode: inline
+  fields:
+    - start
+    - end
+    - length
+    - angle
+    - stroke
+
+linebreak
+  kind: linebreak
+  mode: inline
+  fields:
+    - justify
+
+link
+  kind: link
+  mode: inline
+  fields:
+    - dest
+    - body
+
+list
+  kind: list
+  mode: block
+  fields:
+    - tight
+    - marker
+    - indent
+    - body-indent
+    - spacing
+    - children
+
+math.accent
+  kind: math-accent
+  mode: inline
+  fields:
+    - base
+    - accent
+    - size
+    - dotless
+
+math.attach
+  kind: math-attach
+  mode: inline
+  fields:
+    - base
+    - t
+    - b
+    - tl
+    - bl
+    - tr
+    - br
+
+math.binom
+  kind: math-binom
+  mode: inline
+  fields:
+    - upper
+    - lower
+
+math.cancel
+  kind: math-cancel
+  mode: inline
+  fields:
+    - body
+    - length
+    - inverted
+    - cross
+    - angle
+    - stroke
+
+math.cases
+  kind: math-cases
+  mode: inline
+  fields:
+    - delim
+    - reverse
+    - gap
+    - children
+
+math.class
+  kind: math-class
+  mode: inline
+  fields:
+    - class
+    - body
+
+math.equation
+  kind: math-equation
+  mode: block-or-inline
+  fields:
+    - block
+    - numbering
+    - number-align
+    - supplement
+    - alt
+    - body
+
+math.frac
+  kind: math-frac
+  mode: inline
+  fields:
+    - num
+    - denom
+    - style
+
+math.limits
+  kind: math-limits
+  mode: inline
+  fields:
+    - body
+    - inline
+
+math.lr
+  kind: math-lr
+  mode: inline
+  fields:
+    - size
+    - body
+
+math.mat
+  kind: math-mat
+  mode: inline
+  fields:
+    - delim
+    - align
+    - augment
+    - gap
+    - row-gap
+    - column-gap
+    - rows
+
+math.mid
+  kind: math-mid
+  mode: inline
+  fields:
+    - body
+
+math.op
+  kind: math-op
+  mode: inline
+  fields:
+    - text
+    - limits
+
+math.overbrace
+  kind: math-overbrace
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.overbracket
+  kind: math-overbracket
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.overline
+  kind: math-overline
+  mode: inline
+  fields:
+    - body
+
+math.overparen
+  kind: math-overparen
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.overshell
+  kind: math-overshell
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.primes
+  kind: math-primes
+  mode: inline
+  fields:
+    - count
+
+math.root
+  kind: math-root
+  mode: inline
+  fields:
+    - index
+    - radicand
+
+math.scripts
+  kind: math-scripts
+  mode: inline
+  fields:
+    - body
+
+math.stretch
+  kind: math-stretch
+  mode: inline
+  fields:
+    - body
+    - size
+
+math.underbrace
+  kind: math-underbrace
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.underbracket
+  kind: math-underbracket
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.underline
+  kind: math-underline
+  mode: inline
+  fields:
+    - body
+
+math.underparen
+  kind: math-underparen
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.undershell
+  kind: math-undershell
+  mode: inline
+  fields:
+    - body
+    - annotation
+
+math.vec
+  kind: math-vec
+  mode: inline
+  fields:
+    - delim
+    - align
+    - gap
+    - children
+
+metadata
+  kind: metadata
+  mode: inline
+  fields:
+    - value
+
+move
+  kind: move
+  mode: inline
+  fields:
+    - dx
+    - dy
+    - body
+
+outline
+  kind: outline
+  mode: block
+  fields:
+    - title
+    - target
+    - depth
+    - indent
+
+outline.entry
+  kind: outline-entry
+  mode: inline
+  fields:
+    - level
+    - element
+    - fill
+
+overline
+  kind: overline
+  mode: inline
+  fields:
+    - stroke
+    - offset
+    - extent
+    - evade
+    - background
+    - body
+
+pad
+  kind: pad
+  mode: inline
+  fields:
+    - left
+    - top
+    - right
+    - bottom
+    - x
+    - y
+    - rest
+    - body
+
+page
+  kind: page
+  mode: inline
+  fields:
+    - paper
+    - width
+    - height
+    - flipped
+    - margin
+    - binding
+    - columns
+    - fill
+    - numbering
+    - supplement
+    - number-align
+    - header
+    - header-ascent
+    - footer
+    - footer-descent
+    - background
+    - foreground
+    - body
+
+pagebreak
+  kind: pagebreak
+  mode: block
+  fields:
+    - weak
+    - to
+
+par
+  kind: paragraph
+  mode: block
+  fields:
+    - leading
+    - spacing
+    - justify
+    - justification-limits
+    - linebreaks
+    - first-line-indent
+    - hanging-indent
+    - body
+
+par.line
+  kind: par-line
+  mode: inline
+  fields:
+    - numbering
+    - number-align
+    - number-margin
+    - number-clearance
+    - numbering-scope
+
+parbreak
+  kind: parbreak
+  mode: block
+  fields: []
+
+path
+  kind: path
+  mode: inline
+  fields:
+    - fill
+    - fill-rule
+    - stroke
+    - closed
+    - vertices
+
+pdf.artifact
+  kind: pdf-artifact
+  mode: inline
+  fields:
+    - kind
+    - body
+
+pdf.attach
+  kind: pdf-attach
+  mode: inline
+  fields:
+    - path
+    - data
+    - relationship
+    - mime-type
+    - description
+
+pdf.embed
+  kind: pdf-embed
+  mode: inline
+  fields:
+    - path
+    - data
+    - relationship
+    - mime-type
+    - description
+
+place
+  kind: place
+  mode: inline
+  fields:
+    - alignment
+    - scope
+    - float
+    - clearance
+    - dx
+    - dy
+    - body
+
+place.flush
+  kind: place-flush
+  mode: inline
+  fields: []
+
+polygon
+  kind: polygon
+  mode: inline
+  fields:
+    - fill
+    - fill-rule
+    - stroke
+    - vertices
+
+quote
+  kind: quote
+  mode: block-or-inline
+  fields:
+    - block
+    - quotes
+    - attribution
+    - body
+
+raw
+  kind: raw
+  mode: block-or-inline
+  fields:
+    - text
+    - block
+    - lang
+    - align
+    - syntaxes
+    - theme
+    - tab-size
+    - lines
+
+raw.line
+  kind: raw-line
+  mode: inline
+  fields:
+    - number
+    - count
+    - text
+    - body
+
+rect
+  kind: rect
+  mode: inline
+  fields:
+    - width
+    - height
+    - fill
+    - stroke
+    - radius
+    - inset
+    - outset
+    - body
+
+ref
+  kind: ref
+  mode: inline
+  fields:
+    - target
+    - supplement
+    - form
+    - citation
+    - element
+
+repeat
+  kind: repeat
+  mode: inline
+  fields:
+    - body
+    - gap
+    - justify
+
+rotate
+  kind: rotate
+  mode: inline
+  fields:
+    - angle
+    - origin
+    - reflow
+    - body
+
+scale
+  kind: scale
+  mode: inline
+  fields:
+    - factor
+    - x
+    - y
+    - origin
+    - reflow
+    - body
+
+skew
+  kind: skew
+  mode: inline
+  fields:
+    - ax
+    - ay
+    - origin
+    - reflow
+    - body
+
+smallcaps
+  kind: smallcaps
+  mode: inline
+  fields:
+    - all
+    - body
+
+smartquote
+  kind: smartquote
+  mode: inline
+  fields:
+    - double
+    - enabled
+    - alternative
+    - quotes
+
+square
+  kind: square
+  mode: inline
+  fields:
+    - size
+    - width
+    - height
+    - fill
+    - stroke
+    - radius
+    - inset
+    - outset
+    - body
+
+stack
+  kind: stack
+  mode: block
+  fields:
+    - dir
+    - spacing
+    - children
+
+strike
+  kind: strike
+  mode: inline
+  fields:
+    - stroke
+    - offset
+    - extent
+    - background
+    - body
+
+strong
+  kind: strong
+  mode: inline
+  fields:
+    - delta
+    - body
+
+sub
+  kind: sub
+  mode: inline
+  fields:
+    - typographic
+    - baseline
+    - size
+    - body
+
+super
+  kind: super
+  mode: inline
+  fields:
+    - typographic
+    - baseline
+    - size
+    - body
+
+table
+  kind: table
+  mode: block
+  fields:
+    - columns
+    - rows
+    - gutter
+    - column-gutter
+    - row-gutter
+    - inset
+    - align
+    - fill
+    - stroke
+    - children
+
+table.cell
+  kind: table-cell
+  mode: inline
+  fields:
+    - body
+    - x
+    - y
+    - colspan
+    - rowspan
+    - inset
+    - align
+    - fill
+    - stroke
+    - breakable
+
+table.footer
+  kind: table-footer
+  mode: inline
+  fields:
+    - repeat
+    - children
+
+table.header
+  kind: table-header
+  mode: inline
+  fields:
+    - repeat
+    - level
+    - children
+
+table.hline
+  kind: table-hline
+  mode: inline
+  fields:
+    - y
+    - start
+    - end
+    - stroke
+    - position
+
+table.vline
+  kind: table-vline
+  mode: inline
+  fields:
+    - x
+    - start
+    - end
+    - stroke
+    - position
+
+terms
+  kind: terms
+  mode: block
+  fields:
+    - tight
+    - separator
+    - indent
+    - hanging-indent
+    - spacing
+    - children
+
+title
+  kind: title
+  mode: block
+  fields:
+    - body
+
+underline
+  kind: underline
+  mode: inline
+  fields:
+    - stroke
+    - offset
+    - extent
+    - evade
+    - background
+    - body
+
+v
+  kind: v
+  mode: block
+  fields:
+    - amount
+    - weak

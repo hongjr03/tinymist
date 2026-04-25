@@ -19,7 +19,9 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
 
 
 
-A block quote with underlined text.
+> A block quote with underlined text.
+
+Figure: A rectangle
 
 Centered
 

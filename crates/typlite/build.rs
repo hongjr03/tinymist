@@ -15,6 +15,11 @@ fn main() {
 
     let elements = collect_elements();
 
+    write_typst_ir_lib(out_dir, &elements);
+    write_element_spec(out_dir, &elements);
+}
+
+fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
     let mut out = String::new();
     out.push_str(
         r#"#let field(it, name, default: none) = it.fields().at(name, default: default)
@@ -143,6 +148,56 @@ fn main() {
 
     fs::write(out_dir.join("typlite-ir.typ"), out)
         .expect("failed to write generated typlite IR library");
+}
+
+fn write_element_spec(out_dir: &Path, elements: &[ElementSpec]) {
+    let mut out = String::new();
+    out.push_str(
+        r#"#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ElementMode {
+    Block,
+    Inline,
+    BlockOrInline,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ElementSpec {
+    pub selector: &'static str,
+    pub kind: &'static str,
+    pub mode: ElementMode,
+    pub fields: &'static [&'static str],
+}
+
+pub static ELEMENTS: &[ElementSpec] = &[
+"#,
+    );
+
+    for element in elements {
+        let selector = element.selector();
+        let kind = element.kind();
+        let mode = match element.mode() {
+            Mode::Block => "ElementMode::Block",
+            Mode::Inline => "ElementMode::Inline",
+            Mode::BlockOrInline => "ElementMode::BlockOrInline",
+        };
+        let fields = element.fields().collect::<Vec<_>>();
+
+        out.push_str("    ElementSpec {\n");
+        out.push_str(&format!("        selector: {selector:?},\n"));
+        out.push_str(&format!("        kind: {kind:?},\n"));
+        out.push_str(&format!("        mode: {mode},\n"));
+        out.push_str("        fields: &[\n");
+        for field in fields {
+            out.push_str(&format!("            {field:?},\n"));
+        }
+        out.push_str("        ],\n");
+        out.push_str("    },\n");
+    }
+
+    out.push_str("];\n");
+
+    fs::write(out_dir.join("typlite-elements.rs"), out)
+        .expect("failed to write generated typlite element spec");
 }
 
 #[derive(Debug, Clone)]

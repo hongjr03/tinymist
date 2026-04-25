@@ -3,6 +3,9 @@
 #![allow(missing_docs)]
 
 pub mod backend;
+pub mod element_spec {
+    include!(concat!(env!("OUT_DIR"), "/typlite-elements.rs"));
+}
 mod extract;
 pub mod ir;
 

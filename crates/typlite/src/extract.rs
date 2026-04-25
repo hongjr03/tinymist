@@ -51,6 +51,29 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
             lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
             text: field_value(element, "text").unwrap_or_default(),
         }),
+        Some("typlite-quote") => Some(Block::Quote(
+            field_children(element, "body")
+                .map(collect_item_blocks)
+                .unwrap_or_default(),
+        )),
+        Some("typlite-figure") => Some(Block::Figure {
+            body: field_children(element, "body")
+                .map(collect_item_blocks)
+                .unwrap_or_default(),
+            caption: field_children(element, "caption")
+                .map(collect_inlines)
+                .unwrap_or_default(),
+        }),
+        Some("typlite-align") => Some(Block::Align(
+            field_children(element, "body")
+                .map(collect_item_blocks)
+                .unwrap_or_default(),
+        )),
+        Some("typlite-math-equation") => Some(Block::Math(
+            field_children(element, "body")
+                .map(collect_inlines)
+                .unwrap_or_default(),
+        )),
         Some("typlite-list") => Some(Block::List {
             ordered: false,
             items: collect_list_items(element, false),
@@ -59,26 +82,7 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
             ordered: true,
             items: collect_list_items(element, true),
         }),
-        Some(tag) if tag.starts_with("typlite-") => field_children(element, "body")
-            .map(collect_item_blocks)
-            .and_then(single_or_paragraph),
         _ => None,
-    }
-}
-
-fn single_or_paragraph(mut blocks: Vec<Block>) -> Option<Block> {
-    match blocks.len() {
-        0 => None,
-        1 => blocks.pop(),
-        _ => Some(Block::Paragraph(
-            blocks
-                .into_iter()
-                .flat_map(|block| match block {
-                    Block::Paragraph(inlines) => inlines,
-                    _ => Vec::new(),
-                })
-                .collect(),
-        )),
     }
 }
 

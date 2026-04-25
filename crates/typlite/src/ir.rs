@@ -21,6 +21,19 @@ pub enum Block {
     },
     /// A paragraph.
     Paragraph(Vec<Inline>),
+    /// A block quote.
+    Quote(Vec<Block>),
+    /// A figure.
+    Figure {
+        /// Figure body.
+        body: Vec<Block>,
+        /// Optional caption.
+        caption: Vec<Inline>,
+    },
+    /// An aligned block.
+    Align(Vec<Block>),
+    /// A math equation.
+    Math(Vec<Inline>),
     /// A backend-specific raw block.
     Raw {
         /// Optional source language.

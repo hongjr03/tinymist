@@ -4,8 +4,86 @@ use std::path::Path;
 use std::sync::Arc;
 
 use tinymist_tests::run_with_sources;
+use typlite::element_spec::{ELEMENTS, ElementMode};
 use typlite::{Format, Typlite, TypliteFeat};
 use typst_html::{HtmlElement, HtmlNode};
+
+#[test]
+fn generated_element_spec_covers_core_elements() {
+    let table = element("table");
+    assert_eq!(table.kind, "table");
+    assert_eq!(table.mode, ElementMode::Block);
+    assert!(table.fields.contains(&"align"));
+    assert!(table.fields.contains(&"children"));
+
+    let grid = element("grid");
+    assert_eq!(grid.kind, "grid");
+    assert_eq!(grid.mode, ElementMode::Block);
+    assert!(grid.fields.contains(&"children"));
+
+    let link = element("link");
+    assert_eq!(link.mode, ElementMode::Inline);
+    assert!(link.fields.contains(&"dest"));
+    assert!(link.fields.contains(&"body"));
+
+    let math = element("math.equation");
+    assert_eq!(math.kind, "math-equation");
+    assert_eq!(math.mode, ElementMode::BlockOrInline);
+    assert!(math.fields.contains(&"body"));
+}
+
+#[test]
+fn generated_element_spec_snapshot() {
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+
+    let mut settings = insta::Settings::clone_current();
+    settings.set_prepend_module_to_snapshot(false);
+    settings.set_snapshot_path(manifest_dir.join("fixtures/convert/snaps"));
+
+    settings.bind(|| {
+        insta::assert_snapshot!("generated_element_spec", render_element_spec());
+    });
+}
+
+fn element(selector: &str) -> &'static typlite::element_spec::ElementSpec {
+    ELEMENTS
+        .iter()
+        .find(|element| element.selector == selector)
+        .unwrap_or_else(|| panic!("missing generated element spec for {selector}"))
+}
+
+fn render_element_spec() -> String {
+    let mut out = String::new();
+
+    for element in ELEMENTS {
+        out.push_str(element.selector);
+        out.push('\n');
+        out.push_str("  kind: ");
+        out.push_str(element.kind);
+        out.push('\n');
+        out.push_str("  mode: ");
+        out.push_str(match element.mode {
+            ElementMode::Block => "block",
+            ElementMode::Inline => "inline",
+            ElementMode::BlockOrInline => "block-or-inline",
+        });
+        out.push('\n');
+        out.push_str("  fields:");
+        if element.fields.is_empty() {
+            out.push_str(" []\n");
+        } else {
+            out.push('\n');
+            for field in element.fields {
+                out.push_str("    - ");
+                out.push_str(field);
+                out.push('\n');
+            }
+        }
+        out.push('\n');
+    }
+
+    out
+}
 
 #[test]
 fn convert_fixtures() {
