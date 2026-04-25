@@ -439,6 +439,8 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
             text "0% + 5pt"
           <span data-typlite-field="true" name="outset" kind="dictionary">
           <span data-typlite-field="true" name="body" kind="none">
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
       <span data-typlite-field="true" name="alt" kind="none">
       <span data-typlite-field="true" name="placement" kind="none">
       <span data-typlite-field="true" name="scope" kind="string">

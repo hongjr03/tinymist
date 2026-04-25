@@ -147,6 +147,8 @@ pub enum Inline {
     Math(Vec<Inline>),
     /// A line break.
     Linebreak,
+    /// A laid-out Typst frame rendered as SVG.
+    Frame(FrameImage),
     /// Boxed content.
     Box(InlineElementData),
     /// Circle shape.
@@ -329,6 +331,13 @@ pub struct InlineElementData {
     pub body: Vec<Inline>,
 }
 
+/// A rendered frame image extracted from `html.frame`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FrameImage {
+    /// SVG payload.
+    pub svg: EcoString,
+}
+
 /// An extracted element field.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ElementField {
@@ -347,6 +356,67 @@ pub enum ElementFieldValue {
     Inlines(Vec<Inline>),
     /// Block content field.
     Blocks(Vec<Block>),
+}
+
+impl BlockElementData {
+    /// Returns a field value by name.
+    pub fn field(&self, name: &str) -> Option<&ElementFieldValue> {
+        self.fields
+            .iter()
+            .find(|field| field.name == name)
+            .map(|field| &field.value)
+    }
+
+    /// Returns a scalar field value by name.
+    pub fn scalar(&self, name: &str) -> Option<&str> {
+        self.field(name).and_then(ElementFieldValue::as_scalar)
+    }
+}
+
+impl InlineElementData {
+    /// Returns a field value by name.
+    pub fn field(&self, name: &str) -> Option<&ElementFieldValue> {
+        self.fields
+            .iter()
+            .find(|field| field.name == name)
+            .map(|field| &field.value)
+    }
+
+    /// Returns a scalar field value by name.
+    pub fn scalar(&self, name: &str) -> Option<&str> {
+        self.field(name).and_then(ElementFieldValue::as_scalar)
+    }
+
+    /// Returns an inline field value by name.
+    pub fn inlines(&self, name: &str) -> Option<&[Inline]> {
+        self.field(name).and_then(ElementFieldValue::as_inlines)
+    }
+}
+
+impl ElementFieldValue {
+    /// Returns this value as scalar text.
+    pub fn as_scalar(&self) -> Option<&str> {
+        match self {
+            Self::Scalar(value) => Some(value.as_str()),
+            _ => None,
+        }
+    }
+
+    /// Returns this value as inline nodes.
+    pub fn as_inlines(&self) -> Option<&[Inline]> {
+        match self {
+            Self::Inlines(value) => Some(value),
+            _ => None,
+        }
+    }
+
+    /// Returns this value as block nodes.
+    pub fn as_blocks(&self) -> Option<&[Block]> {
+        match self {
+            Self::Blocks(value) => Some(value),
+            _ => None,
+        }
+    }
 }
 
 impl Block {

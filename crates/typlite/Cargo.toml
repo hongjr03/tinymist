@@ -27,6 +27,7 @@ tinymist-std.workspace = true
 typst.workspace = true
 typst-html.workspace = true
 typst-syntax.workspace = true
+typst-svg.workspace = true
 
 [dev-dependencies]
 insta.workspace = true

@@ -84,6 +84,14 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
   }
 }
 
+#let frame_node(name, value) = field_node(name, "frame", html.frame(value))
+
+#let html_target(value, fallback) = if target() == "html" {
+  value
+} else {
+  fallback
+}
+
 #let list_item_node(index, item) = field_node(str(index), "list.item", {
   value_node("body", field(item, "body"))
 })
@@ -131,7 +139,11 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
             .fields()
             .map(|field| element.field_node(field, value_node))
             .collect::<String>();
-        let body = format!("{{\n{fields}  }}");
+        let frame = element
+            .needs_frame()
+            .then_some("    frame_node(\"frame\", it)\n")
+            .unwrap_or("");
+        let body = format!("{{\n{fields}{frame}  }}");
 
         let call = match element.mode() {
             Mode::Block => format!("node({kind:?}, {body})"),
@@ -141,7 +153,9 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
             ),
         };
 
-        out.push_str(&format!("  show {selector}: it => {call}\n"));
+        out.push_str(&format!(
+            "  show {selector}: it => html_target({call}, it)\n"
+        ));
     }
 
     out.push_str("\n  body\n}\n");
@@ -288,6 +302,13 @@ impl ElementSpec {
 
     fn fields(&self) -> impl Iterator<Item = &'static str> + '_ {
         element_fields(self.elem)
+    }
+
+    fn needs_frame(&self) -> bool {
+        matches!(
+            self.selector().as_str(),
+            "circle" | "curve" | "ellipse" | "line" | "path" | "polygon" | "rect" | "square"
+        )
     }
 
     fn field_node(&self, field: &str, value_node: &str) -> String {

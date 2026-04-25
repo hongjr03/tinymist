@@ -1,23 +1,25 @@
 //! Experimental extraction from Typst HTML custom elements into typlite IR.
 
 use ecow::EcoString;
-use typst_html::{HtmlElement, HtmlNode};
+use typst::introspection::Introspector;
+use typst_html::{HtmlDocument, HtmlElement, HtmlFrame, HtmlNode};
 
 use crate::element_spec::{ELEMENTS, ElementMode, ElementSpec};
 use crate::ir::{
-    Block, BlockElementData, Document, Inline, InlineElementData, ListItem, TableCell, TableRow,
-    block_from_element_kind, inline_from_element_kind,
+    Block, BlockElementData, Document, ElementField, ElementFieldValue, FrameImage, Inline,
+    InlineElementData, ListItem, TableCell, TableRow, block_from_element_kind,
+    inline_from_element_kind,
 };
 
 /// Extracts typlite IR nodes from an HTML document root.
-pub fn extract_document(root: &HtmlElement) -> Document {
+pub fn extract_document(html: &HtmlDocument) -> Document {
     let mut blocks = Vec::new();
-    collect_blocks(root, &mut blocks);
+    collect_blocks(&html.root, &html.introspector, &mut blocks);
     Document { blocks }
 }
 
-fn collect_blocks(element: &HtmlElement, blocks: &mut Vec<Block>) {
-    if let Some(block) = block_from_element(element) {
+fn collect_blocks(element: &HtmlElement, introspector: &Introspector, blocks: &mut Vec<Block>) {
+    if let Some(block) = block_from_element(element, introspector) {
         blocks.push(block);
         return;
     }
@@ -28,12 +30,12 @@ fn collect_blocks(element: &HtmlElement, blocks: &mut Vec<Block>) {
 
     for child in &element.children {
         if let HtmlNode::Element(child) = child {
-            collect_blocks(child, blocks);
+            collect_blocks(child, introspector, blocks);
         }
     }
 }
 
-fn block_from_element(element: &HtmlElement) -> Option<Block> {
+fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Option<Block> {
     match tag_name(element).as_deref() {
         Some("typlite-heading") => Some({
             let level = field_value(element, "level")
@@ -42,13 +44,13 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
             Block::Heading {
                 level,
                 body: field_children(element, "body")
-                    .map(collect_inlines)
+                    .map(|children| collect_inlines(children, introspector))
                     .unwrap_or_default(),
             }
         }),
         Some("typlite-paragraph") => Some(Block::Paragraph(
             field_children(element, "body")
-                .map(collect_inlines)
+                .map(|children| collect_inlines(children, introspector))
                 .unwrap_or_default(),
         )),
         Some("typlite-raw") => Some(Block::Raw {
@@ -57,32 +59,32 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
         }),
         Some("typlite-quote") => Some(Block::Quote(
             field_children(element, "body")
-                .map(collect_item_blocks)
+                .map(|children| collect_item_blocks(children, introspector))
                 .unwrap_or_default(),
         )),
         Some("typlite-figure") => Some(Block::Figure {
             body: field_children(element, "body")
-                .map(collect_item_blocks)
+                .map(|children| collect_item_blocks(children, introspector))
                 .unwrap_or_default(),
             caption: field_children(element, "caption")
-                .map(collect_inlines)
+                .map(|children| collect_inlines(children, introspector))
                 .unwrap_or_default(),
         }),
         Some("typlite-align") => Some(Block::Align(
             field_children(element, "body")
-                .map(collect_item_blocks)
+                .map(|children| collect_item_blocks(children, introspector))
                 .unwrap_or_default(),
         )),
         Some("typlite-math-equation") => Some(Block::Math(
             field_children(element, "body")
-                .map(collect_inlines)
+                .map(|children| collect_inlines(children, introspector))
                 .unwrap_or_default(),
         )),
         Some("typlite-table") => Some(Block::Table {
-            rows: collect_table_rows(element, "table-cell"),
+            rows: collect_table_rows(element, "table-cell", introspector),
         }),
         Some("typlite-grid") => Some(Block::Table {
-            rows: collect_table_rows(element, "grid-cell"),
+            rows: collect_table_rows(element, "grid-cell", introspector),
         }),
         Some("typlite-list") => Some(Block::List {
             ordered: false,
@@ -91,7 +93,7 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
             start: None,
             reversed: false,
             full: false,
-            items: collect_list_items(element, false),
+            items: collect_list_items(element, false, introspector),
         }),
         Some("typlite-enum") => Some(Block::List {
             ordered: true,
@@ -102,14 +104,14 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
                 .and_then(|value| value.parse::<i64>().ok()),
             reversed: field_bool(element, "reversed"),
             full: field_bool(element, "full"),
-            items: collect_list_items(element, true),
+            items: collect_list_items(element, true, introspector),
         }),
         Some(tag) => block_spec_from_tag(&tag).and_then(|spec| {
             block_from_element_kind(
                 spec.kind,
                 BlockElementData {
-                    fields: Vec::new(),
-                    body: collect_block_element_body(element, spec),
+                    fields: collect_element_fields(element, spec, FieldMode::Block, introspector),
+                    body: collect_block_element_body(element, spec, introspector),
                 },
             )
         }),
@@ -123,34 +125,45 @@ fn block_spec_from_tag(tag: &str) -> Option<&'static ElementSpec> {
     matches!(spec.mode, ElementMode::Block | ElementMode::BlockOrInline).then_some(spec)
 }
 
-fn collect_block_element_body(element: &HtmlElement, spec: &'static ElementSpec) -> Vec<Block> {
+fn collect_block_element_body(
+    element: &HtmlElement,
+    spec: &'static ElementSpec,
+    introspector: &Introspector,
+) -> Vec<Block> {
     let mut blocks = Vec::new();
 
     for field in content_fields(spec) {
         if let Some(children) = field_children(element, field) {
-            blocks.extend(collect_field_blocks(children));
+            blocks.extend(collect_field_blocks(children, introspector));
         }
     }
 
     blocks
 }
 
-fn collect_field_blocks(nodes: &[HtmlNode]) -> Vec<Block> {
+fn collect_field_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Vec<Block> {
     let mut blocks = Vec::new();
 
     for node in nodes {
         match node {
             HtmlNode::Element(element) if is_field(element) => {
-                blocks.extend(collect_item_blocks(&element.children));
+                blocks.extend(collect_item_blocks(&element.children, introspector));
             }
-            _ => blocks.extend(collect_item_blocks(std::slice::from_ref(node))),
+            _ => blocks.extend(collect_item_blocks(
+                std::slice::from_ref(node),
+                introspector,
+            )),
         }
     }
 
     blocks
 }
 
-fn collect_list_items(element: &HtmlElement, ordered: bool) -> Vec<ListItem> {
+fn collect_list_items(
+    element: &HtmlElement,
+    ordered: bool,
+    introspector: &Introspector,
+) -> Vec<ListItem> {
     let Some(children) = field_children(element, "children") else {
         return Vec::new();
     };
@@ -163,7 +176,7 @@ fn collect_list_items(element: &HtmlElement, ordered: bool) -> Vec<ListItem> {
             };
 
             let body = field_children(item, "body")
-                .map(collect_item_blocks)
+                .map(|children| collect_item_blocks(children, introspector))
                 .unwrap_or_default();
             let number = ordered
                 .then(|| field_value(item, "number").filter(|value| value.as_str() != "auto"))
@@ -174,7 +187,11 @@ fn collect_list_items(element: &HtmlElement, ordered: bool) -> Vec<ListItem> {
         .collect()
 }
 
-fn collect_table_rows(element: &HtmlElement, cell_kind: &str) -> Vec<TableRow> {
+fn collect_table_rows(
+    element: &HtmlElement,
+    cell_kind: &str,
+    introspector: &Introspector,
+) -> Vec<TableRow> {
     let columns = field_children(element, "columns")
         .map(|children| children.iter().filter_map(field_node).count())
         .filter(|columns| *columns > 0)
@@ -187,7 +204,7 @@ fn collect_table_rows(element: &HtmlElement, cell_kind: &str) -> Vec<TableRow> {
     let mut row = Vec::new();
 
     for child in children {
-        collect_table_cells(child, cell_kind, &mut row);
+        collect_table_cells(child, cell_kind, introspector, &mut row);
         while row.len() >= columns {
             rows.push(TableRow {
                 cells: row.drain(..columns).collect(),
@@ -202,7 +219,12 @@ fn collect_table_rows(element: &HtmlElement, cell_kind: &str) -> Vec<TableRow> {
     rows
 }
 
-fn collect_table_cells(node: &HtmlNode, cell_kind: &str, out: &mut Vec<TableCell>) {
+fn collect_table_cells(
+    node: &HtmlNode,
+    cell_kind: &str,
+    introspector: &Introspector,
+    out: &mut Vec<TableCell>,
+) {
     let HtmlNode::Element(element) = node else {
         return;
     };
@@ -210,7 +232,7 @@ fn collect_table_cells(node: &HtmlNode, cell_kind: &str, out: &mut Vec<TableCell
     if attr(element, "data-typlite").as_deref() == Some(cell_kind) {
         out.push(TableCell {
             body: field_children(element, "body")
-                .map(collect_inlines)
+                .map(|children| collect_inlines(children, introspector))
                 .unwrap_or_default(),
         });
 
@@ -224,11 +246,11 @@ fn collect_table_cells(node: &HtmlNode, cell_kind: &str, out: &mut Vec<TableCell
     }
 
     for child in &element.children {
-        collect_table_cells(child, cell_kind, out);
+        collect_table_cells(child, cell_kind, introspector, out);
     }
 }
 
-fn collect_item_blocks(nodes: &[HtmlNode]) -> Vec<Block> {
+fn collect_item_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Vec<Block> {
     let mut blocks = Vec::new();
     let mut inlines = Vec::new();
 
@@ -240,14 +262,15 @@ fn collect_item_blocks(nodes: &[HtmlNode]) -> Vec<Block> {
                     continue;
                 }
 
-                if let Some(block) = block_from_element(element) {
+                if let Some(block) = block_from_element(element, introspector) {
                     flush_paragraph(&mut inlines, &mut blocks);
                     blocks.push(block);
                 } else {
-                    inlines.extend(collect_inlines(std::slice::from_ref(node)));
+                    inlines.extend(collect_inlines(std::slice::from_ref(node), introspector));
                 }
             }
-            HtmlNode::Tag(_) | HtmlNode::Frame(_) => {}
+            HtmlNode::Frame(frame) => inlines.push(frame_to_inline(frame, introspector)),
+            HtmlNode::Tag(_) => {}
         }
     }
 
@@ -267,6 +290,7 @@ fn inline_has_content(inline: &Inline) -> bool {
     match inline {
         Inline::Text(text) => !text.trim().is_empty(),
         Inline::Linebreak => false,
+        Inline::Frame(_) => true,
         Inline::Emph(body)
         | Inline::Strong(body)
         | Inline::Strike(body)
@@ -275,13 +299,94 @@ fn inline_has_content(inline: &Inline) -> bool {
         | Inline::Math(body) => body.iter().any(inline_has_content),
         Inline::Link { dest, body } => !dest.is_empty() || body.iter().any(inline_has_content),
         Inline::Raw { text, .. } => !text.is_empty(),
-        _ => inline
-            .generated_body()
-            .is_some_and(|body| body.iter().any(inline_has_content)),
+        Inline::Circle(data)
+        | Inline::Curve(data)
+        | Inline::Ellipse(data)
+        | Inline::Line(data)
+        | Inline::Path(data)
+        | Inline::Polygon(data)
+        | Inline::Rect(data)
+        | Inline::Square(data) => data
+            .inlines("frame")
+            .is_some_and(|frames| !frames.is_empty()),
+        Inline::Box(data)
+        | Inline::Cite(data)
+        | Inline::CurveClose(data)
+        | Inline::CurveCubic(data)
+        | Inline::CurveLine(data)
+        | Inline::CurveMove(data)
+        | Inline::CurveQuad(data)
+        | Inline::Document(data)
+        | Inline::FigureCaption(data)
+        | Inline::Footnote(data)
+        | Inline::FootnoteEntry(data)
+        | Inline::GridCell(data)
+        | Inline::GridFooter(data)
+        | Inline::GridHeader(data)
+        | Inline::GridHline(data)
+        | Inline::GridVline(data)
+        | Inline::H(data)
+        | Inline::Hide(data)
+        | Inline::Highlight(data)
+        | Inline::Image(data)
+        | Inline::MathAccent(data)
+        | Inline::MathAttach(data)
+        | Inline::MathBinom(data)
+        | Inline::MathCancel(data)
+        | Inline::MathCases(data)
+        | Inline::MathClass(data)
+        | Inline::MathFrac(data)
+        | Inline::MathLimits(data)
+        | Inline::MathLr(data)
+        | Inline::MathMat(data)
+        | Inline::MathMid(data)
+        | Inline::MathOp(data)
+        | Inline::MathOverbrace(data)
+        | Inline::MathOverbracket(data)
+        | Inline::MathOverline(data)
+        | Inline::MathOverparen(data)
+        | Inline::MathOvershell(data)
+        | Inline::MathPrimes(data)
+        | Inline::MathRoot(data)
+        | Inline::MathScripts(data)
+        | Inline::MathStretch(data)
+        | Inline::MathUnderbrace(data)
+        | Inline::MathUnderbracket(data)
+        | Inline::MathUnderline(data)
+        | Inline::MathUnderparen(data)
+        | Inline::MathUndershell(data)
+        | Inline::MathVec(data)
+        | Inline::Metadata(data)
+        | Inline::Move(data)
+        | Inline::OutlineEntry(data)
+        | Inline::Overline(data)
+        | Inline::Pad(data)
+        | Inline::Page(data)
+        | Inline::ParLine(data)
+        | Inline::PdfArtifact(data)
+        | Inline::PdfAttach(data)
+        | Inline::PdfEmbed(data)
+        | Inline::Place(data)
+        | Inline::PlaceFlush(data)
+        | Inline::Quote(data)
+        | Inline::RawLine(data)
+        | Inline::Ref(data)
+        | Inline::Repeat(data)
+        | Inline::Rotate(data)
+        | Inline::Scale(data)
+        | Inline::Skew(data)
+        | Inline::Smallcaps(data)
+        | Inline::Smartquote(data)
+        | Inline::TableCell(data)
+        | Inline::TableFooter(data)
+        | Inline::TableHeader(data)
+        | Inline::TableHline(data)
+        | Inline::TableVline(data)
+        | Inline::Underline(data) => data.body.iter().any(inline_has_content),
     }
 }
 
-fn collect_inlines(nodes: &[HtmlNode]) -> Vec<Inline> {
+fn collect_inlines(nodes: &[HtmlNode], introspector: &Introspector) -> Vec<Inline> {
     let mut out = Vec::new();
 
     for node in nodes {
@@ -295,38 +400,38 @@ fn collect_inlines(nodes: &[HtmlNode]) -> Vec<Inline> {
                 match attr(element, "data-typlite").as_deref() {
                     Some("emph") => out.push(Inline::Emph(
                         field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     )),
                     Some("strong") => out.push(Inline::Strong(
                         field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     )),
                     Some("link") => out.push(Inline::Link {
                         dest: field_value(element, "dest").unwrap_or_default(),
                         body: field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     }),
                     Some("strike") => out.push(Inline::Strike(
                         field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     )),
                     Some("sub") => out.push(Inline::Sub(
                         field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     )),
                     Some("super") => out.push(Inline::Super(
                         field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     )),
                     Some("math-equation") => out.push(Inline::Math(
                         field_children(element, "body")
-                            .map(collect_inlines)
+                            .map(|children| collect_inlines(children, introspector))
                             .unwrap_or_default(),
                     )),
                     Some("linebreak") => out.push(Inline::Linebreak),
@@ -339,8 +444,13 @@ fn collect_inlines(nodes: &[HtmlNode]) -> Vec<Inline> {
                             if let Some(inline) = inline_from_element_kind(
                                 spec.kind,
                                 InlineElementData {
-                                    fields: Vec::new(),
-                                    body: collect_inline_element_body(element, spec),
+                                    fields: collect_element_fields(
+                                        element,
+                                        spec,
+                                        FieldMode::Inline,
+                                        introspector,
+                                    ),
+                                    body: collect_inline_element_body(element, spec, introspector),
                                 },
                             ) {
                                 out.push(inline);
@@ -348,41 +458,110 @@ fn collect_inlines(nodes: &[HtmlNode]) -> Vec<Inline> {
                         }
                     }
                     None => {
-                        out.extend(collect_inlines(&element.children));
+                        out.extend(collect_inlines(&element.children, introspector));
                     }
                 }
             }
-            HtmlNode::Tag(_) | HtmlNode::Frame(_) => {}
+            HtmlNode::Frame(frame) => out.push(frame_to_inline(frame, introspector)),
+            HtmlNode::Tag(_) => {}
         }
     }
 
     out
 }
 
-fn collect_inline_element_body(element: &HtmlElement, spec: &'static ElementSpec) -> Vec<Inline> {
+fn collect_inline_element_body(
+    element: &HtmlElement,
+    spec: &'static ElementSpec,
+    introspector: &Introspector,
+) -> Vec<Inline> {
     for field in content_fields(spec) {
         if let Some(children) = field_children(element, field) {
-            return collect_inlines(children);
+            return collect_inlines(children, introspector);
         }
     }
 
     Vec::new()
 }
 
-fn content_fields(spec: &'static ElementSpec) -> impl Iterator<Item = &'static str> {
-    spec.fields.iter().copied().filter(|field| {
-        matches!(
-            *field,
-            "body" | "children" | "title" | "caption" | "term" | "description"
+#[derive(Debug, Clone, Copy)]
+enum FieldMode {
+    Block,
+    Inline,
+}
+
+fn collect_element_fields(
+    element: &HtmlElement,
+    spec: &'static ElementSpec,
+    mode: FieldMode,
+    introspector: &Introspector,
+) -> Vec<ElementField> {
+    spec.fields
+        .iter()
+        .copied()
+        .filter_map(|name| {
+            let children = field_children(element, name)?;
+            Some(ElementField {
+                name,
+                value: collect_element_field_value(name, children, mode, introspector),
+            })
+        })
+        .chain(
+            field_children(element, "frame").map(|children| ElementField {
+                name: "frame",
+                value: ElementFieldValue::Inlines(collect_inlines(children, introspector)),
+            }),
         )
-    })
+        .collect()
+}
+
+fn collect_element_field_value(
+    name: &str,
+    children: &[HtmlNode],
+    mode: FieldMode,
+    introspector: &Introspector,
+) -> ElementFieldValue {
+    if is_content_field_name(name) {
+        match mode {
+            FieldMode::Block => {
+                ElementFieldValue::Blocks(collect_field_blocks(children, introspector))
+            }
+            FieldMode::Inline => {
+                ElementFieldValue::Inlines(collect_inlines(children, introspector))
+            }
+        }
+    } else {
+        ElementFieldValue::Scalar(collect_text(children, introspector))
+    }
+}
+
+fn content_fields(spec: &'static ElementSpec) -> impl Iterator<Item = &'static str> {
+    spec.fields
+        .iter()
+        .copied()
+        .filter(|field| is_content_field_name(field))
+}
+
+fn is_content_field_name(field: &str) -> bool {
+    matches!(
+        field,
+        "body"
+            | "children"
+            | "title"
+            | "caption"
+            | "term"
+            | "description"
+            | "supplement"
+            | "citation"
+            | "element"
+    )
 }
 
 fn spec_by_kind(kind: &str) -> Option<&'static ElementSpec> {
     ELEMENTS.iter().find(|spec| spec.kind.name() == kind)
 }
 
-fn collect_text(nodes: &[HtmlNode]) -> EcoString {
+fn collect_text(nodes: &[HtmlNode], introspector: &Introspector) -> EcoString {
     let mut out = EcoString::new();
 
     for node in nodes {
@@ -390,14 +569,37 @@ fn collect_text(nodes: &[HtmlNode]) -> EcoString {
             HtmlNode::Text(text, _) => out.push_str(text),
             HtmlNode::Element(element) => {
                 if !is_field(element) {
-                    out.push_str(&collect_text(&element.children));
+                    out.push_str(&collect_text(&element.children, introspector));
                 }
             }
-            HtmlNode::Tag(_) | HtmlNode::Frame(_) => {}
+            HtmlNode::Frame(frame) => {
+                if !out.is_empty() {
+                    out.push(' ');
+                }
+                out.push_str(&frame_to_svg(frame, introspector));
+            }
+            HtmlNode::Tag(_) => {}
         }
     }
 
     out
+}
+
+fn frame_to_inline(frame: &HtmlFrame, introspector: &Introspector) -> Inline {
+    Inline::Frame(FrameImage {
+        svg: frame_to_svg(frame, introspector),
+    })
+}
+
+fn frame_to_svg(frame: &HtmlFrame, introspector: &Introspector) -> EcoString {
+    typst_svg::svg_html_frame(
+        &frame.inner,
+        frame.text_size,
+        frame.id.as_deref(),
+        &frame.link_points,
+        introspector,
+    )
+    .into()
 }
 
 fn tag_name(element: &HtmlElement) -> Option<String> {
@@ -414,7 +616,25 @@ fn attr(element: &HtmlElement, name: &str) -> Option<EcoString> {
 }
 
 fn field_value(element: &HtmlElement, name: &str) -> Option<EcoString> {
-    field_element(element, name).map(|field| collect_text(&field.children))
+    field_element(element, name).map(|field| collect_text_without_frames(&field.children))
+}
+
+fn collect_text_without_frames(nodes: &[HtmlNode]) -> EcoString {
+    let mut out = EcoString::new();
+
+    for node in nodes {
+        match node {
+            HtmlNode::Text(text, _) => out.push_str(text),
+            HtmlNode::Element(element) => {
+                if !is_field(element) {
+                    out.push_str(&collect_text_without_frames(&element.children));
+                }
+            }
+            HtmlNode::Tag(_) | HtmlNode::Frame(_) => {}
+        }
+    }
+
+    out
 }
 
 fn field_bool(element: &HtmlElement, name: &str) -> bool {

@@ -369,6 +369,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
           <span data-typlite-field="true" name="outset" kind="dictionary">
           <span data-typlite-field="true" name="body" kind="content">
             text "Circle"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         text " "
         <span data-typlite="ellipse">
           <span data-typlite-field="true" name="width" kind="relative length">
@@ -383,6 +385,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
           <span data-typlite-field="true" name="outset" kind="dictionary">
           <span data-typlite-field="true" name="body" kind="content">
             text "Ellipse"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         text " "
         <span data-typlite="rect">
           <span data-typlite-field="true" name="width" kind="relative length">
@@ -398,6 +402,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
           <span data-typlite-field="true" name="outset" kind="dictionary">
           <span data-typlite-field="true" name="body" kind="content">
             text "Rect"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         text " "
         <span data-typlite="square">
           <span data-typlite-field="true" name="size" kind="none">
@@ -414,6 +420,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
           <span data-typlite-field="true" name="outset" kind="dictionary">
           <span data-typlite-field="true" name="body" kind="content">
             text "Square"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         text " "
         <span data-typlite="line">
           <span data-typlite-field="true" name="start" kind="array">
@@ -428,6 +436,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
             text "0deg"
           <span data-typlite-field="true" name="stroke" kind="stroke">
             text "1pt + black"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         text " "
         <span data-typlite="polygon">
           <span data-typlite-field="true" name="fill" kind="none">
@@ -451,6 +461,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
                 text "0% + 2pt"
               <span data-typlite-field="true" name="1" kind="relative length">
                 text "0% + 4pt"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
         text " "
         <span data-typlite="curve">
           <span data-typlite-field="true" name="fill" kind="none">
@@ -514,6 +526,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
               <span data-typlite="curve-close">
                 <span data-typlite-field="true" name="mode" kind="string">
                   text "smooth"
+          <span data-typlite-field="true" name="frame" kind="frame">
+            frame
     tag
     <typlite-parbreak>
     tag
@@ -5883,6 +5897,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
                   text "0deg"
                 <span data-typlite-field="true" name="stroke" kind="stroke">
                   text "0.5pt"
+                <span data-typlite-field="true" name="frame" kind="frame">
+                  frame
             <span data-typlite-field="true" name="clearance" kind="length">
               text "1em"
             <span data-typlite-field="true" name="gap" kind="length">
