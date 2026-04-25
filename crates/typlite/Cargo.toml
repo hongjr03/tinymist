@@ -30,6 +30,7 @@ tinymist-project = { workspace = true, features = ["lsp"] }
 tinymist-std.workspace = true
 typst.workspace = true
 typst-html.workspace = true
+typst-library.workspace = true
 typst-syntax.workspace = true
 typst-svg.workspace = true
 

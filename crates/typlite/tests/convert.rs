@@ -45,6 +45,32 @@ fn generated_element_spec_snapshot() {
     });
 }
 
+#[test]
+fn rust_content_encoder_reads_styled_content() {
+    let source = r##"
+#import "@local/typlite-ir:0.1.0": encode_content
+
+#raw(encode_content(text(red)[red]))
+
+#raw(encode_content($bold(A)$))
+"##;
+
+    run_with_sources(source, |verse, _| {
+        let world = Arc::new(verse.snapshot());
+        let (world, _) = TypliteFeat::default()
+            .prepare_world(&world, Format::Md)
+            .unwrap();
+        let html = typst::compile::<typst_html::HtmlDocument>(&world)
+            .output
+            .unwrap();
+        let debug = render_debug_html(&html.root);
+
+        assert!(debug.contains(r#"\"func\":\"styled"#), "{debug}");
+        assert!(debug.contains(r#"#ff4136"#), "{debug}");
+        assert!(debug.contains(r#"\"bold\":true"#), "{debug}");
+    });
+}
+
 fn element(selector: &str) -> &'static typlite::element_spec::ElementSpec {
     ELEMENTS
         .iter()

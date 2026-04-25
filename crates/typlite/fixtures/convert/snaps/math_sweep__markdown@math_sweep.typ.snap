@@ -51,11 +51,11 @@ $$\left.\begin{array}{l}z_{n_{p}} \\ a^{2}\end{array}\right)$$
 
 $$x + \operatorname{lim}\limits_{n \to \infty} n$$
 
-$$A + A + A + A + A$$
+$$\textstyle \mathrm{A} + \textstyle \mathit{A} + \textstyle \mathbf{A} + \textstyle \mathrm{A} + \textstyle \mathsf{A}$$
 
-$$A + A + A + A + A$$
+$$\textstyle \mathcal{A} + \textstyle \mathscr{A} + \textstyle \mathfrak{A} + \textstyle \mathtt{A} + \textstyle \mathbb{A}$$
 
-$$\sum_{i} x_{i} + \sum_{i} x_{i} + x + x$$
+$$\displaystyle \sum_{i} x_{i} + \textstyle \sum_{i} x_{i} + \scriptstyle x + \scriptscriptstyle x$$
 
 ## Under over cancel align
 

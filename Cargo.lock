@@ -7314,6 +7314,7 @@ dependencies = [
  "tinymist-tests",
  "typst",
  "typst-html",
+ "typst-library",
  "typst-svg",
  "typst-syntax 0.14.2",
 ]

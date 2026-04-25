@@ -935,11 +935,11 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"t\":{\"func\":\"text\",\"text\":\"2\"},\"b\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"root\",\"radicand\":{\"func\":\"text\",\"text\":\"4\"}}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"b\":{\"func\":\"text\",\"text\":\"1\"},\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"attach\",\"t\":{\"func\":\"text\",\"text\":\"2\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"root\",\"radicand\":{\"func\":\"text\",\"text\":\"4\"}}],\"func\":\"sequence\"}"
     tag
     <typlite-parbreak>
     tag

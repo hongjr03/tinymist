@@ -74,11 +74,15 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
   }
 }
 
+#let encoded_content_node(name, value) = field_node(name, "content-ir", __typlite_encode_content(value))
+
 #let opaque_value_node(name, value) = {
   let ty = type(value)
   let kind = str(ty)
   if ty == type(none) {
     field_node(name, kind, [])
+  } else if ty == type([]) {
+    encoded_content_node(name, value)
   } else {
     field_node(name, kind, scalar(value))
   }
@@ -114,6 +118,8 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
 } else {
   fallback
 }
+
+#let encode_content(value) = __typlite_encode_content(value)
 
 #let list_item_node(index, item) = field_node(str(index), "list.item", {
   value_node("body", field(item, "body"))

@@ -1097,11 +1097,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"accent\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"accent\":\"\u{302}\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"t\":{\"func\":\"text\",\"text\":\"1\"},\"b\":{\"func\":\"text\",\"text\":\"2\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"binom\",\"upper\":{\"func\":\"text\",\"text\":\"1\"},\"lower\":[{\"func\":\"text\",\"text\":\"2\"}]},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"cancel\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"accent\":\"\u{302}\",\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"accent\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"b\":{\"func\":\"text\",\"text\":\"2\"},\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"attach\",\"t\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"binom\",\"lower\":[{\"func\":\"text\",\"text\":\"2\"}],\"upper\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"cancel\"}],\"func\":\"sequence\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1110,11 +1110,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"cases\",\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}]},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"class\",\"class\":\"normal\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"frac\",\"num\":{\"func\":\"text\",\"text\":\"1\"},\"denom\":{\"func\":\"text\",\"text\":\"2\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"limits\",\"body\":{\"func\":\"symbol\",\"text\":\"∑\"},\"inline\":false}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],\"func\":\"cases\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"class\":\"normal\",\"func\":\"class\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"denom\":{\"func\":\"text\",\"text\":\"2\"},\"func\":\"frac\",\"num\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"∑\"},\"func\":\"limits\",\"inline\":false}],\"func\":\"sequence\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1123,11 +1123,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"lr\",\"body\":{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\")\"}]}}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"mat\",\"rows\":[[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],[{\"func\":\"text\",\"text\":\"3\"},{\"func\":\"text\",\"text\":\"4\"}]]},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"mid\",\"body\":{\"func\":\"symbol\",\"text\":\"|\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"op\",\"text\":{\"func\":\"text\",\"text\":\"lim\"},\"limits\":true}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"body\":{\"body\":{\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"symbol\",\"text\":\"x\"},{\"func\":\"symbol\",\"text\":\")\"}],\"func\":\"sequence\"},\"func\":\"lr\"},\"func\":\"lr\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"mat\",\"rows\":[[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],[{\"func\":\"text\",\"text\":\"3\"},{\"func\":\"text\",\"text\":\"4\"}]]},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"|\"},\"func\":\"mid\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"op\",\"limits\":true,\"text\":{\"func\":\"text\",\"text\":\"lim\"}}],\"func\":\"sequence\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1136,11 +1136,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"overbrace\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overbracket\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overline\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overparen\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"overshell\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"overbrace\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"overbracket\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"overline\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"overparen\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"overshell\"}],\"func\":\"sequence\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1149,11 +1149,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"primes\",\"count\":3},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"root\",\"index\":{\"func\":\"text\",\"text\":\"3\"},\"radicand\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"scripts\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"stretch\",\"body\":{\"func\":\"symbol\",\"text\":\"→\"}}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"count\":3,\"func\":\"primes\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"root\",\"index\":{\"func\":\"text\",\"text\":\"3\"},\"radicand\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"scripts\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"→\"},\"func\":\"stretch\"}],\"func\":\"sequence\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1162,11 +1162,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"underbrace\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"underbracket\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"underline\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"underparen\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"undershell\",\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"annotation\":{\"func\":\"text\",\"text\":\"1\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"vec\",\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}]}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"underbrace\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"underbracket\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"underline\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"underparen\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"annotation\":{\"func\":\"text\",\"text\":\"1\"},\"body\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"undershell\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],\"func\":\"vec\"}],\"func\":\"sequence\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1175,11 +1175,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"vec\",\"delim\":[\"[\",\"]\"],\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"text\",\"text\":\"2\"}],\"delim\":[\"[\",\"]\"],\"func\":\"vec\"}"
     tag
     tag
     <typlite-math-equation>
@@ -1188,11 +1188,11 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
       <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="number-align" kind="alignment">
         text "end + horizon"
-      <span data-typlite-field="true" name="supplement" kind="content">
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
         text "{\"func\":\"text\",\"text\":\"Equation\"}"
       <span data-typlite-field="true" name="alt" kind="none">
-      <span data-typlite-field="true" name="body" kind="content">
-        text "{\"func\":\"sequence\",\"children\":[{\"func\":\"attach\",\"base\":{\"func\":\"symbol\",\"text\":\"∑\"},\"t\":{\"func\":\"symbol\",\"text\":\"n\"},\"b\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"k\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"text\",\"text\":\"0\"}]}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"k\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"2\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"…\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"space\"},{\"func\":\"linebreak\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"frac\",\"num\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"lr\",\"body\":{\"func\":\"sequence\",\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"symbol\",\"text\":\")\"}]}}]},\"denom\":{\"func\":\"text\",\"text\":\"2\"}}]}"
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"b\":{\"children\":[{\"func\":\"symbol\",\"text\":\"k\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"text\",\"text\":\"0\"}],\"func\":\"sequence\"},\"base\":{\"func\":\"symbol\",\"text\":\"∑\"},\"func\":\"attach\",\"t\":{\"func\":\"symbol\",\"text\":\"n\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"k\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"2\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"…\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"space\"},{\"func\":\"linebreak\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"denom\":{\"func\":\"text\",\"text\":\"2\"},\"func\":\"frac\",\"num\":{\"children\":[{\"func\":\"symbol\",\"text\":\"n\"},{\"body\":{\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"symbol\",\"text\":\"n\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"text\",\"text\":\"1\"},{\"func\":\"symbol\",\"text\":\")\"}],\"func\":\"sequence\"},\"func\":\"lr\"}],\"func\":\"sequence\"}}],\"func\":\"sequence\"}"
     tag
     <section role="doc-endnotes">
       <ol style="list-style-type: none">
