@@ -40,6 +40,8 @@ pub enum Block {
     Table {
         /// Table rows.
         rows: Vec<TableRow>,
+        /// Column alignments.
+        alignments: Vec<TableAlign>,
     },
     /// Bibliography block.
     Bibliography(BlockElementData),
@@ -58,7 +60,10 @@ pub enum Block {
     /// Stack block.
     Stack(BlockElementData),
     /// Terms list.
-    Terms(BlockElementData),
+    Terms {
+        /// Terms list items.
+        items: Vec<TermItem>,
+    },
     /// Document title.
     Title(BlockElementData),
     /// Vertical spacing.
@@ -98,6 +103,15 @@ pub struct ListItem {
     pub body: Vec<Block>,
 }
 
+/// A terms list item.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TermItem {
+    /// Term body.
+    pub term: Vec<Inline>,
+    /// Term description blocks.
+    pub description: Vec<Block>,
+}
+
 /// A table row.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TableRow {
@@ -110,6 +124,19 @@ pub struct TableRow {
 pub struct TableCell {
     /// Cell inline body.
     pub body: Vec<Inline>,
+}
+
+/// Markdown-compatible table column alignment.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TableAlign {
+    /// Default alignment.
+    Default,
+    /// Left alignment.
+    Left,
+    /// Center alignment.
+    Center,
+    /// Right alignment.
+    Right,
 }
 
 /// A Typst math expression node.
@@ -466,7 +493,6 @@ impl Block {
             | Self::Pagebreak(data)
             | Self::Parbreak(data)
             | Self::Stack(data)
-            | Self::Terms(data)
             | Self::Title(data)
             | Self::V(data) => Some(&data.body),
             _ => None,
@@ -576,7 +602,6 @@ pub fn block_from_element_kind(kind: ElementKind, data: BlockElementData) -> Opt
         ElementKind::Pagebreak => Some(Block::Pagebreak(data)),
         ElementKind::Parbreak => Some(Block::Parbreak(data)),
         ElementKind::Stack => Some(Block::Stack(data)),
-        ElementKind::Terms => Some(Block::Terms(data)),
         ElementKind::Title => Some(Block::Title(data)),
         ElementKind::V => Some(Block::V(data)),
         _ => None,

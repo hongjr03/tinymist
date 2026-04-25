@@ -3,7 +3,7 @@
 use crate::Result;
 use crate::ir::{
     Block, Document, ElementFieldValue, FrameImage, Inline, InlineElementData, MathNode, MathValue,
-    TableRow,
+    TableAlign, TableRow, TermItem,
 };
 use tinymist_std::error::prelude::*;
 
@@ -48,16 +48,19 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
         }
         Block::Quote(blocks) => render_quote(blocks, indent, out)?,
         Block::Figure { body, caption } => {
+            out.push_str(&" ".repeat(indent));
+            out.push_str("<figure>\n");
             render_blocks_into(body, indent, out)?;
             if !caption.is_empty() {
-                if !body.is_empty() {
-                    out.push('\n');
-                    out.push('\n');
-                }
+                out.push('\n');
                 out.push_str(&" ".repeat(indent));
-                out.push_str("Figure: ");
+                out.push_str("<figcaption>");
                 render_inlines(caption, out)?;
+                out.push_str("</figcaption>");
             }
+            out.push('\n');
+            out.push_str(&" ".repeat(indent));
+            out.push_str("</figure>");
         }
         Block::Align(blocks) => render_blocks_into(blocks, indent, out)?,
         Block::Math(body) => {
@@ -66,10 +69,20 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             render_math(body, out)?;
             out.push_str("$$");
         }
-        Block::Table { rows } => render_table(rows, indent, out)?,
-        Block::Raw { text, .. } => {
+        Block::Table { rows, alignments } => render_table(rows, alignments, indent, out)?,
+        Block::Raw { lang, text } => {
             out.push_str(&" ".repeat(indent));
+            out.push_str("```");
+            if let Some(lang) = lang {
+                out.push_str(lang);
+            }
+            out.push('\n');
             out.push_str(text);
+            if !text.ends_with('\n') {
+                out.push('\n');
+            }
+            out.push_str(&" ".repeat(indent));
+            out.push_str("```");
         }
         Block::List {
             ordered,
@@ -78,11 +91,10 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             items,
             ..
         } => render_list(*ordered, *start, *reversed, items, indent, out)?,
-        Block::Block(data)
-        | Block::Columns(data)
-        | Block::Stack(data)
-        | Block::Terms(data)
-        | Block::Title(data) => render_blocks_into(&data.body, indent, out)?,
+        Block::Block(data) | Block::Columns(data) | Block::Stack(data) | Block::Title(data) => {
+            render_blocks_into(&data.body, indent, out)?
+        }
+        Block::Terms { items } => render_terms(items, indent, out)?,
         Block::Colbreak(_) | Block::Parbreak(_) | Block::V(_) => {}
         Block::Outline(data) => {
             if let Some(title) = data.field("title") {
@@ -137,7 +149,12 @@ fn render_quote(blocks: &[Block], indent: usize, out: &mut String) -> Result<()>
     Ok(())
 }
 
-fn render_table(rows: &[TableRow], indent: usize, out: &mut String) -> Result<()> {
+fn render_table(
+    rows: &[TableRow],
+    alignments: &[TableAlign],
+    indent: usize,
+    out: &mut String,
+) -> Result<()> {
     if rows.is_empty() {
         return Ok(());
     }
@@ -151,8 +168,15 @@ fn render_table(rows: &[TableRow], indent: usize, out: &mut String) -> Result<()
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push('|');
-    for _ in 0..columns {
-        out.push_str(" --- |");
+    for index in 0..columns {
+        out.push(' ');
+        out.push_str(table_align_marker(
+            alignments
+                .get(index)
+                .copied()
+                .unwrap_or(TableAlign::Default),
+        ));
+        out.push_str(" |");
     }
 
     for row in &rows[1..] {
@@ -161,6 +185,15 @@ fn render_table(rows: &[TableRow], indent: usize, out: &mut String) -> Result<()
     }
 
     Ok(())
+}
+
+fn table_align_marker(align: TableAlign) -> &'static str {
+    match align {
+        TableAlign::Default => "---",
+        TableAlign::Left => ":---",
+        TableAlign::Center => ":---:",
+        TableAlign::Right => "---:",
+    }
 }
 
 fn render_table_row(row: &TableRow, columns: usize, indent: usize, out: &mut String) -> Result<()> {
@@ -225,6 +258,35 @@ fn render_list(
         for line in lines {
             out.push('\n');
             out.push_str(line);
+        }
+    }
+
+    Ok(())
+}
+
+fn render_terms(items: &[TermItem], indent: usize, out: &mut String) -> Result<()> {
+    for (index, item) in items.iter().enumerate() {
+        if index > 0 {
+            out.push('\n');
+            out.push('\n');
+        }
+
+        out.push_str(&" ".repeat(indent));
+        render_inlines(&item.term, out)?;
+
+        let description = render_blocks(&item.description, indent + 2)?;
+        if !description.is_empty() {
+            out.push('\n');
+            out.push_str(&" ".repeat(indent));
+            out.push_str(": ");
+            let mut lines = description.lines();
+            if let Some(first) = lines.next() {
+                out.push_str(first.trim_start());
+            }
+            for line in lines {
+                out.push('\n');
+                out.push_str(line);
+            }
         }
     }
 
@@ -311,9 +373,9 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
                 render_inlines(&data.body, out)?
             }
             Inline::Footnote(data) => {
-                out.push_str("<sup>");
+                out.push_str("^[");
                 render_inlines(&data.body, out)?;
-                out.push_str("</sup>");
+                out.push(']');
             }
             Inline::GridHline(_)
             | Inline::GridVline(_)

@@ -19,6 +19,12 @@ Stack A
 
 Stack B
 
+Term A
+: Description A
+
+Term B
+: Description B
+
 Outline
 
 <div style="break-after: page"></div>
@@ -29,7 +35,7 @@ Box <img alt="circle" src="data:image/svg+xml;utf8,%3Csvg%20class%3D%22typst-fra
 
 <span style="text-decoration: overline">Overline</span> <u>Underline</u> <mark>Highlight</mark> <span style="font-variant: small-caps">Smallcaps</span> 
 
-<sup>Footnote body</sup>
+^[Footnote body]
 
 @sweep
 

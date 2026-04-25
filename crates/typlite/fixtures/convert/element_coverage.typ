@@ -13,6 +13,8 @@
 
 @title[Heading with #emph[emphasis] and #link("https://example.com")[a link]]
 
+#cite(<title>)
+
 #quote(block: true)[A block quote with #underline[underlined text].]
 
 #figure(

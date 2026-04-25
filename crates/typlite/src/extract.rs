@@ -10,8 +10,8 @@ use crate::Result;
 use crate::element_spec::{ELEMENTS, ElementMode, ElementSpec};
 use crate::ir::{
     Block, BlockElementData, Document, ElementField, ElementFieldValue, FrameImage, Inline,
-    InlineElementData, ListItem, MathField, MathNode, MathValue, TableCell, TableRow,
-    block_from_element_kind, inline_from_element_kind,
+    InlineElementData, ListItem, MathField, MathNode, MathValue, TableAlign, TableCell, TableRow,
+    TermItem, block_from_element_kind, inline_from_element_kind,
 };
 
 /// Extracts typlite IR nodes from an HTML document root.
@@ -93,9 +93,11 @@ fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Res
         Some("typlite-math-equation") => Some(Block::Math(math_field(element, "body")?)),
         Some("typlite-table") => Some(Block::Table {
             rows: collect_table_rows(element, "table-cell", introspector)?,
+            alignments: collect_table_alignments(element),
         }),
         Some("typlite-grid") => Some(Block::Table {
             rows: collect_table_rows(element, "grid-cell", introspector)?,
+            alignments: collect_table_alignments(element),
         }),
         Some("typlite-list") => Some(Block::List {
             ordered: false,
@@ -116,6 +118,9 @@ fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Res
             reversed: field_bool(element, "reversed"),
             full: field_bool(element, "full"),
             items: collect_list_items(element, true, introspector)?,
+        }),
+        Some("typlite-terms") => Some(Block::Terms {
+            items: collect_term_items(element, introspector)?,
         }),
         Some(tag) => match block_spec_from_tag(&tag) {
             Some(spec) => block_from_element_kind(
@@ -203,6 +208,32 @@ fn collect_list_items(
     Ok(items)
 }
 
+fn collect_term_items(element: &HtmlElement, introspector: &Introspector) -> Result<Vec<TermItem>> {
+    let Some(children) = field_children(element, "children") else {
+        return Ok(Vec::new());
+    };
+
+    let mut items = Vec::new();
+    for node in children {
+        let HtmlNode::Element(item) = node else {
+            continue;
+        };
+
+        let term = field_children(item, "term")
+            .map(|children| collect_inlines(children, introspector))
+            .transpose()?
+            .unwrap_or_default();
+        let description = field_children(item, "description")
+            .map(|children| collect_item_blocks(children, introspector))
+            .transpose()?
+            .unwrap_or_default();
+
+        items.push(TermItem { term, description });
+    }
+
+    Ok(items)
+}
+
 fn collect_table_rows(
     element: &HtmlElement,
     cell_kind: &str,
@@ -233,6 +264,38 @@ fn collect_table_rows(
     }
 
     Ok(rows)
+}
+
+fn collect_table_alignments(element: &HtmlElement) -> Vec<TableAlign> {
+    let Some(children) = field_children(element, "align") else {
+        return Vec::new();
+    };
+
+    let alignments = children
+        .iter()
+        .filter_map(field_node)
+        .map(|field| table_alignment(&collect_text_without_frames(&field.children)))
+        .collect::<Vec<_>>();
+
+    if alignments.is_empty() {
+        let alignment = table_alignment(&collect_text_without_frames(children));
+        if alignment == TableAlign::Default {
+            Vec::new()
+        } else {
+            vec![alignment]
+        }
+    } else {
+        alignments
+    }
+}
+
+fn table_alignment(value: &str) -> TableAlign {
+    match value.trim() {
+        "left" | "start" => TableAlign::Left,
+        "center" | "horizon" => TableAlign::Center,
+        "right" | "end" => TableAlign::Right,
+        _ => TableAlign::Default,
+    }
 }
 
 fn collect_table_cells(
