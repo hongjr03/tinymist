@@ -17,9 +17,10 @@ line break.
   Column two
 </div>
 
-Stack A
-
-Stack B
+<div style="display: flex; flex-direction: column; gap: 2pt">
+  Stack A
+  Stack B
+</div>
 
 Term A
 : Description A
@@ -30,6 +31,8 @@ Term B
 Outline
 
 <div style="break-after: page"></div>
+
+<div style="height: 2pt"></div>
 
 Placed . 
 

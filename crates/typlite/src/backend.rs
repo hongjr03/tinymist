@@ -98,15 +98,15 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             ..
         } => render_list(*ordered, *start, *reversed, items, indent, out)?,
         Block::Columns(data) => render_columns(data, indent, out)?,
-        Block::Block(data) | Block::Stack(data) | Block::Title(data) => {
-            render_blocks_into(&data.body, indent, out)?
-        }
+        Block::Stack(data) => render_stack(data, indent, out)?,
+        Block::Block(data) | Block::Title(data) => render_blocks_into(&data.body, indent, out)?,
         Block::Terms { items } => render_terms(items, indent, out)?,
         Block::Colbreak(_) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<div style=\"break-after: column\"></div>");
         }
-        Block::Parbreak(_) | Block::V(_) => {}
+        Block::V(data) => render_vertical_space(data, indent, out)?,
+        Block::Parbreak(_) => {}
         Block::Outline(data) => {
             if let Some(title) = data.field("title") {
                 out.push_str(&" ".repeat(indent));
@@ -237,6 +237,53 @@ fn render_columns(
     out.push_str("</div>");
 
     Ok(())
+}
+
+fn render_stack(data: &crate::ir::BlockElementData, indent: usize, out: &mut String) -> Result<()> {
+    out.push_str(&" ".repeat(indent));
+    out.push_str("<div style=\"display: flex");
+    if let Some(direction) = data.scalar("dir").and_then(css_stack_direction) {
+        out.push_str("; flex-direction: ");
+        out.push_str(direction);
+    }
+    if let Some(spacing) = data.scalar("spacing").filter(|value| !value.is_empty()) {
+        out.push_str("; gap: ");
+        push_css_length(spacing, out);
+    }
+    out.push_str("\">\n");
+    render_blocks_html_into(&data.body, indent + 2, out)?;
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out.push_str("</div>");
+
+    Ok(())
+}
+
+fn render_vertical_space(
+    data: &crate::ir::BlockElementData,
+    indent: usize,
+    out: &mut String,
+) -> Result<()> {
+    let Some(amount) = data.scalar("amount").filter(|value| !value.is_empty()) else {
+        return Ok(());
+    };
+
+    out.push_str(&" ".repeat(indent));
+    out.push_str("<div style=\"height: ");
+    push_css_length(amount, out);
+    out.push_str("\"></div>");
+
+    Ok(())
+}
+
+fn css_stack_direction(value: &str) -> Option<&'static str> {
+    match value.trim() {
+        "ttb" => Some("column"),
+        "btt" => Some("column-reverse"),
+        "ltr" => Some("row"),
+        "rtl" => Some("row-reverse"),
+        _ => None,
+    }
 }
 
 fn css_text_align(value: &str) -> Option<&'static str> {
