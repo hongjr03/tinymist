@@ -35,7 +35,7 @@ pub enum Block {
     /// An aligned block.
     Align(Vec<Block>),
     /// A math equation.
-    Math(Vec<Inline>),
+    Math(MathNode),
     /// A table-like block.
     Table {
         /// Table rows.
@@ -112,6 +112,41 @@ pub struct TableCell {
     pub body: Vec<Inline>,
 }
 
+/// A Typst math expression node.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MathNode {
+    /// Typst math function name.
+    pub func: EcoString,
+    /// Function fields.
+    pub fields: Vec<MathField>,
+}
+
+/// A Typst math node field.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MathField {
+    /// Field name.
+    pub name: EcoString,
+    /// Field value.
+    pub value: MathValue,
+}
+
+/// A Typst math field value.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum MathValue {
+    /// Absent value.
+    None,
+    /// Boolean value.
+    Bool(bool),
+    /// Scalar value.
+    Scalar(EcoString),
+    /// Nested math expression.
+    Node(Box<MathNode>),
+    /// Math expression list.
+    Nodes(Vec<MathNode>),
+    /// Two-dimensional math expression list.
+    Rows(Vec<Vec<MathNode>>),
+}
+
 /// A generated block element payload.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BlockElementData {
@@ -144,7 +179,7 @@ pub enum Inline {
     /// Superscript inline content.
     Super(Vec<Inline>),
     /// Inline math content.
-    Math(Vec<Inline>),
+    Math(MathNode),
     /// A line break.
     Linebreak,
     /// A laid-out Typst frame rendered as SVG.

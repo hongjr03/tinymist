@@ -2,7 +2,8 @@
 
 use crate::Result;
 use crate::ir::{
-    Block, Document, ElementFieldValue, FrameImage, Inline, InlineElementData, TableRow,
+    Block, Document, ElementFieldValue, FrameImage, Inline, InlineElementData, MathNode, MathValue,
+    TableRow,
 };
 use tinymist_std::error::prelude::*;
 
@@ -62,7 +63,7 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
         Block::Math(body) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("$$");
-            render_inlines(body, out)?;
+            render_math(body, out)?;
             out.push_str("$$");
         }
         Block::Table { rows } => render_table(rows, indent, out)?,
@@ -268,7 +269,7 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             }
             Inline::Math(children) => {
                 out.push('$');
-                render_inlines(children, out)?;
+                render_math(children, out)?;
                 out.push('$');
             }
             Inline::Linebreak => out.push('\n'),
@@ -383,6 +384,282 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
     }
 
     Ok(())
+}
+
+fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
+    match node.func.as_str() {
+        "sequence" => render_math_nodes(math_nodes(node, "children")?, out),
+        "text" | "symbol" => {
+            out.push_str(math_scalar(node, "text")?);
+            Ok(())
+        }
+        "space" => {
+            out.push(' ');
+            Ok(())
+        }
+        "accent" => render_math_accent(node, out),
+        "attach" => render_math_attach(node, out),
+        "binom" => render_math_two_arg_command(node, "binom", "upper", "lower", out),
+        "cancel" => render_math_one_arg_command(node, "cancel", "body", out),
+        "cases" => render_math_cases(node, out),
+        "class" | "limits" | "lr" | "scripts" | "stretch" | "mid" => {
+            render_math(math_child(node, "body")?, out)
+        }
+        "frac" => render_math_two_arg_command(node, "frac", "num", "denom", out),
+        "mat" => render_math_matrix(node, out),
+        "op" => render_math_op(node, out),
+        "overbrace" => render_math_annotated_command(node, "overbrace", "body", out),
+        "overbracket" => render_math_annotated_command(node, "overbracket", "body", out),
+        "overline" => render_math_one_arg_command(node, "overline", "body", out),
+        "overparen" => render_math_annotated_command(node, "overparen", "body", out),
+        "overshell" => render_math_annotation_command(node, "overset", out),
+        "primes" => render_math_primes(node, out),
+        "root" => render_math_root(node, out),
+        "underbrace" => render_math_annotated_command(node, "underbrace", "body", out),
+        "underbracket" => render_math_annotated_command(node, "underbracket", "body", out),
+        "underline" => render_math_one_arg_command(node, "underline", "body", out),
+        "underparen" => render_math_annotated_command(node, "underparen", "body", out),
+        "undershell" => render_math_annotation_command(node, "underset", out),
+        "vec" => render_math_one_arg_nodes_command(node, "vec", "children", out),
+        func => bail!("typlite markdown math rendering is not implemented for `{func}`"),
+    }
+}
+
+fn render_math_nodes(nodes: &[MathNode], out: &mut String) -> Result<()> {
+    for node in nodes {
+        render_math(node, out)?;
+    }
+    Ok(())
+}
+
+fn render_math_accent(node: &MathNode, out: &mut String) -> Result<()> {
+    let command = match math_scalar(node, "accent")? {
+        "\u{302}" => "hat",
+        "\u{303}" => "tilde",
+        "\u{304}" => "bar",
+        "\u{307}" => "dot",
+        "\u{308}" => "ddot",
+        "\u{20d7}" => "vec",
+        accent => bail!("typlite markdown math accent `{accent}` is not implemented"),
+    };
+    render_math_one_arg_command(node, command, "base", out)
+}
+
+fn render_math_attach(node: &MathNode, out: &mut String) -> Result<()> {
+    render_math(math_child(node, "base")?, out)?;
+    if let Some(bottom) = math_optional_child(node, "b")? {
+        out.push_str("_{");
+        render_math(bottom, out)?;
+        out.push('}');
+    }
+    if let Some(top) = math_optional_child(node, "t")? {
+        out.push_str("^{");
+        render_math(top, out)?;
+        out.push('}');
+    }
+    Ok(())
+}
+
+fn render_math_cases(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\begin{cases}");
+    for (index, child) in math_nodes(node, "children")?.iter().enumerate() {
+        if index > 0 {
+            out.push_str(r" \\ ");
+        }
+        render_math(child, out)?;
+    }
+    out.push_str(r"\end{cases}");
+    Ok(())
+}
+
+fn render_math_matrix(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\begin{matrix}");
+    for (row_index, row) in math_rows(node, "rows")?.iter().enumerate() {
+        if row_index > 0 {
+            out.push_str(r" \\ ");
+        }
+        for (cell_index, cell) in row.iter().enumerate() {
+            if cell_index > 0 {
+                out.push_str(" & ");
+            }
+            render_math(cell, out)?;
+        }
+    }
+    out.push_str(r"\end{matrix}");
+    Ok(())
+}
+
+fn render_math_op(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\operatorname{");
+    render_math(math_child(node, "text")?, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_primes(node: &MathNode, out: &mut String) -> Result<()> {
+    let count = math_scalar(node, "count")?
+        .parse::<usize>()
+        .context_ut("math.primes count must be a number")?;
+    for _ in 0..count {
+        out.push('\'');
+    }
+    Ok(())
+}
+
+fn render_math_root(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\sqrt");
+    if let Some(index) = math_optional_child(node, "index")? {
+        out.push('[');
+        render_math(index, out)?;
+        out.push(']');
+    }
+    out.push('{');
+    render_math(math_child(node, "radicand")?, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_one_arg_command(
+    node: &MathNode,
+    command: &str,
+    field: &str,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math(math_child(node, field)?, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_one_arg_nodes_command(
+    node: &MathNode,
+    command: &str,
+    field: &str,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math_nodes(math_nodes(node, field)?, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_two_arg_command(
+    node: &MathNode,
+    command: &str,
+    first: &str,
+    second: &str,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math_value(math_field(node, first)?, out)?;
+    out.push_str("}{");
+    render_math_value(math_field(node, second)?, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_annotated_command(
+    node: &MathNode,
+    command: &str,
+    body: &str,
+    out: &mut String,
+) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math(math_child(node, body)?, out)?;
+    out.push('}');
+    if let Some(annotation) = math_optional_child(node, "annotation")? {
+        out.push_str("^{");
+        render_math(annotation, out)?;
+        out.push('}');
+    }
+    Ok(())
+}
+
+fn render_math_annotation_command(node: &MathNode, command: &str, out: &mut String) -> Result<()> {
+    out.push('\\');
+    out.push_str(command);
+    out.push('{');
+    render_math(math_child(node, "annotation")?, out)?;
+    out.push_str("}{");
+    render_math(math_child(node, "body")?, out)?;
+    out.push('}');
+    Ok(())
+}
+
+fn render_math_value(value: &MathValue, out: &mut String) -> Result<()> {
+    match value {
+        MathValue::None => Ok(()),
+        MathValue::Bool(value) => {
+            out.push_str(if *value { "true" } else { "false" });
+            Ok(())
+        }
+        MathValue::Scalar(value) => {
+            out.push_str(value);
+            Ok(())
+        }
+        MathValue::Node(node) => render_math(node, out),
+        MathValue::Nodes(nodes) => render_math_nodes(nodes, out),
+        MathValue::Rows(_) => bail!("math row value cannot be rendered as a scalar expression"),
+    }
+}
+
+fn math_field<'a>(node: &'a MathNode, name: &str) -> Result<&'a MathValue> {
+    let Some(value) = node
+        .fields
+        .iter()
+        .find(|field| field.name == name)
+        .map(|field| &field.value)
+    else {
+        bail!("math.{} is missing field `{name}`", node.func);
+    };
+    Ok(value)
+}
+
+fn math_child<'a>(node: &'a MathNode, name: &str) -> Result<&'a MathNode> {
+    match math_field(node, name)? {
+        MathValue::Node(child) => Ok(child),
+        _ => bail!("math.{} field `{name}` must be a node", node.func),
+    }
+}
+
+fn math_optional_child<'a>(node: &'a MathNode, name: &str) -> Result<Option<&'a MathNode>> {
+    match node.fields.iter().find(|field| field.name == name) {
+        Some(field) => match &field.value {
+            MathValue::Node(child) => Ok(Some(child)),
+            MathValue::None => Ok(None),
+            _ => bail!("math.{} field `{name}` must be a node", node.func),
+        },
+        None => Ok(None),
+    }
+}
+
+fn math_nodes<'a>(node: &'a MathNode, name: &str) -> Result<&'a [MathNode]> {
+    match math_field(node, name)? {
+        MathValue::Nodes(nodes) => Ok(nodes),
+        _ => bail!("math.{} field `{name}` must be a node list", node.func),
+    }
+}
+
+fn math_rows<'a>(node: &'a MathNode, name: &str) -> Result<&'a [Vec<MathNode>]> {
+    match math_field(node, name)? {
+        MathValue::Rows(rows) => Ok(rows),
+        _ => bail!("math.{} field `{name}` must be a row list", node.func),
+    }
+}
+
+fn math_scalar<'a>(node: &'a MathNode, name: &str) -> Result<&'a str> {
+    match math_field(node, name)? {
+        MathValue::Scalar(value) => Ok(value),
+        _ => bail!("math.{} field `{name}` must be a scalar", node.func),
+    }
 }
 
 fn render_element_frame(node: &Inline, data: &InlineElementData, out: &mut String) -> Result<()> {

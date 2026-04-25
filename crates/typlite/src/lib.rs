@@ -193,7 +193,7 @@ impl Typlite {
         let (world, _) = self.feat.prepare_world(&self.world, self.format)?;
         let compiled = typst::compile::<typst_html::HtmlDocument>(&world);
         let html = compiled.output?;
-        let ir = extract_document(&html);
+        let ir = extract_document(&html)?;
 
         match self.format {
             Format::Md => Ok(render_markdown(&ir)?.into()),

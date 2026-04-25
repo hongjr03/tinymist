@@ -40,6 +40,6 @@ Boxed Padded Moved Rotated Scaled Skewed
 
 <mark>Highlighted</mark> <span style="font-variant: small-caps">Small caps</span> ~~Struck~~ <sub>Subscript</sub> <sup>Superscript</sup>
 
-$${  "func": "sequence",  "children": [    {      "func": "attach",      "base": {        "func": "symbol",        "text": "x"      },      "t": {        "func": "text",        "text": "2"      },      "b": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "y"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "="    },    {      "func": "space"    },    {      "func": "root",      "radicand": {        "func": "text",        "text": "4"      }    }  ]}$$
+$$x_{1}^{2} + y = \sqrt{4}$$
 
 fn main() {}

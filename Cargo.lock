@@ -7305,6 +7305,7 @@ version = "0.14.16"
 dependencies = [
  "ecow",
  "insta",
+ "serde_json",
  "tinymist-project",
  "tinymist-std",
  "tinymist-tests",
