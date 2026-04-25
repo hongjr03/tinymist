@@ -5,6 +5,8 @@ input_file: crates/typlite/fixtures/convert/all_elements.typ
 ---
 # Element Sweep
 
+<!-- typlite-metadata: {"fixture":"all-elements"} -->
+
 Block body with
 
 horizontal spacing and a

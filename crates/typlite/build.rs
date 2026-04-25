@@ -35,7 +35,7 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
   } else if ty in (type(""), type(0), type(0.0), type(<label>), type(type)) {
     str(value)
   } else {
-    let encoded = json.encode(value)
+    let encoded = json.encode(value, pretty: false)
     if encoded.starts-with("\"") and encoded.ends-with("\"") {
       encoded.slice(1, -1)
     } else {
@@ -322,6 +322,9 @@ impl ElementSpec {
             }
             ("terms", "children") => {
                 format!("    children_node({field:?}, field(it, {field:?}), term_item_node)\n")
+            }
+            ("metadata", "value") => {
+                format!("    opaque_value_node({field:?}, field(it, {field:?}))\n")
             }
             _ => format!("    {value_node}({field:?}, field(it, {field:?}))\n"),
         }

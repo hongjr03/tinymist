@@ -682,7 +682,8 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::Rect(data)
             | Inline::Square(data) => render_element_frame(node, data, out)?,
             Inline::Cite(data) => render_cite(data, out)?,
-            Inline::Document(_) | Inline::Hide(_) | Inline::Metadata(_) | Inline::Page(_) => {}
+            Inline::Metadata(data) => render_metadata(data, out),
+            Inline::Document(_) | Inline::Hide(_) | Inline::Page(_) => {}
             Inline::FigureCaption(data) => render_inlines(&data.body, out)?,
             Inline::FootnoteEntry(_) => {}
             Inline::Footnote(data) => {
@@ -865,7 +866,8 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::Rect(data)
             | Inline::Square(data) => render_element_frame(node, data, out)?,
             Inline::Cite(data) => render_cite(data, out)?,
-            Inline::Document(_) | Inline::Hide(_) | Inline::Metadata(_) | Inline::Page(_) => {}
+            Inline::Metadata(data) => render_metadata(data, out),
+            Inline::Document(_) | Inline::Hide(_) | Inline::Page(_) => {}
             Inline::GridHline(_)
             | Inline::GridVline(_)
             | Inline::PlaceFlush(_)
@@ -1506,6 +1508,16 @@ fn render_inline_quote_html(data: &InlineElementData, out: &mut String) -> Resul
     Ok(())
 }
 
+fn render_metadata(data: &InlineElementData, out: &mut String) {
+    let Some(value) = data.scalar("value").filter(|value| !value.is_empty()) else {
+        return;
+    };
+
+    out.push_str("<!-- typlite-metadata: ");
+    push_html_comment_escaped(value, out);
+    out.push_str(" -->");
+}
+
 fn render_smartquote(data: &InlineElementData, out: &mut String) -> Result<()> {
     out.push(smartquote_char(data)?);
     Ok(())
@@ -1689,6 +1701,22 @@ fn push_html_escaped(value: &str, out: &mut String) {
             '>' => out.push_str("&gt;"),
             _ => out.push(ch),
         }
+    }
+}
+
+fn push_html_comment_escaped(value: &str, out: &mut String) {
+    let mut prev_was_hyphen = false;
+
+    for ch in value.chars() {
+        if prev_was_hyphen && ch == '-' {
+            out.push(' ');
+        }
+        out.push(ch);
+        prev_was_hyphen = ch == '-';
+    }
+
+    if prev_was_hyphen {
+        out.push(' ');
     }
 }
 
