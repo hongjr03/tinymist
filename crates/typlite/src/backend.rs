@@ -68,7 +68,7 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             out.push_str(&" ".repeat(indent));
             out.push_str("</figure>");
         }
-        Block::Align(blocks) => render_blocks_into(blocks, indent, out)?,
+        Block::Align { alignment, body } => render_align(alignment.as_deref(), body, indent, out)?,
         Block::Math(body) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("$$");
@@ -97,11 +97,16 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             items,
             ..
         } => render_list(*ordered, *start, *reversed, items, indent, out)?,
-        Block::Block(data) | Block::Columns(data) | Block::Stack(data) | Block::Title(data) => {
+        Block::Columns(data) => render_columns(data, indent, out)?,
+        Block::Block(data) | Block::Stack(data) | Block::Title(data) => {
             render_blocks_into(&data.body, indent, out)?
         }
         Block::Terms { items } => render_terms(items, indent, out)?,
-        Block::Colbreak(_) | Block::Parbreak(_) | Block::V(_) => {}
+        Block::Colbreak(_) => {
+            out.push_str(&" ".repeat(indent));
+            out.push_str("<div style=\"break-after: column\"></div>");
+        }
+        Block::Parbreak(_) | Block::V(_) => {}
         Block::Outline(data) => {
             if let Some(title) = data.field("title") {
                 out.push_str(&" ".repeat(indent));
@@ -180,6 +185,80 @@ fn render_block_html(block: &Block, indent: usize, out: &mut String) -> Result<(
             Ok(())
         }
         _ => render_block(block, indent, out),
+    }
+}
+
+fn render_align(
+    alignment: Option<&str>,
+    body: &[Block],
+    indent: usize,
+    out: &mut String,
+) -> Result<()> {
+    let Some(text_align) = alignment.and_then(css_text_align) else {
+        return render_blocks_into(body, indent, out);
+    };
+
+    out.push_str(&" ".repeat(indent));
+    out.push_str("<div style=\"text-align: ");
+    out.push_str(text_align);
+    out.push_str("\">\n");
+    render_blocks_html_into(body, indent + 2, out)?;
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out.push_str("</div>");
+
+    Ok(())
+}
+
+fn render_columns(
+    data: &crate::ir::BlockElementData,
+    indent: usize,
+    out: &mut String,
+) -> Result<()> {
+    out.push_str(&" ".repeat(indent));
+    out.push_str("<div style=\"");
+    let mut has_style = false;
+    if let Some(count) = data.scalar("count").filter(|value| !value.is_empty()) {
+        has_style = true;
+        out.push_str("column-count: ");
+        push_html_escaped(count, out);
+    }
+    if let Some(gutter) = data.scalar("gutter").filter(|value| !value.is_empty()) {
+        if has_style {
+            out.push_str("; ");
+        }
+        out.push_str("column-gap: ");
+        push_css_length(gutter, out);
+    }
+    out.push_str("\">\n");
+    render_blocks_html_into(&data.body, indent + 2, out)?;
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out.push_str("</div>");
+
+    Ok(())
+}
+
+fn css_text_align(value: &str) -> Option<&'static str> {
+    let value = value.trim();
+    if value.contains("center") || value.contains("horizon") {
+        Some("center")
+    } else if value.contains("right") || value.contains("end") {
+        Some("right")
+    } else if value.contains("left") || value.contains("start") {
+        Some("left")
+    } else {
+        None
+    }
+}
+
+fn push_css_length(value: &str, out: &mut String) {
+    if value.contains('+') || value.contains('-') {
+        out.push_str("calc(");
+        push_html_escaped(value, out);
+        out.push(')');
+    } else {
+        push_html_escaped(value, out);
     }
 }
 

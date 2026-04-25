@@ -11,9 +11,11 @@ horizontal spacing and a
 
 line break.
 
-Column one
-
-Column two
+<div style="column-count: 2; column-gap: calc(0% + 4pt)">
+  Column one
+  <div style="break-after: column"></div>
+  Column two
+</div>
 
 Stack A
 

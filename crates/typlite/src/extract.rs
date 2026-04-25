@@ -86,12 +86,13 @@ fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Res
             alt: field_value(element, "alt")
                 .filter(|value| !value.is_empty() && value.as_str() != "none"),
         }),
-        Some("typlite-align") => Some(Block::Align(
-            field_children(element, "body")
+        Some("typlite-align") => Some(Block::Align {
+            alignment: field_value(element, "alignment"),
+            body: field_children(element, "body")
                 .map(|children| collect_item_blocks(children, introspector))
                 .transpose()?
                 .unwrap_or_default(),
-        )),
+        }),
         Some("typlite-math-equation") => Some(Block::Math(math_field(element, "body")?)),
         Some("typlite-table") => Some(Block::Table {
             rows: collect_table_rows(element, "table-cell", introspector)?,

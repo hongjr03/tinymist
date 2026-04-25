@@ -53,7 +53,9 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
   </tr>
 </table>
 
-Centered
+<div style="text-align: center">
+  Centered
+</div>
 
 Boxed Padded Moved Rotated Scaled Skewed
 

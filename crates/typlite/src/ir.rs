@@ -35,7 +35,12 @@ pub enum Block {
         alt: Option<EcoString>,
     },
     /// An aligned block.
-    Align(Vec<Block>),
+    Align {
+        /// Alignment value.
+        alignment: Option<EcoString>,
+        /// Aligned body.
+        body: Vec<Block>,
+    },
     /// A math equation.
     Math(MathNode),
     /// A table-like block.
