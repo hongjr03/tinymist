@@ -41,15 +41,33 @@ Box <img alt="circle" src="data:image/svg+xml;utf8,%3Csvg%20class%3D%22typst-fra
 
 PDF artifact
 
-| H1 | H2 |
-| --- | --- |
-| Merged |  |
-| F1 | F2 |
+<table>
+  <tr>
+    <td>H1</td>
+    <td>H2</td>
+  </tr>
+  <tr>
+    <td colspan="2">Merged</td>
+  </tr>
+  <tr>
+    <td>F1</td>
+    <td>F2</td>
+  </tr>
+</table>
 
-| GH1 | GH2 |
-| --- | --- |
-| Grid merged |  |
-| GF1 | GF2 |
+<table>
+  <tr>
+    <td>GH1</td>
+    <td>GH2</td>
+  </tr>
+  <tr>
+    <td colspan="2">Grid merged</td>
+  </tr>
+  <tr>
+    <td>GF1</td>
+    <td>GF2</td>
+  </tr>
+</table>
 
 $$\hat{x} + x_{2}^{1} + \binom{1}{2} + \cancel{x}$$
 

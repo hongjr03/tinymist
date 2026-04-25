@@ -47,9 +47,15 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
             render_inlines(body, out)?;
         }
         Block::Quote(blocks) => render_quote(blocks, indent, out)?,
-        Block::Figure { body, caption } => {
+        Block::Figure { body, caption, alt } => {
             out.push_str(&" ".repeat(indent));
-            out.push_str("<figure>\n");
+            out.push_str("<figure");
+            if let Some(alt) = alt {
+                out.push_str(" aria-label=\"");
+                push_html_escaped(alt, out);
+                out.push('"');
+            }
+            out.push_str(">\n");
             render_blocks_into(body, indent, out)?;
             if !caption.is_empty() {
                 out.push('\n');
@@ -164,6 +170,10 @@ fn render_table(
         return Ok(());
     }
 
+    if requires_html_table(rows) {
+        return render_html_table(rows, indent, out);
+    }
+
     render_table_row(&rows[0], columns, indent, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
@@ -185,6 +195,66 @@ fn render_table(
     }
 
     Ok(())
+}
+
+fn requires_html_table(rows: &[TableRow]) -> bool {
+    rows.iter().any(|row| {
+        row.cells
+            .iter()
+            .any(|cell| cell.colspan != 1 || cell.rowspan != 1 || cell.align != TableAlign::Default)
+    })
+}
+
+fn render_html_table(rows: &[TableRow], indent: usize, out: &mut String) -> Result<()> {
+    let indentation = " ".repeat(indent);
+    out.push_str(&indentation);
+    out.push_str("<table>");
+
+    for row in rows {
+        out.push('\n');
+        out.push_str(&indentation);
+        out.push_str("  <tr>");
+        for cell in &row.cells {
+            out.push('\n');
+            out.push_str(&indentation);
+            out.push_str("    <td");
+            if cell.colspan > 1 {
+                out.push_str(" colspan=\"");
+                out.push_str(&cell.colspan.to_string());
+                out.push('"');
+            }
+            if cell.rowspan > 1 {
+                out.push_str(" rowspan=\"");
+                out.push_str(&cell.rowspan.to_string());
+                out.push('"');
+            }
+            if let Some(align) = table_align_style(cell.align) {
+                out.push_str(" style=\"text-align: ");
+                out.push_str(align);
+                out.push('"');
+            }
+            out.push('>');
+            render_inlines_html(&cell.body, out)?;
+            out.push_str("</td>");
+        }
+        out.push('\n');
+        out.push_str(&indentation);
+        out.push_str("  </tr>");
+    }
+
+    out.push('\n');
+    out.push_str(&indentation);
+    out.push_str("</table>");
+    Ok(())
+}
+
+fn table_align_style(align: TableAlign) -> Option<&'static str> {
+    match align {
+        TableAlign::Default => None,
+        TableAlign::Left => Some("left"),
+        TableAlign::Center => Some("center"),
+        TableAlign::Right => Some("right"),
+    }
 }
 
 fn table_align_marker(align: TableAlign) -> &'static str {
@@ -441,6 +511,162 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
                 out.push_str("<u>");
                 render_inlines(&data.body, out)?;
                 out.push_str("</u>");
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
+    for node in nodes {
+        match node {
+            Inline::Text(text) => push_html_escaped(text, out),
+            Inline::Emph(children) => {
+                out.push_str("<em>");
+                render_inlines_html(children, out)?;
+                out.push_str("</em>");
+            }
+            Inline::Strong(children) => {
+                out.push_str("<strong>");
+                render_inlines_html(children, out)?;
+                out.push_str("</strong>");
+            }
+            Inline::Link { dest, body } => {
+                out.push_str("<a href=\"");
+                push_html_escaped(dest, out);
+                out.push_str("\">");
+                render_inlines_html(body, out)?;
+                out.push_str("</a>");
+            }
+            Inline::Strike(children) => {
+                out.push_str("<del>");
+                render_inlines_html(children, out)?;
+                out.push_str("</del>");
+            }
+            Inline::Sub(children) => {
+                out.push_str("<sub>");
+                render_inlines_html(children, out)?;
+                out.push_str("</sub>");
+            }
+            Inline::Super(children) => {
+                out.push_str("<sup>");
+                render_inlines_html(children, out)?;
+                out.push_str("</sup>");
+            }
+            Inline::Raw { text, .. } => {
+                out.push_str("<code>");
+                push_html_escaped(text, out);
+                out.push_str("</code>");
+            }
+            Inline::Linebreak => out.push_str("<br>"),
+            Inline::Math(math) => {
+                out.push('$');
+                render_math(math, out)?;
+                out.push('$');
+            }
+            Inline::Frame(frame) => render_frame_image("frame", frame, out)?,
+            Inline::Footnote(data) => {
+                out.push_str("<sup>");
+                render_inlines_html(&data.body, out)?;
+                out.push_str("</sup>");
+            }
+            Inline::Highlight(data) => {
+                out.push_str("<mark>");
+                render_inlines_html(&data.body, out)?;
+                out.push_str("</mark>");
+            }
+            Inline::Image(data) => render_image(data, out)?,
+            Inline::Overline(data) => {
+                out.push_str("<span style=\"text-decoration: overline\">");
+                render_inlines_html(&data.body, out)?;
+                out.push_str("</span>");
+            }
+            Inline::Smallcaps(data) => {
+                out.push_str("<span style=\"font-variant: small-caps\">");
+                render_inlines_html(&data.body, out)?;
+                out.push_str("</span>");
+            }
+            Inline::Underline(data) => {
+                out.push_str("<u>");
+                render_inlines_html(&data.body, out)?;
+                out.push_str("</u>");
+            }
+            Inline::Box(data)
+            | Inline::Move(data)
+            | Inline::Pad(data)
+            | Inline::Place(data)
+            | Inline::Repeat(data)
+            | Inline::Rotate(data)
+            | Inline::Scale(data)
+            | Inline::Skew(data)
+            | Inline::TableCell(data)
+            | Inline::TableFooter(data)
+            | Inline::TableHeader(data)
+            | Inline::GridCell(data)
+            | Inline::GridFooter(data)
+            | Inline::GridHeader(data)
+            | Inline::ParLine(data)
+            | Inline::PdfArtifact(data)
+            | Inline::Quote(data)
+            | Inline::RawLine(data)
+            | Inline::FigureCaption(data)
+            | Inline::FootnoteEntry(data)
+            | Inline::OutlineEntry(data) => render_inlines_html(&data.body, out)?,
+            Inline::Circle(data)
+            | Inline::Curve(data)
+            | Inline::Ellipse(data)
+            | Inline::Line(data)
+            | Inline::Path(data)
+            | Inline::Polygon(data)
+            | Inline::Rect(data)
+            | Inline::Square(data) => render_element_frame(node, data, out)?,
+            Inline::Cite(data) => render_cite(data, out)?,
+            Inline::Document(_) | Inline::Hide(_) | Inline::Metadata(_) | Inline::Page(_) => {}
+            Inline::GridHline(_)
+            | Inline::GridVline(_)
+            | Inline::PlaceFlush(_)
+            | Inline::TableHline(_)
+            | Inline::TableVline(_) => {}
+            Inline::H(_) => out.push(' '),
+            Inline::PdfAttach(_) | Inline::PdfEmbed(_) => {
+                bail!("typlite markdown PDF embedding rendering is not implemented")
+            }
+            Inline::Ref(data) => render_ref(data, out)?,
+            Inline::Smartquote(_) => {}
+            Inline::MathAccent(_)
+            | Inline::MathAttach(_)
+            | Inline::MathBinom(_)
+            | Inline::MathCancel(_)
+            | Inline::MathCases(_)
+            | Inline::MathClass(_)
+            | Inline::MathFrac(_)
+            | Inline::MathLimits(_)
+            | Inline::MathLr(_)
+            | Inline::MathMat(_)
+            | Inline::MathMid(_)
+            | Inline::MathOp(_)
+            | Inline::MathOverbrace(_)
+            | Inline::MathOverbracket(_)
+            | Inline::MathOverline(_)
+            | Inline::MathOverparen(_)
+            | Inline::MathOvershell(_)
+            | Inline::MathPrimes(_)
+            | Inline::MathRoot(_)
+            | Inline::MathScripts(_)
+            | Inline::MathStretch(_)
+            | Inline::MathUnderbrace(_)
+            | Inline::MathUnderbracket(_)
+            | Inline::MathUnderline(_)
+            | Inline::MathUnderparen(_)
+            | Inline::MathUndershell(_)
+            | Inline::MathVec(_)
+            | Inline::CurveClose(_)
+            | Inline::CurveCubic(_)
+            | Inline::CurveLine(_)
+            | Inline::CurveMove(_)
+            | Inline::CurveQuad(_) => {
+                bail!("typlite HTML table cell rendering is not implemented for generated inline")
             }
         }
     }
@@ -760,10 +986,10 @@ fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
 
     out.push_str("![");
     if let Some(alt) = data.scalar("alt") {
-        out.push_str(alt);
+        push_markdown_link_text_escaped(alt, out);
     }
     out.push_str("](");
-    out.push_str(source);
+    push_markdown_url(source, out);
     out.push(')');
 
     Ok(())
@@ -945,6 +1171,34 @@ fn push_html_escaped(value: &str, out: &mut String) {
             '>' => out.push_str("&gt;"),
             _ => out.push(ch),
         }
+    }
+}
+
+fn push_markdown_link_text_escaped(value: &str, out: &mut String) {
+    for ch in value.chars() {
+        match ch {
+            '\\' | '[' | ']' => {
+                out.push('\\');
+                out.push(ch);
+            }
+            _ => out.push(ch),
+        }
+    }
+}
+
+fn push_markdown_url(value: &str, out: &mut String) {
+    if value.contains(char::is_whitespace) || value.contains(')') {
+        out.push('<');
+        for ch in value.chars() {
+            if ch == '>' {
+                out.push_str("%3E");
+            } else {
+                out.push(ch);
+            }
+        }
+        out.push('>');
+    } else {
+        out.push_str(value);
     }
 }
 

@@ -28,14 +28,30 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
 <figcaption>A rectangle</figcaption>
 </figure>
 
-| A | B |
-| :--- | ---: |
-| *C* | **D** |
-| E |  |
-| F | G |
+<table>
+  <tr>
+    <td>A</td>
+    <td>B</td>
+  </tr>
+  <tr>
+    <td><em>C</em></td>
+    <td style="text-align: center"><strong>D</strong></td>
+  </tr>
+  <tr>
+    <td colspan="2">E</td>
+  </tr>
+  <tr>
+    <td>F</td>
+    <td>G</td>
+  </tr>
+</table>
 
-| G1 | G2 |
-| :---: | --- |
+<table>
+  <tr>
+    <td>G1</td>
+    <td style="text-align: right">G2</td>
+  </tr>
+</table>
 
 Centered
 

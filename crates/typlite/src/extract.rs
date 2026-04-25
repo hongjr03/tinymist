@@ -83,6 +83,8 @@ fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Res
                 .map(|children| collect_inlines(children, introspector))
                 .transpose()?
                 .unwrap_or_default(),
+            alt: field_value(element, "alt")
+                .filter(|value| !value.is_empty() && value.as_str() != "none"),
         }),
         Some("typlite-align") => Some(Block::Align(
             field_children(element, "body")
@@ -252,10 +254,17 @@ fn collect_table_rows(
 
     for child in children {
         collect_table_cells(child, cell_kind, introspector, &mut row)?;
-        while row.len() >= columns {
-            rows.push(TableRow {
-                cells: row.drain(..columns).collect(),
-            });
+        let mut occupied_columns: usize = row.iter().map(|cell| cell.colspan).sum();
+        while occupied_columns >= columns {
+            let mut drained = Vec::new();
+            let mut drained_columns = 0usize;
+            while drained_columns < columns {
+                let cell = row.remove(0);
+                drained_columns += cell.colspan;
+                drained.push(cell);
+            }
+            rows.push(TableRow { cells: drained });
+            occupied_columns = row.iter().map(|cell| cell.colspan).sum();
         }
     }
 
@@ -314,14 +323,16 @@ fn collect_table_cells(
                 .map(|children| collect_inlines(children, introspector))
                 .transpose()?
                 .unwrap_or_default(),
+            colspan: field_value(element, "colspan")
+                .and_then(|value| value.parse::<usize>().ok())
+                .unwrap_or(1),
+            rowspan: field_value(element, "rowspan")
+                .and_then(|value| value.parse::<usize>().ok())
+                .unwrap_or(1),
+            align: field_value(element, "align")
+                .map(|value| table_alignment(&value))
+                .unwrap_or(TableAlign::Default),
         });
-
-        let colspan = field_value(element, "colspan")
-            .and_then(|value| value.parse::<usize>().ok())
-            .unwrap_or(1);
-        for _ in 1..colspan {
-            out.push(TableCell { body: Vec::new() });
-        }
         return Ok(());
     }
 

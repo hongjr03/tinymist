@@ -31,6 +31,8 @@ pub enum Block {
         body: Vec<Block>,
         /// Optional caption.
         caption: Vec<Inline>,
+        /// Optional alternative text.
+        alt: Option<EcoString>,
     },
     /// An aligned block.
     Align(Vec<Block>),
@@ -124,6 +126,12 @@ pub struct TableRow {
 pub struct TableCell {
     /// Cell inline body.
     pub body: Vec<Inline>,
+    /// Number of columns spanned by this cell.
+    pub colspan: usize,
+    /// Number of rows spanned by this cell.
+    pub rowspan: usize,
+    /// Cell-level alignment.
+    pub align: TableAlign,
 }
 
 /// Markdown-compatible table column alignment.
