@@ -18,113 +18,203 @@ use crate::ir::{
 
 /// Extracts typlite IR nodes from an HTML document root.
 pub fn extract_document(html: &HtmlDocument) -> Result<Document> {
-    let mut blocks = Vec::new();
-    collect_blocks(&html.root, &html.introspector, &mut blocks)?;
-    Ok(Document { blocks })
+    Extractor::new(&html.introspector).document(&html.root)
 }
 
-fn collect_blocks(
-    element: &HtmlElement,
-    introspector: &Introspector,
-    blocks: &mut Vec<Block>,
-) -> Result<()> {
-    if let Some(block) = block_from_element(element, introspector)? {
-        blocks.push(block);
-        return Ok(());
+struct Extractor<'a> {
+    introspector: &'a Introspector,
+}
+
+impl<'a> Extractor<'a> {
+    fn new(introspector: &'a Introspector) -> Self {
+        Self { introspector }
     }
 
-    if is_field(element) {
-        return Ok(());
+    fn document(&self, root: &HtmlElement) -> Result<Document> {
+        let mut blocks = Vec::new();
+        self.collect_blocks(root, &mut blocks)?;
+        Ok(Document { blocks })
     }
 
-    for child in &element.children {
-        if let HtmlNode::Element(child) = child {
-            collect_blocks(child, introspector, blocks)?;
+    fn collect_blocks(&self, element: &HtmlElement, blocks: &mut Vec<Block>) -> Result<()> {
+        if let Some(block) = self.block_from_element(element)? {
+            blocks.push(block);
+            return Ok(());
         }
+
+        if is_field(element) {
+            return Ok(());
+        }
+
+        for child in &element.children {
+            if let HtmlNode::Element(child) = child {
+                self.collect_blocks(child, blocks)?;
+            }
+        }
+
+        Ok(())
     }
 
-    Ok(())
+    fn block_from_element(&self, element: &HtmlElement) -> Result<Option<Block>> {
+        let transport = TransportElement::new(element)?;
+        Ok(match tag_name(element).as_deref() {
+            Some("typlite-heading") => Some({
+                let level = transport
+                    .scalar("level")
+                    .and_then(|level| level.parse::<u8>().ok())
+                    .unwrap_or(1);
+                Block::Heading {
+                    level,
+                    body: transport.content_inlines("body", self.introspector)?,
+                }
+            }),
+            Some("typlite-paragraph") => Some(Block::Paragraph(
+                transport.content_inlines("body", self.introspector)?,
+            )),
+            Some("typlite-raw") => Some(Block::Raw {
+                lang: transport
+                    .scalar("lang")
+                    .filter(|lang| lang.as_str() != "none"),
+                text: transport.scalar("text").unwrap_or_default(),
+            }),
+            Some("typlite-quote") => Some(Block::Quote(
+                transport.content_blocks("body", self.introspector)?,
+            )),
+            Some("typlite-figure") => Some(Block::Figure {
+                body: transport.content_blocks("body", self.introspector)?,
+                caption: transport.content_inlines("caption", self.introspector)?,
+                alt: transport
+                    .scalar("alt")
+                    .filter(|value| !value.is_empty() && value.as_str() != "none"),
+            }),
+            Some("typlite-align") => Some(Block::Align {
+                alignment: transport.scalar("alignment"),
+                body: transport.content_blocks("body", self.introspector)?,
+            }),
+            Some("typlite-math-equation") => Some(Block::Math(transport.math("body")?)),
+            Some("typlite-table") => Some(Block::Table {
+                rows: collect_table_rows(element, "table-cell", self.introspector)?,
+                alignments: collect_table_alignments(element),
+            }),
+            Some("typlite-grid") => Some(Block::Table {
+                rows: collect_table_rows(element, "grid-cell", self.introspector)?,
+                alignments: collect_table_alignments(element),
+            }),
+            Some("typlite-list") => Some(Block::List {
+                ordered: false,
+                tight: transport.bool("tight"),
+                numbering: None,
+                start: None,
+                reversed: false,
+                full: false,
+                items: collect_list_items(element, false, self.introspector)?,
+            }),
+            Some("typlite-enum") => Some(Block::List {
+                ordered: true,
+                tight: transport.bool("tight"),
+                numbering: transport
+                    .scalar("numbering")
+                    .filter(|value| value.as_str() != "none"),
+                start: transport
+                    .scalar("start")
+                    .filter(|value| value.as_str() != "auto")
+                    .and_then(|value| value.parse::<i64>().ok()),
+                reversed: transport.bool("reversed"),
+                full: transport.bool("full"),
+                items: collect_list_items(element, true, self.introspector)?,
+            }),
+            Some("typlite-terms") => Some(Block::Terms {
+                items: collect_term_items(element, self.introspector)?,
+            }),
+            Some(tag) => match block_spec_from_tag(&tag) {
+                Some(spec) => block_from_element_kind(
+                    spec.kind,
+                    BlockElementData {
+                        fields: collect_element_fields(
+                            element,
+                            spec,
+                            FieldMode::Block,
+                            self.introspector,
+                        )?,
+                        body: collect_block_element_body(element, spec, self.introspector)?,
+                    },
+                ),
+                None => None,
+            },
+            None => None,
+        })
+    }
 }
 
-fn block_from_element(element: &HtmlElement, introspector: &Introspector) -> Result<Option<Block>> {
-    Ok(match tag_name(element).as_deref() {
-        Some("typlite-heading") => Some({
-            let level = field_value(element, "level")
-                .and_then(|level| level.parse::<u8>().ok())
-                .unwrap_or(1);
-            Block::Heading {
-                level,
-                body: element_field_inlines(element, "body", introspector)?,
-            }
-        }),
-        Some("typlite-paragraph") => Some(Block::Paragraph(element_field_inlines(
+struct TransportElement<'a> {
+    element: &'a HtmlElement,
+    encoded: Option<Map<String, Value>>,
+}
+
+impl<'a> TransportElement<'a> {
+    fn new(element: &'a HtmlElement) -> Result<Self> {
+        Ok(Self {
             element,
-            "body",
-            introspector,
-        )?)),
-        Some("typlite-raw") => Some(Block::Raw {
-            lang: field_value(element, "lang").filter(|lang| lang.as_str() != "none"),
-            text: field_value(element, "text").unwrap_or_default(),
-        }),
-        Some("typlite-quote") => Some(Block::Quote(element_field_blocks(
-            element,
-            "body",
-            introspector,
-        )?)),
-        Some("typlite-figure") => Some(Block::Figure {
-            body: element_field_blocks(element, "body", introspector)?,
-            caption: element_field_inlines(element, "caption", introspector)?,
-            alt: field_value(element, "alt")
-                .filter(|value| !value.is_empty() && value.as_str() != "none"),
-        }),
-        Some("typlite-align") => Some(Block::Align {
-            alignment: field_value(element, "alignment"),
-            body: element_field_blocks(element, "body", introspector)?,
-        }),
-        Some("typlite-math-equation") => Some(Block::Math(element_field_math(element, "body")?)),
-        Some("typlite-table") => Some(Block::Table {
-            rows: collect_table_rows(element, "table-cell", introspector)?,
-            alignments: collect_table_alignments(element),
-        }),
-        Some("typlite-grid") => Some(Block::Table {
-            rows: collect_table_rows(element, "grid-cell", introspector)?,
-            alignments: collect_table_alignments(element),
-        }),
-        Some("typlite-list") => Some(Block::List {
-            ordered: false,
-            tight: field_bool(element, "tight"),
-            numbering: None,
-            start: None,
-            reversed: false,
-            full: false,
-            items: collect_list_items(element, false, introspector)?,
-        }),
-        Some("typlite-enum") => Some(Block::List {
-            ordered: true,
-            tight: field_bool(element, "tight"),
-            numbering: field_value(element, "numbering").filter(|value| value.as_str() != "none"),
-            start: field_value(element, "start")
-                .filter(|value| value.as_str() != "auto")
-                .and_then(|value| value.parse::<i64>().ok()),
-            reversed: field_bool(element, "reversed"),
-            full: field_bool(element, "full"),
-            items: collect_list_items(element, true, introspector)?,
-        }),
-        Some("typlite-terms") => Some(Block::Terms {
-            items: collect_term_items(element, introspector)?,
-        }),
-        Some(tag) => match block_spec_from_tag(&tag) {
-            Some(spec) => block_from_element_kind(
-                spec.kind,
-                BlockElementData {
-                    fields: collect_element_fields(element, spec, FieldMode::Block, introspector)?,
-                    body: collect_block_element_body(element, spec, introspector)?,
-                },
-            ),
-            None => None,
-        },
-        None => None,
-    })
+            encoded: encoded_object(element)?,
+        })
+    }
+
+    fn field(&self, name: &str) -> Option<&'a [HtmlNode]> {
+        field_children(self.element, name)
+    }
+
+    fn encoded_field(&self, name: &str) -> Option<&Value> {
+        self.encoded.as_ref().and_then(|object| object.get(name))
+    }
+
+    fn scalar(&self, name: &str) -> Option<EcoString> {
+        if let Some(value) = self.encoded_field(name) {
+            return Some(encoded::scalar(value));
+        }
+
+        self.field(name).map(collect_text_without_frames)
+    }
+
+    fn bool(&self, name: &str) -> bool {
+        self.scalar(name)
+            .is_some_and(|value| value.as_str() == "true")
+    }
+
+    fn content_blocks(&self, name: &str, introspector: &Introspector) -> Result<Vec<Block>> {
+        if let Some(children) = self.field(name) {
+            return collect_item_blocks(children, introspector);
+        }
+
+        if let Some(value) = self.encoded_field(name) {
+            return encoded::content_blocks(value, introspector);
+        }
+
+        Ok(Vec::new())
+    }
+
+    fn content_inlines(&self, name: &str, introspector: &Introspector) -> Result<Vec<Inline>> {
+        if let Some(children) = self.field(name) {
+            return collect_inlines(children, introspector);
+        }
+
+        if let Some(value) = self.encoded_field(name) {
+            return encoded::content_inlines(value, introspector);
+        }
+
+        Ok(Vec::new())
+    }
+
+    fn math(&self, name: &str) -> Result<MathNode> {
+        if self.field(name).is_some() {
+            return math_field(self.element, name);
+        }
+
+        if let Some(value) = self.encoded_field(name) {
+            return encoded::math_node(value);
+        }
+
+        math_field(self.element, name)
+    }
 }
 
 fn block_spec_from_tag(tag: &str) -> Option<&'static ElementSpec> {
@@ -138,10 +228,11 @@ fn collect_block_element_body(
     spec: &'static ElementSpec,
     introspector: &Introspector,
 ) -> Result<Vec<Block>> {
+    let transport = TransportElement::new(element)?;
     let mut blocks = Vec::new();
 
     for field in content_fields(spec) {
-        blocks.extend(element_field_blocks(element, field, introspector)?);
+        blocks.extend(transport.content_blocks(field, introspector)?);
     }
 
     Ok(blocks)
@@ -165,48 +256,16 @@ fn collect_field_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Resu
     Ok(blocks)
 }
 
-fn element_field_blocks(
-    element: &HtmlElement,
-    name: &str,
-    introspector: &Introspector,
-) -> Result<Vec<Block>> {
-    if let Some(children) = field_children(element, name) {
-        return collect_item_blocks(children, introspector);
-    }
-
-    if let Some(value) = encoded_field(element, name)? {
-        return encoded::content_blocks(&value, introspector);
-    }
-
-    Ok(Vec::new())
-}
-
 fn element_field_inlines(
     element: &HtmlElement,
     name: &str,
     introspector: &Introspector,
 ) -> Result<Vec<Inline>> {
-    if let Some(children) = field_children(element, name) {
-        return collect_inlines(children, introspector);
-    }
-
-    if let Some(value) = encoded_field(element, name)? {
-        return encoded::content_inlines(&value, introspector);
-    }
-
-    Ok(Vec::new())
+    TransportElement::new(element)?.content_inlines(name, introspector)
 }
 
 fn element_field_math(element: &HtmlElement, name: &str) -> Result<MathNode> {
-    if field_children(element, name).is_some() {
-        return math_field(element, name);
-    }
-
-    if let Some(value) = encoded_field(element, name)? {
-        return encoded::math_node(&value);
-    }
-
-    math_field(element, name)
+    TransportElement::new(element)?.math(name)
 }
 
 fn collect_list_items(
@@ -214,8 +273,9 @@ fn collect_list_items(
     ordered: bool,
     introspector: &Introspector,
 ) -> Result<Vec<ListItem>> {
-    let Some(children) = field_children(element, "children") else {
-        if let Some(Value::Array(children)) = encoded_field(element, "children")? {
+    let transport = TransportElement::new(element)?;
+    let Some(children) = transport.field("children") else {
+        if let Some(Value::Array(children)) = transport.encoded_field("children") {
             return encoded::list_items_from_array(&children, ordered, introspector);
         }
         return Ok(Vec::new());
@@ -245,8 +305,9 @@ fn collect_list_items(
 }
 
 fn collect_term_items(element: &HtmlElement, introspector: &Introspector) -> Result<Vec<TermItem>> {
-    let Some(children) = field_children(element, "children") else {
-        if let Some(Value::Array(children)) = encoded_field(element, "children")? {
+    let transport = TransportElement::new(element)?;
+    let Some(children) = transport.field("children") else {
+        if let Some(Value::Array(children)) = transport.encoded_field("children") {
             return encoded::term_items_from_array(&children, introspector);
         }
         return Ok(Vec::new());
@@ -278,13 +339,14 @@ fn collect_table_rows(
     cell_kind: &str,
     introspector: &Introspector,
 ) -> Result<Vec<TableRow>> {
-    let columns = field_children(element, "columns")
+    let transport = TransportElement::new(element)?;
+    let columns = transport
+        .field("columns")
         .map(|children| children.iter().filter_map(field_node).count())
         .filter(|columns| *columns > 0)
         .or_else(|| {
-            encoded_field(element, "columns")
-                .ok()
-                .flatten()
+            transport
+                .encoded_field("columns")
                 .and_then(|value| match value {
                     Value::Array(values) => Some(values.len()),
                     _ => None,
@@ -293,11 +355,11 @@ fn collect_table_rows(
         })
         .unwrap_or(1);
 
-    let Some(children) = field_children(element, "children") else {
-        if let Some(Value::Array(children)) = encoded_field(element, "children")? {
+    let Some(children) = transport.field("children") else {
+        if let Some(Value::Array(children)) = transport.encoded_field("children") {
             let mut rows = Vec::new();
             let mut row = Vec::new();
-            for child in &children {
+            for child in children {
                 encoded::collect_table_cells(child, cell_kind, introspector, &mut row)?;
                 let mut occupied_columns: usize = row.iter().map(|cell| cell.colspan).sum();
                 while occupied_columns >= columns {
@@ -347,11 +409,15 @@ fn collect_table_rows(
 }
 
 fn collect_table_alignments(element: &HtmlElement) -> Vec<TableAlign> {
-    if let Some(value) = encoded_field(element, "align").ok().flatten() {
+    let Ok(transport) = TransportElement::new(element) else {
+        return Vec::new();
+    };
+
+    if let Some(value) = transport.encoded_field("align") {
         return encoded::table_alignments(&value);
     }
 
-    let Some(children) = field_children(element, "align") else {
+    let Some(children) = transport.field("align") else {
         return Vec::new();
     };
 
@@ -419,6 +485,7 @@ fn collect_table_cells(
 }
 
 fn collect_item_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Result<Vec<Block>> {
+    let extractor = Extractor::new(introspector);
     let mut blocks = Vec::new();
     let mut inlines = Vec::new();
 
@@ -430,7 +497,7 @@ fn collect_item_blocks(nodes: &[HtmlNode], introspector: &Introspector) -> Resul
                     continue;
                 }
 
-                if let Some(block) = block_from_element(element, introspector)? {
+                if let Some(block) = extractor.block_from_element(element)? {
                     flush_paragraph(&mut inlines, &mut blocks);
                     blocks.push(block);
                 } else {
@@ -641,7 +708,8 @@ fn collect_inline_element_body(
     spec: &'static ElementSpec,
     introspector: &Introspector,
 ) -> Result<Vec<Inline>> {
-    if let Some(children) = field_children(element, "body") {
+    let transport = TransportElement::new(element)?;
+    if let Some(children) = transport.field("body") {
         return collect_inlines(children, introspector);
     }
 
@@ -649,12 +717,12 @@ fn collect_inline_element_body(
         if field == "body" {
             continue;
         }
-        if let Some(children) = field_children(element, field) {
+        if let Some(children) = transport.field(field) {
             return collect_inlines(children, introspector);
         }
     }
 
-    if let Some(object) = encoded_object(element)? {
+    if let Some(object) = transport.encoded.as_ref() {
         return encoded::inline_element_body(&object, spec, introspector);
     }
 
@@ -674,14 +742,15 @@ fn collect_element_fields(
     introspector: &Introspector,
 ) -> Result<Vec<ElementField>> {
     let mut fields = Vec::new();
+    let transport = TransportElement::new(element)?;
 
-    let Some(object) = encoded_object(element)? else {
+    let Some(object) = transport.encoded.as_ref() else {
         return Ok(fields);
     };
 
     for name in spec.fields.iter().copied() {
         if is_content_field_name(name)
-            && let Some(children) = field_children(element, name)
+            && let Some(children) = transport.field(name)
         {
             fields.push(ElementField {
                 name,
@@ -888,10 +957,6 @@ fn collect_text_without_frames(nodes: &[HtmlNode]) -> EcoString {
     }
 
     out
-}
-
-fn field_bool(element: &HtmlElement, name: &str) -> bool {
-    field_value(element, name).is_some_and(|value| value.as_str() == "true")
 }
 
 fn field_children<'a>(element: &'a HtmlElement, name: &str) -> Option<&'a [HtmlNode]> {
