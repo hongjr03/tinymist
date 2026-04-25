@@ -20,9 +20,7 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
 
 [Heading with *emphasis* and [a link](https://example.com)](#title)
 
-> A block quote with
-> 
-> <u>underlined text</u>.
+> A block quote with <u>underlined text</u>.
 
 <figure>
 <img alt="rect" src="data:image/svg+xml;utf8,%3Csvg%20class%3D%22typst-frame%22%20style%3D%22overflow%3A%20visible%3B%20width%3A%201.4545454545454546em%3B%20height%3A%200.7272727272727273em%3B%22%20viewBox%3D%220%200%2016%208%22%20width%3D%2216pt%22%20height%3D%228pt%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xmlns%3Ah5%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%3E%3Cg%3E%3Cpath%20class%3D%22typst-shape%22%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22butt%22%20stroke-linejoin%3D%22miter%22%20stroke-miterlimit%3D%224%22%20d%3D%22M%200%200v%208%20h%2016%20v%20-8%20Z%20%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">

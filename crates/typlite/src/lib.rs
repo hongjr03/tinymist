@@ -183,48 +183,12 @@ fn typlite_library(library: &Arc<LazyHash<TypstLibrary>>) -> Arc<LazyHash<TypstL
         .global
         .scope_mut()
         .define_func::<__typlite_encode_content>();
-    library
-        .global
-        .scope_mut()
-        .define_func::<__typlite_encode_element>();
-    library
-        .global
-        .scope_mut()
-        .define_func::<__typlite_encode_value>();
-    library
-        .global
-        .scope_mut()
-        .define_func::<__typlite_is_block_equation>();
     Arc::new(library)
 }
 
 #[func(name = "__typlite_encode_content", title = "Typlite content encoder")]
 fn __typlite_encode_content(body: Content) -> Str {
     Str::from(serde_json::to_string(&encode_content(&body)).unwrap_or_else(|_| "{}".to_owned()))
-}
-
-#[func(name = "__typlite_encode_element", title = "Typlite element encoder")]
-fn __typlite_encode_element(element: Content) -> Str {
-    Str::from(serde_json::to_string(&encode_element(&element)).unwrap_or_else(|_| "{}".to_owned()))
-}
-
-#[func(name = "__typlite_encode_value", title = "Typlite value encoder")]
-fn __typlite_encode_value(value: Value) -> Str {
-    Str::from(serde_json::to_string(&encode_value(&value)).unwrap_or_else(|_| "null".to_owned()))
-}
-
-#[func(
-    name = "__typlite_is_block_equation",
-    title = "Typlite equation block probe"
-)]
-fn __typlite_is_block_equation(element: Content) -> bool {
-    element
-        .to_packed::<EquationElem>()
-        .is_some_and(|equation| equation.block.get(StyleChain::default()))
-}
-
-fn encode_element(element: &Content) -> serde_json::Value {
-    encode_content(element)
 }
 
 fn encode_content(body: &Content) -> serde_json::Value {
@@ -317,10 +281,6 @@ fn encode_value(value: &Value) -> serde_json::Value {
             .map(serde_json::Value::Number)
             .unwrap_or_else(|| value.repr().as_str().into()),
         Value::Str(value) => value.as_str().into(),
-        Value::Bytes(value) => serde_json::json!({
-            "kind": "bytes",
-            "bytes": value.as_slice(),
-        }),
         Value::Content(value) => encode_content(value),
         Value::Array(value) => value.iter().map(encode_value).collect(),
         Value::Dict(value) => value

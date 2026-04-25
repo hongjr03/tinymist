@@ -9,99 +9,297 @@ input_file: crates/typlite/fixtures/convert/reference_semantics.typ
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
     tag
-    <typlite-heading data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Target Section\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"label\":\"<target-section>\",\"level\":1,\"numbering\":null,\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}}"
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="supplement" kind="content">
         text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
       <span data-typlite-field="true" name="body" kind="content">
         text "Target Section"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Plain reference\"},{\"func\":\"text\",\"text\":\":\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"ref\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"citation\\\":{\\\"func\\\":\\\"cite\\\",\\\"key\\\":\\\"<target-section>\\\",\\\"supplement\\\":null},\\\"element\\\":{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Target Section\\\"},\\\"bookmarked\\\":\\\"auto\\\",\\\"depth\\\":1,\\\"func\\\":\\\"heading\\\",\\\"hanging-indent\\\":\\\"auto\\\",\\\"label\\\":\\\"<target-section>\\\",\\\"level\\\":1,\\\"numbering\\\":null,\\\"offset\\\":0,\\\"outlined\\\":true,\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Section\\\"}},\\\"form\\\":\\\"normal\\\",\\\"func\\\":\\\"ref\\\",\\\"supplement\\\":\\\"auto\\\",\\\"target\\\":\\\"<target-section>\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"citation\"},\"body\":{\"func\":\"cite\",\"key\":\"<target-section>\",\"supplement\":null},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         text "Plain reference"
         text ":"
         text " "
         tag
-        <span data-typlite="ref" data-typlite-ir="true">
-          text "{\"citation\":{\"func\":\"cite\",\"key\":\"<target-section>\",\"supplement\":null},\"element\":{\"body\":{\"func\":\"text\",\"text\":\"Target Section\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"label\":\"<target-section>\",\"level\":1,\"numbering\":null,\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}},\"form\":\"normal\",\"func\":\"ref\",\"supplement\":\"auto\",\"target\":\"<target-section>\"}"
+        <span data-typlite="ref">
+          <span data-typlite-field="true" name="target" kind="label">
+            text "target-section"
+          <span data-typlite-field="true" name="supplement" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="form" kind="string">
+            text "normal"
           <span data-typlite-field="true" name="citation" kind="content">
             tag
-            <span data-typlite="cite" data-typlite-ir="true">
-              text "{\"form\":\"normal\",\"func\":\"cite\",\"key\":\"<target-section>\",\"style\":\"auto\",\"supplement\":null}"
+            <span data-typlite="cite">
+              <span data-typlite-field="true" name="key" kind="label">
+                text "target-section"
+              <span data-typlite-field="true" name="supplement" kind="none">
+              <span data-typlite-field="true" name="form" kind="string">
+                text "normal"
+              <span data-typlite-field="true" name="style" kind="auto">
+                text "auto"
+            tag
+          <span data-typlite-field="true" name="element" kind="content">
+            tag
+            <typlite-heading>
+              <span data-typlite-field="true" name="level" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="depth" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="offset" kind="integer">
+                text "0"
+              <span data-typlite-field="true" name="numbering" kind="none">
+              <span data-typlite-field="true" name="supplement" kind="content">
+                text "Section"
+              <span data-typlite-field="true" name="outlined" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="bookmarked" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="hanging-indent" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "Target Section"
             tag
         tag
         text "."
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Named reference\"},{\"func\":\"text\",\"text\":\":\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"ref\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"citation\\\":{\\\"func\\\":\\\"cite\\\",\\\"key\\\":\\\"<target-section>\\\",\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"the target section\\\"}},\\\"element\\\":{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Target Section\\\"},\\\"bookmarked\\\":\\\"auto\\\",\\\"depth\\\":1,\\\"func\\\":\\\"heading\\\",\\\"hanging-indent\\\":\\\"auto\\\",\\\"label\\\":\\\"<target-section>\\\",\\\"level\\\":1,\\\"numbering\\\":null,\\\"offset\\\":0,\\\"outlined\\\":true,\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Section\\\"}},\\\"form\\\":\\\"normal\\\",\\\"func\\\":\\\"ref\\\",\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"the target section\\\"},\\\"target\\\":\\\"<target-section>\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"supplement\"},\"body\":{\"func\":\"text\",\"text\":\"the target section\"},\"func\":\"elem\",\"tag\":\"span\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"citation\"},\"body\":{\"func\":\"cite\",\"key\":\"<target-section>\",\"supplement\":{\"func\":\"text\",\"text\":\"the target section\"}},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         text "Named reference"
         text ":"
         text " "
         tag
-        <span data-typlite="ref" data-typlite-ir="true">
-          text "{\"citation\":{\"func\":\"cite\",\"key\":\"<target-section>\",\"supplement\":{\"func\":\"text\",\"text\":\"the target section\"}},\"element\":{\"body\":{\"func\":\"text\",\"text\":\"Target Section\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"label\":\"<target-section>\",\"level\":1,\"numbering\":null,\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}},\"form\":\"normal\",\"func\":\"ref\",\"supplement\":{\"func\":\"text\",\"text\":\"the target section\"},\"target\":\"<target-section>\"}"
+        <span data-typlite="ref">
+          <span data-typlite-field="true" name="target" kind="label">
+            text "target-section"
           <span data-typlite-field="true" name="supplement" kind="content">
             text "the target section"
+          <span data-typlite-field="true" name="form" kind="string">
+            text "normal"
           <span data-typlite-field="true" name="citation" kind="content">
             tag
-            <span data-typlite="cite" data-typlite-ir="true">
-              text "{\"form\":\"normal\",\"func\":\"cite\",\"key\":\"<target-section>\",\"style\":\"auto\",\"supplement\":{\"func\":\"text\",\"text\":\"the target section\"}}"
+            <span data-typlite="cite">
+              <span data-typlite-field="true" name="key" kind="label">
+                text "target-section"
               <span data-typlite-field="true" name="supplement" kind="content">
                 text "the target section"
+              <span data-typlite-field="true" name="form" kind="string">
+                text "normal"
+              <span data-typlite-field="true" name="style" kind="auto">
+                text "auto"
+            tag
+          <span data-typlite-field="true" name="element" kind="content">
+            tag
+            <typlite-heading>
+              <span data-typlite-field="true" name="level" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="depth" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="offset" kind="integer">
+                text "0"
+              <span data-typlite-field="true" name="numbering" kind="none">
+              <span data-typlite-field="true" name="supplement" kind="content">
+                text "Section"
+              <span data-typlite-field="true" name="outlined" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="bookmarked" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="hanging-indent" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "Target Section"
             tag
         tag
         text "."
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Explicit reference\"},{\"func\":\"text\",\"text\":\":\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"ref\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"citation\\\":{\\\"func\\\":\\\"cite\\\",\\\"key\\\":\\\"<target-section>\\\",\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"custom target\\\"}},\\\"element\\\":{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Target Section\\\"},\\\"bookmarked\\\":\\\"auto\\\",\\\"depth\\\":1,\\\"func\\\":\\\"heading\\\",\\\"hanging-indent\\\":\\\"auto\\\",\\\"label\\\":\\\"<target-section>\\\",\\\"level\\\":1,\\\"numbering\\\":null,\\\"offset\\\":0,\\\"outlined\\\":true,\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Section\\\"}},\\\"form\\\":\\\"normal\\\",\\\"func\\\":\\\"ref\\\",\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"custom target\\\"},\\\"target\\\":\\\"<target-section>\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"supplement\"},\"body\":{\"func\":\"text\",\"text\":\"custom target\"},\"func\":\"elem\",\"tag\":\"span\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"citation\"},\"body\":{\"func\":\"cite\",\"key\":\"<target-section>\",\"supplement\":{\"func\":\"text\",\"text\":\"custom target\"}},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         text "Explicit reference"
         text ":"
         text " "
         tag
-        <span data-typlite="ref" data-typlite-ir="true">
-          text "{\"citation\":{\"func\":\"cite\",\"key\":\"<target-section>\",\"supplement\":{\"func\":\"text\",\"text\":\"custom target\"}},\"element\":{\"body\":{\"func\":\"text\",\"text\":\"Target Section\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"label\":\"<target-section>\",\"level\":1,\"numbering\":null,\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}},\"form\":\"normal\",\"func\":\"ref\",\"supplement\":{\"func\":\"text\",\"text\":\"custom target\"},\"target\":\"<target-section>\"}"
+        <span data-typlite="ref">
+          <span data-typlite-field="true" name="target" kind="label">
+            text "target-section"
           <span data-typlite-field="true" name="supplement" kind="content">
             text "custom target"
+          <span data-typlite-field="true" name="form" kind="string">
+            text "normal"
           <span data-typlite-field="true" name="citation" kind="content">
             tag
-            <span data-typlite="cite" data-typlite-ir="true">
-              text "{\"form\":\"normal\",\"func\":\"cite\",\"key\":\"<target-section>\",\"style\":\"auto\",\"supplement\":{\"func\":\"text\",\"text\":\"custom target\"}}"
+            <span data-typlite="cite">
+              <span data-typlite-field="true" name="key" kind="label">
+                text "target-section"
               <span data-typlite-field="true" name="supplement" kind="content">
                 text "custom target"
+              <span data-typlite-field="true" name="form" kind="string">
+                text "normal"
+              <span data-typlite-field="true" name="style" kind="auto">
+                text "auto"
+            tag
+          <span data-typlite-field="true" name="element" kind="content">
+            tag
+            <typlite-heading>
+              <span data-typlite-field="true" name="level" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="depth" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="offset" kind="integer">
+                text "0"
+              <span data-typlite-field="true" name="numbering" kind="none">
+              <span data-typlite-field="true" name="supplement" kind="content">
+                text "Section"
+              <span data-typlite-field="true" name="outlined" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="bookmarked" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="hanging-indent" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "Target Section"
             tag
         tag
         text "."
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Footnote call\"},{\"func\":\"text\",\"text\":\":\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"footnote\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"body\\\":{\\\"children\\\":[{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Footnote body with\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"emphasis\\\"},\\\"func\\\":\\\"emph\\\"},{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\".\\\"}],\\\"func\\\":\\\"sequence\\\"},\\\"func\\\":\\\"footnote\\\",\\\"numbering\\\":\\\"1\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Footnote body with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         text "Footnote call"
         text ":"
         text " "
         tag
-        <span data-typlite="footnote" data-typlite-ir="true">
-          text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Footnote body with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"func\":\"footnote\",\"numbering\":\"1\"}"
+        <span data-typlite="footnote">
+          <span data-typlite-field="true" name="numbering" kind="string">
+            text "1"
           <span data-typlite-field="true" name="body" kind="content">
             text "Footnote body with"
             text " "
             tag
-            <span data-typlite="emph" data-typlite-ir="true">
-              text "{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"}"
+            <span data-typlite="emph">
               <span data-typlite-field="true" name="body" kind="content">
                 text "emphasis"
             tag
@@ -113,7 +311,43 @@ input_file: crates/typlite/fixtures/convert/reference_semantics.typ
         tag
         <li>
           tag
-          <span data-typlite="footnote-entry" data-typlite-ir="true">
-            text "{\"clearance\":\"1em\",\"func\":\"entry\",\"gap\":\"0.5em\",\"indent\":\"1em\",\"note\":{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Footnote body with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"func\":\"footnote\",\"numbering\":\"1\"},\"separator\":{\"func\":\"line\",\"length\":\"30% + 0pt\",\"stroke\":\"0.5pt\"}}"
+          <span data-typlite="footnote-entry">
+            <span data-typlite-field="true" name="note" kind="content">
+              tag
+              <span data-typlite="footnote">
+                <span data-typlite-field="true" name="numbering" kind="string">
+                  text "1"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "Footnote body with"
+                  text " "
+                  tag
+                  <span data-typlite="emph">
+                    <span data-typlite-field="true" name="body" kind="content">
+                      text "emphasis"
+                  tag
+                  text "."
+              tag
+            <span data-typlite-field="true" name="separator" kind="content">
+              <span data-typlite="line">
+                <span data-typlite-field="true" name="start" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 0pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 0pt"
+                <span data-typlite-field="true" name="end" kind="none">
+                <span data-typlite-field="true" name="length" kind="relative length">
+                  text "30% + 0pt"
+                <span data-typlite-field="true" name="angle" kind="angle">
+                  text "0deg"
+                <span data-typlite-field="true" name="stroke" kind="stroke">
+                  text "0.5pt"
+                <span data-typlite-field="true" name="frame" kind="frame">
+                  frame
+            <span data-typlite-field="true" name="clearance" kind="length">
+              text "1em"
+            <span data-typlite-field="true" name="gap" kind="length">
+              text "0.5em"
+            <span data-typlite-field="true" name="indent" kind="length">
+              text "1em"
           tag
         tag

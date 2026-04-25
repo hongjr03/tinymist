@@ -9,12 +9,54 @@ input_file: crates/typlite/fixtures/convert/image_read_source.typ
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"image\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"alt\\\":\\\"Read image\\\",\\\"fit\\\":\\\"cover\\\",\\\"format\\\":\\\"auto\\\",\\\"func\\\":\\\"image\\\",\\\"height\\\":\\\"auto\\\",\\\"icc\\\":\\\"auto\\\",\\\"page\\\":1,\\\"scaling\\\":\\\"auto\\\",\\\"source\\\":{\\\"bytes\\\":[60,115,118,103,32,120,109,108,110,115,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,118,105,101,119,66,111,120,61,34,48,32,48,32,49,54,32,49,54,34,62,10,32,32,60,114,101,99,116,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,102,105,108,108,61,34,114,101,100,34,47,62,10,60,47,115,118,103,62],\\\"kind\\\":\\\"bytes\\\"},\\\"width\\\":\\\"auto\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"frame\",\"name\":\"frame\"},\"body\":{\"body\":{\"alt\":\"Read image\",\"fit\":\"cover\",\"format\":\"auto\",\"func\":\"image\",\"height\":\"auto\",\"icc\":\"auto\",\"page\":1,\"scaling\":\"auto\",\"source\":{\"bytes\":[60,115,118,103,32,120,109,108,110,115,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,118,105,101,119,66,111,120,61,34,48,32,48,32,49,54,32,49,54,34,62,10,32,32,60,114,101,99,116,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,102,105,108,108,61,34,114,101,100,34,47,62,10,60,47,115,118,103,62],\"kind\":\"bytes\"},\"width\":\"auto\"},\"func\":\"frame\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         tag
-        <span data-typlite="image" data-typlite-ir="true">
-          text "{\"alt\":\"Read image\",\"fit\":\"cover\",\"format\":\"auto\",\"func\":\"image\",\"height\":\"auto\",\"icc\":\"auto\",\"page\":1,\"scaling\":\"auto\",\"source\":{\"bytes\":[60,115,118,103,32,120,109,108,110,115,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,118,105,101,119,66,111,120,61,34,48,32,48,32,49,54,32,49,54,34,62,10,32,32,60,114,101,99,116,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,102,105,108,108,61,34,114,101,100,34,47,62,10,60,47,115,118,103,62],\"kind\":\"bytes\"},\"width\":\"auto\"}"
+        <span data-typlite="image">
+          <span data-typlite-field="true" name="source" kind="source">
+            text "{\"kind\":\"bytes\",\"bytes\":[60,115,118,103,32,120,109,108,110,115,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,118,105,101,119,66,111,120,61,34,48,32,48,32,49,54,32,49,54,34,62,10,32,32,60,114,101,99,116,32,119,105,100,116,104,61,34,49,54,34,32,104,101,105,103,104,116,61,34,49,54,34,32,102,105,108,108,61,34,114,101,100,34,47,62,10,60,47,115,118,103,62]}"
+          <span data-typlite-field="true" name="format" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="alt" kind="string">
+            text "Read image"
+          <span data-typlite-field="true" name="page" kind="integer">
+            text "1"
+          <span data-typlite-field="true" name="fit" kind="string">
+            text "cover"
+          <span data-typlite-field="true" name="scaling" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="icc" kind="auto">
+            text "auto"
           <span data-typlite-field="true" name="frame" kind="frame">
             frame
         tag

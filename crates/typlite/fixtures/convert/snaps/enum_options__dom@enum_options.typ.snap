@@ -9,49 +9,88 @@ input_file: crates/typlite/fixtures/convert/enum_options.typ
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
     tag
-    <typlite-heading data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Enum Options\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"level\":1,\"numbering\":null,\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}}"
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="supplement" kind="content">
         text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
       <span data-typlite-field="true" name="body" kind="content">
         text "Enum Options"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-enum data-typlite-ir="true">
-      text "{\"body-indent\":\"0.5em\",\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"five\"},\"func\":\"item\"},{\"body\":{\"func\":\"text\",\"text\":\"six\"},\"func\":\"item\"}],\"full\":false,\"func\":\"enum\",\"indent\":\"0pt\",\"number-align\":\"end + top\",\"numbering\":\"1.\",\"reversed\":false,\"spacing\":\"auto\",\"start\":5,\"tight\":true}"
+    <typlite-enum>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1."
+      <span data-typlite-field="true" name="start" kind="integer">
+        text "5"
+      <span data-typlite-field="true" name="full" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="reversed" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body-indent" kind="length">
+        text "0.5em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + top"
       <span data-typlite-field="true" name="children" kind="array">
         <span data-typlite-field="true" name="0" kind="enum.item">
-          <span data-typlite-field="true" name="number" kind="json">
-            text "null"
+          <span data-typlite-field="true" name="number" kind="none">
           <span data-typlite-field="true" name="body" kind="content">
             text "five"
         <span data-typlite-field="true" name="1" kind="enum.item">
-          <span data-typlite-field="true" name="number" kind="json">
-            text "null"
+          <span data-typlite-field="true" name="number" kind="none">
           <span data-typlite-field="true" name="body" kind="content">
             text "six"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-enum data-typlite-ir="true">
-      text "{\"body-indent\":\"0.5em\",\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"three\"},\"func\":\"item\"},{\"body\":{\"func\":\"text\",\"text\":\"two\"},\"func\":\"item\"},{\"body\":{\"func\":\"text\",\"text\":\"one\"},\"func\":\"item\"}],\"full\":false,\"func\":\"enum\",\"indent\":\"0pt\",\"number-align\":\"end + top\",\"numbering\":\"1.\",\"reversed\":true,\"spacing\":\"auto\",\"start\":\"auto\",\"tight\":true}"
+    <typlite-enum>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1."
+      <span data-typlite-field="true" name="start" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="full" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="reversed" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body-indent" kind="length">
+        text "0.5em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + top"
       <span data-typlite-field="true" name="children" kind="array">
         <span data-typlite-field="true" name="0" kind="enum.item">
-          <span data-typlite-field="true" name="number" kind="json">
-            text "null"
+          <span data-typlite-field="true" name="number" kind="none">
           <span data-typlite-field="true" name="body" kind="content">
             text "three"
         <span data-typlite-field="true" name="1" kind="enum.item">
-          <span data-typlite-field="true" name="number" kind="json">
-            text "null"
+          <span data-typlite-field="true" name="number" kind="none">
           <span data-typlite-field="true" name="body" kind="content">
             text "two"
         <span data-typlite-field="true" name="2" kind="enum.item">
-          <span data-typlite-field="true" name="number" kind="json">
-            text "null"
+          <span data-typlite-field="true" name="number" kind="none">
           <span data-typlite-field="true" name="body" kind="content">
             text "one"
     tag

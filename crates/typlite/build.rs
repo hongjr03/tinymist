@@ -24,46 +24,115 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
     out.push_str(
         r#"#let field(it, name, default: none) = it.fields().at(name, default: default)
 
-#let encode_content(value) = __typlite_encode_content(value)
+#let scalar(value) = {
+  let ty = type(value)
+  if ty == type(none) {
+    "none"
+  } else if ty == type(auto) {
+    "auto"
+  } else if ty == type(true) {
+    if value { "true" } else { "false" }
+  } else if ty in (type(""), type(0), type(0.0), type(<label>), type(type)) {
+    str(value)
+  } else {
+    let encoded = json.encode(value, pretty: false)
+    if encoded.starts-with("\"") and encoded.ends-with("\"") {
+      encoded.slice(1, -1)
+    } else {
+      encoded
+    }
+  }
+}
 
-#let field_node(name, kind, body) = html.elem(
+#let field_node(name, kind, body, attrs: (:)) = html.elem(
   "span",
-  attrs: (data-typlite-field: "true", name: name, kind: kind),
+  attrs: (data-typlite-field: "true", name: name, kind: kind) + attrs,
   body,
 )
 
-#let value_node(name, value) = field_node(name, "json", __typlite_encode_value(value))
-
-#let content_node(name, value) = if type(value) == type([]) {
-  field_node(name, "content", value)
-} else {
-  []
+#let value_node(name, value) = {
+  let ty = type(value)
+  let kind = str(ty)
+  if ty == type(none) {
+    field_node(name, kind, [])
+  } else if ty == type([]) {
+    field_node(name, kind, value)
+  } else if ty == type((:)) {
+    field_node(name, kind, {
+      for (key, item) in value.pairs() {
+        value_node(key, item)
+      }
+    })
+  } else if ty == type(()) {
+    field_node(name, kind, {
+      for (index, item) in value.enumerate() {
+        value_node(str(index), item)
+      }
+    })
+  } else {
+    field_node(name, kind, scalar(value))
+  }
 }
 
 #let encoded_content_node(name, value) = field_node(name, "content-ir", __typlite_encode_content(value))
 
-#let frame_node(value) = if target() == "html" {
-  html.elem(
-    "span",
-    attrs: (data-typlite-field: "true", name: "frame", kind: "frame"),
-    html.frame(value),
-  )
-} else {
-  value
+#let opaque_value_node(name, value) = {
+  let ty = type(value)
+  let kind = str(ty)
+  if ty == type(none) {
+    field_node(name, kind, [])
+  } else if ty == type([]) {
+    encoded_content_node(name, value)
+  } else {
+    field_node(name, kind, scalar(value))
+  }
 }
 
+#let source_value(value) = {
+  let ty = type(value)
+  if ty == type(bytes(())) {
+    (kind: "bytes", bytes: range(value.len()).map(i => value.at(i)))
+  } else if ty == type("") {
+    (kind: "string", value: value)
+  } else if ty == type(()) {
+    value.map(source_value)
+  } else {
+    value
+  }
+}
+
+#let source_node(name, value) = {
+  let ty = type(value)
+  let kind = str(ty)
+  if ty == type(none) {
+    field_node(name, kind, [])
+  } else {
+    field_node(name, "source", json.encode(source_value(value), pretty: false))
+  }
+}
+
+#let frame_node(name, value) = field_node(name, "frame", html.frame(value))
+
+#let html_target(value, fallback) = if target() == "html" {
+  value
+} else {
+  fallback
+}
+
+#let encode_content(value) = __typlite_encode_content(value)
+
 #let list_item_node(index, item) = field_node(str(index), "list.item", {
-  content_node("body", field(item, "body"))
+  value_node("body", field(item, "body"))
 })
 
 #let enum_item_node(index, item) = field_node(str(index), "enum.item", {
   value_node("number", field(item, "number"))
-  content_node("body", field(item, "body"))
+  value_node("body", field(item, "body"))
 })
 
 #let term_item_node(index, item) = field_node(str(index), "terms.item", {
-  content_node("term", field(item, "term"))
-  content_node("description", field(item, "description"))
+  value_node("term", field(item, "term"))
+  value_node("description", field(item, "description"))
 })
 
 #let children_node(name, children, item_node) = field_node(name, "array", {
@@ -74,13 +143,12 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
 
 #let node(kind, body) = html.elem(
   "typlite-" + kind,
-  attrs: (data-typlite-ir: "true"),
   body,
 )
 
 #let inline(kind, body) = html.elem(
   "span",
-  attrs: (data-typlite: kind, data-typlite-ir: "true"),
+  attrs: (data-typlite: kind),
   body,
 )
 
@@ -90,39 +158,32 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
 
     for element in elements {
         let selector = element.selector();
-        if selector.starts_with("math.") && selector != "math.equation" {
-            continue;
-        }
         let kind = element.kind();
-        let encoded = "__typlite_encode_element(it)";
+        let value_node = if selector.starts_with("math.") {
+            "opaque_value_node"
+        } else {
+            "value_node"
+        };
         let fields = element
             .fields()
-            .filter(|field| is_content_transport_field(element.selector().as_str(), field))
-            .map(|field| element.content_field_node(field))
+            .map(|field| element.field_node(field, value_node))
             .collect::<String>();
         let frame = element
             .needs_frame()
-            .then_some("\n    frame_node(it)")
+            .then_some("    frame_node(\"frame\", it)\n")
             .unwrap_or("");
-        let body = if selector == "math.equation" {
-            "{\n    encoded_content_node(\"body\", field(it, \"body\"))\n  }".to_owned()
-        } else {
-            format!("{{ {encoded}\n{fields}{frame} }}")
-        };
+        let body = format!("{{\n{fields}{frame}  }}");
 
         let call = match element.mode() {
             Mode::Block => format!("node({kind:?}, {body})"),
             Mode::Inline => format!("inline({kind:?}, {body})"),
-            Mode::BlockOrInline if selector == "math.equation" => format!(
-                "if __typlite_is_block_equation(it) {{ node({kind:?}, {body}) }} else {{ inline({kind:?}, {body}) }}"
-            ),
             Mode::BlockOrInline => format!(
                 "if field(it, \"block\", default: false) {{ node({kind:?}, {body}) }} else {{ inline({kind:?}, {body}) }}"
             ),
         };
 
         out.push_str(&format!(
-            "  show {selector}: it => if target() == \"html\" {{ {call} }} else {{ it }}\n"
+            "  show {selector}: it => html_target({call}, it)\n"
         ));
     }
 
@@ -288,7 +349,7 @@ impl ElementSpec {
         )
     }
 
-    fn content_field_node(&self, field: &str) -> String {
+    fn field_node(&self, field: &str, value_node: &str) -> String {
         match (self.selector().as_str(), field) {
             ("enum", "children") => {
                 format!("    children_node({field:?}, field(it, {field:?}), enum_item_node)\n")
@@ -299,7 +360,13 @@ impl ElementSpec {
             ("terms", "children") => {
                 format!("    children_node({field:?}, field(it, {field:?}), term_item_node)\n")
             }
-            _ => format!("    content_node({field:?}, field(it, {field:?}))\n"),
+            ("metadata", "value") => {
+                format!("    opaque_value_node({field:?}, field(it, {field:?}))\n")
+            }
+            (_, "source" | "sources") => {
+                format!("    source_node({field:?}, field(it, {field:?}))\n")
+            }
+            _ => format!("    {value_node}({field:?}, field(it, {field:?}))\n"),
         }
     }
 }
@@ -420,20 +487,6 @@ fn should_generate(spec: &ElementSpec) -> bool {
 
 fn element_fields(elem: Element) -> impl Iterator<Item = &'static str> {
     (0..u8::MAX).filter_map(move |id| elem.field_name(id))
-}
-
-fn is_content_transport_field(selector: &str, field: &str) -> bool {
-    matches!(
-        field,
-        "body"
-            | "title"
-            | "caption"
-            | "attribution"
-            | "term"
-            | "description"
-            | "supplement"
-            | "citation"
-    ) || matches!((selector, field), ("list" | "enum" | "terms", "children"))
 }
 
 fn upper_camel(part: &str) -> String {

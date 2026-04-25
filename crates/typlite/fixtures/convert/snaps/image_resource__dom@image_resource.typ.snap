@@ -9,47 +9,140 @@ input_file: crates/typlite/fixtures/convert/image_resource.typ
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
     tag
-    <typlite-heading data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Image Resource\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"level\":1,\"numbering\":null,\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}}"
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
       <span data-typlite-field="true" name="supplement" kind="content">
         text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
       <span data-typlite-field="true" name="body" kind="content">
         text "Image Resource"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"image\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"alt\\\":\\\"Sample [box]\\\",\\\"fit\\\":\\\"cover\\\",\\\"format\\\":\\\"auto\\\",\\\"func\\\":\\\"image\\\",\\\"height\\\":\\\"auto\\\",\\\"icc\\\":\\\"auto\\\",\\\"page\\\":1,\\\"scaling\\\":\\\"auto\\\",\\\"source\\\":\\\"sample.svg\\\",\\\"width\\\":\\\"auto\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"frame\",\"name\":\"frame\"},\"body\":{\"body\":{\"alt\":\"Sample [box]\",\"fit\":\"cover\",\"format\":\"auto\",\"func\":\"image\",\"height\":\"auto\",\"icc\":\"auto\",\"page\":1,\"scaling\":\"auto\",\"source\":\"sample.svg\",\"width\":\"auto\"},\"func\":\"frame\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         tag
-        <span data-typlite="image" data-typlite-ir="true">
-          text "{\"alt\":\"Sample [box]\",\"fit\":\"cover\",\"format\":\"auto\",\"func\":\"image\",\"height\":\"auto\",\"icc\":\"auto\",\"page\":1,\"scaling\":\"auto\",\"source\":\"sample.svg\",\"width\":\"auto\"}"
+        <span data-typlite="image">
+          <span data-typlite-field="true" name="source" kind="source">
+            text "{\"kind\":\"string\",\"value\":\"sample.svg\"}"
+          <span data-typlite-field="true" name="format" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="alt" kind="string">
+            text "Sample [box]"
+          <span data-typlite-field="true" name="page" kind="integer">
+            text "1"
+          <span data-typlite-field="true" name="fit" kind="string">
+            text "cover"
+          <span data-typlite-field="true" name="scaling" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="icc" kind="auto">
+            text "auto"
           <span data-typlite-field="true" name="frame" kind="frame">
             frame
         tag
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-figure data-typlite-ir="true">
-      text "{\"alt\":\"Figure [alt]\",\"body\":{\"alt\":\"Figure sample\",\"func\":\"image\",\"source\":\"sample.svg\"},\"caption\":{\"body\":{\"func\":\"text\",\"text\":\"Image figure\"},\"counter\":\"counter(figure.where(kind: image))\",\"func\":\"caption\",\"kind\":\"image\",\"numbering\":\"1\",\"separator\":{\"func\":\"text\",\"text\":\": \"},\"supplement\":{\"func\":\"text\",\"text\":\"Figure\"}},\"counter\":\"counter(figure.where(kind: image))\",\"func\":\"figure\",\"gap\":\"0.65em\",\"kind\":\"image\",\"numbering\":\"1\",\"outlined\":true,\"placement\":null,\"scope\":\"column\",\"supplement\":{\"func\":\"text\",\"text\":\"Figure\"}}"
+    <typlite-figure>
       <span data-typlite-field="true" name="body" kind="content">
         tag
-        <span data-typlite="image" data-typlite-ir="true">
-          text "{\"alt\":\"Figure sample\",\"fit\":\"cover\",\"format\":\"auto\",\"func\":\"image\",\"height\":\"auto\",\"icc\":\"auto\",\"page\":1,\"scaling\":\"auto\",\"source\":\"sample.svg\",\"width\":\"auto\"}"
+        <span data-typlite="image">
+          <span data-typlite-field="true" name="source" kind="source">
+            text "{\"kind\":\"string\",\"value\":\"sample.svg\"}"
+          <span data-typlite-field="true" name="format" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="alt" kind="string">
+            text "Figure sample"
+          <span data-typlite-field="true" name="page" kind="integer">
+            text "1"
+          <span data-typlite-field="true" name="fit" kind="string">
+            text "cover"
+          <span data-typlite-field="true" name="scaling" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="icc" kind="auto">
+            text "auto"
           <span data-typlite-field="true" name="frame" kind="frame">
             frame
         tag
+      <span data-typlite-field="true" name="alt" kind="string">
+        text "Figure [alt]"
+      <span data-typlite-field="true" name="placement" kind="none">
+      <span data-typlite-field="true" name="scope" kind="string">
+        text "column"
       <span data-typlite-field="true" name="caption" kind="content">
         tag
-        <span data-typlite="figure-caption" data-typlite-ir="true">
-          text "{\"body\":{\"func\":\"text\",\"text\":\"Image figure\"},\"counter\":\"counter(figure.where(kind: image))\",\"func\":\"caption\",\"kind\":\"image\",\"numbering\":\"1\",\"position\":\"bottom\",\"separator\":{\"func\":\"text\",\"text\":\": \"},\"supplement\":{\"func\":\"text\",\"text\":\"Figure\"}}"
+        <span data-typlite="figure-caption">
+          <span data-typlite-field="true" name="position" kind="alignment">
+            text "bottom"
+          <span data-typlite-field="true" name="separator" kind="content">
+            text ":"
+            text " "
           <span data-typlite-field="true" name="body" kind="content">
             text "Image figure"
+          <span data-typlite-field="true" name="kind" kind="function">
+            text "image"
           <span data-typlite-field="true" name="supplement" kind="content">
             text "Figure"
+          <span data-typlite-field="true" name="numbering" kind="string">
+            text "1"
+          <span data-typlite-field="true" name="counter" kind="counter">
+            text "counter(figure.where(kind: image))"
         tag
+      <span data-typlite-field="true" name="kind" kind="function">
+        text "image"
       <span data-typlite-field="true" name="supplement" kind="content">
         text "Figure"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1"
+      <span data-typlite-field="true" name="gap" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="counter" kind="counter">
+        text "counter(figure.where(kind: image))"
     tag

@@ -8,97 +8,237 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-heading data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Coverage\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"label\":\"<title>\",\"level\":1,\"numbering\":\"1.\",\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}}"
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1."
       <span data-typlite-field="true" name="supplement" kind="content">
         text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
       <span data-typlite-field="true" name="body" kind="content">
         text "Coverage"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
     tag
-    <typlite-list data-typlite-ir="true">
-      text "{\"body-indent\":\"0.5em\",\"children\":[{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"List item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"}],\"func\":\"sequence\"},\"func\":\"item\"},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"List item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"starts with a number\"},\"func\":\"item\",\"number\":2},{\"func\":\"space\"},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Enum item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"strong text\"},\"func\":\"strong\"}],\"func\":\"sequence\"},\"func\":\"item\"},{\"func\":\"space\"},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Enum item with\"},{\"func\":\"space\"},{\"func\":\"raw\",\"text\":\"inline code\"},{\"func\":\"space\"},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Nested list item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"underlined text\"},\"func\":\"underline\"}],\"func\":\"sequence\"},\"func\":\"item\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"Enum item\"},\"func\":\"item\"}],\"func\":\"sequence\"},\"func\":\"item\"}],\"func\":\"sequence\"},\"func\":\"item\"},{\"body\":{\"func\":\"text\",\"text\":\"back to the first level\"},\"func\":\"item\"}],\"func\":\"list\",\"indent\":\"0pt\",\"marker\":[{\"func\":\"text\",\"text\":\"•\"},{\"func\":\"text\",\"text\":\"‣\"},{\"func\":\"text\",\"text\":\"–\"}],\"spacing\":\"auto\",\"tight\":true}"
+    <typlite-list>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="marker" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          text "•"
+        <span data-typlite-field="true" name="1" kind="content">
+          text "‣"
+        <span data-typlite-field="true" name="2" kind="content">
+          text "–"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body-indent" kind="length">
+        text "0.5em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
       <span data-typlite-field="true" name="children" kind="array">
         <span data-typlite-field="true" name="0" kind="list.item">
           <span data-typlite-field="true" name="body" kind="content">
             text "List item with"
             text " "
             tag
-            <span data-typlite="emph" data-typlite-ir="true">
-              text "{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"}"
+            <span data-typlite="emph">
               <span data-typlite-field="true" name="body" kind="content">
                 text "emphasis"
             tag
         <span data-typlite-field="true" name="1" kind="list.item">
           <span data-typlite-field="true" name="body" kind="content">
             tag
-            <typlite-paragraph data-typlite-ir="true">
-              text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"List item with\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"link\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"a link\\\"},\\\"dest\\\":\\\"https://example.com\\\",\\\"func\\\":\\\"link\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+            <typlite-paragraph>
+              <span data-typlite-field="true" name="leading" kind="length">
+                text "0.65em"
+              <span data-typlite-field="true" name="spacing" kind="length">
+                text "1.2em"
+              <span data-typlite-field="true" name="justify" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+                <span data-typlite-field="true" name="spacing" kind="dictionary">
+                  <span data-typlite-field="true" name="min" kind="relative length">
+                    text "66.67% + 0pt"
+                  <span data-typlite-field="true" name="max" kind="relative length">
+                    text "150% + 0pt"
+                <span data-typlite-field="true" name="tracking" kind="dictionary">
+                  <span data-typlite-field="true" name="min" kind="length">
+                    text "0pt"
+                  <span data-typlite-field="true" name="max" kind="length">
+                    text "0pt"
+              <span data-typlite-field="true" name="linebreaks" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+                <span data-typlite-field="true" name="amount" kind="length">
+                  text "0pt"
+                <span data-typlite-field="true" name="all" kind="boolean">
+                  text "false"
+              <span data-typlite-field="true" name="hanging-indent" kind="length">
+                text "0pt"
               <span data-typlite-field="true" name="body" kind="content">
                 text "List item with"
                 text " "
                 tag
-                <span data-typlite="link" data-typlite-ir="true">
-                  text "{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}"
+                <span data-typlite="link">
+                  <span data-typlite-field="true" name="dest" kind="string">
+                    text "https://example.com"
                   <span data-typlite-field="true" name="body" kind="content">
                     text "a link"
                 tag
             tag
             tag
             tag
-            <typlite-enum data-typlite-ir="true">
-              text "{\"body-indent\":\"0.5em\",\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"starts with a number\"},\"func\":\"item\",\"number\":2},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Enum item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"strong text\"},\"func\":\"strong\"}],\"func\":\"sequence\"},\"func\":\"item\",\"number\":\"auto\"},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Enum item with\"},{\"func\":\"space\"},{\"func\":\"raw\",\"text\":\"inline code\"},{\"func\":\"space\"},{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Nested list item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"underlined text\"},\"func\":\"underline\"}],\"func\":\"sequence\"},\"func\":\"item\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"Enum item\"},\"func\":\"item\"}],\"func\":\"sequence\"},\"func\":\"item\",\"number\":\"auto\"}],\"full\":false,\"func\":\"enum\",\"indent\":\"0pt\",\"number-align\":\"end + top\",\"numbering\":\"1.\",\"reversed\":false,\"spacing\":\"auto\",\"start\":\"auto\",\"tight\":true}"
+            <typlite-enum>
+              <span data-typlite-field="true" name="tight" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="numbering" kind="string">
+                text "1."
+              <span data-typlite-field="true" name="start" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="full" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="reversed" kind="boolean">
+                text "false"
+              <span data-typlite-field="true" name="indent" kind="length">
+                text "0pt"
+              <span data-typlite-field="true" name="body-indent" kind="length">
+                text "0.5em"
+              <span data-typlite-field="true" name="spacing" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="number-align" kind="alignment">
+                text "end + top"
               <span data-typlite-field="true" name="children" kind="array">
                 <span data-typlite-field="true" name="0" kind="enum.item">
-                  <span data-typlite-field="true" name="number" kind="json">
+                  <span data-typlite-field="true" name="number" kind="integer">
                     text "2"
                   <span data-typlite-field="true" name="body" kind="content">
                     text "starts with a number"
                 <span data-typlite-field="true" name="1" kind="enum.item">
-                  <span data-typlite-field="true" name="number" kind="json">
-                    text "\"auto\""
+                  <span data-typlite-field="true" name="number" kind="auto">
+                    text "auto"
                   <span data-typlite-field="true" name="body" kind="content">
                     text "Enum item with"
                     text " "
                     tag
-                    <span data-typlite="strong" data-typlite-ir="true">
-                      text "{\"body\":{\"func\":\"text\",\"text\":\"strong text\"},\"delta\":300,\"func\":\"strong\"}"
+                    <span data-typlite="strong">
+                      <span data-typlite-field="true" name="delta" kind="integer">
+                        text "300"
                       <span data-typlite-field="true" name="body" kind="content">
                         text "strong text"
                     tag
                 <span data-typlite-field="true" name="2" kind="enum.item">
-                  <span data-typlite-field="true" name="number" kind="json">
-                    text "\"auto\""
+                  <span data-typlite-field="true" name="number" kind="auto">
+                    text "auto"
                   <span data-typlite-field="true" name="body" kind="content">
                     tag
-                    <typlite-paragraph data-typlite-ir="true">
-                      text "{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Enum item with\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"bold\":false,\"child\":{\"attrs\":{\"data-typlite\":\"raw\",\"data-typlite-ir\":\"true\"},\"body\":{\"func\":\"text\",\"text\":\"{\\\"align\\\":\\\"start\\\",\\\"block\\\":false,\\\"func\\\":\\\"raw\\\",\\\"lang\\\":null,\\\"lines\\\":[{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"inline code\\\"},\\\"count\\\":1,\\\"func\\\":\\\"line\\\",\\\"number\\\":1,\\\"text\\\":\\\"inline code\\\"}],\\\"syntaxes\\\":[],\\\"tab-size\\\":2,\\\"text\\\":\\\"inline code\\\",\\\"theme\\\":\\\"auto\\\"}\"},\"func\":\"elem\",\"tag\":\"span\"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(8.8pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+                    <typlite-paragraph>
+                      <span data-typlite-field="true" name="leading" kind="length">
+                        text "0.65em"
+                      <span data-typlite-field="true" name="spacing" kind="length">
+                        text "1.2em"
+                      <span data-typlite-field="true" name="justify" kind="boolean">
+                        text "false"
+                      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+                        <span data-typlite-field="true" name="spacing" kind="dictionary">
+                          <span data-typlite-field="true" name="min" kind="relative length">
+                            text "66.67% + 0pt"
+                          <span data-typlite-field="true" name="max" kind="relative length">
+                            text "150% + 0pt"
+                        <span data-typlite-field="true" name="tracking" kind="dictionary">
+                          <span data-typlite-field="true" name="min" kind="length">
+                            text "0pt"
+                          <span data-typlite-field="true" name="max" kind="length">
+                            text "0pt"
+                      <span data-typlite-field="true" name="linebreaks" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+                        <span data-typlite-field="true" name="amount" kind="length">
+                          text "0pt"
+                        <span data-typlite-field="true" name="all" kind="boolean">
+                          text "false"
+                      <span data-typlite-field="true" name="hanging-indent" kind="length">
+                        text "0pt"
                       <span data-typlite-field="true" name="body" kind="content">
                         text "Enum item with"
                         text " "
                         tag
-                        <span data-typlite="raw" data-typlite-ir="true">
-                          text "{\"align\":\"start\",\"block\":false,\"func\":\"raw\",\"lang\":null,\"lines\":[{\"body\":{\"func\":\"text\",\"text\":\"inline code\"},\"count\":1,\"func\":\"line\",\"number\":1,\"text\":\"inline code\"}],\"syntaxes\":[],\"tab-size\":2,\"text\":\"inline code\",\"theme\":\"auto\"}"
+                        <span data-typlite="raw">
+                          <span data-typlite-field="true" name="text" kind="string">
+                            text "inline code"
+                          <span data-typlite-field="true" name="block" kind="boolean">
+                            text "false"
+                          <span data-typlite-field="true" name="lang" kind="none">
+                          <span data-typlite-field="true" name="align" kind="alignment">
+                            text "start"
+                          <span data-typlite-field="true" name="syntaxes" kind="array">
+                          <span data-typlite-field="true" name="theme" kind="auto">
+                            text "auto"
+                          <span data-typlite-field="true" name="tab-size" kind="integer">
+                            text "2"
+                          <span data-typlite-field="true" name="lines" kind="array">
+                            <span data-typlite-field="true" name="0" kind="content">
+                              tag
+                              <span data-typlite="raw-line">
+                                <span data-typlite-field="true" name="number" kind="integer">
+                                  text "1"
+                                <span data-typlite-field="true" name="count" kind="integer">
+                                  text "1"
+                                <span data-typlite-field="true" name="text" kind="string">
+                                  text "inline code"
+                                <span data-typlite-field="true" name="body" kind="content">
+                                  text "inline code"
+                              tag
                         tag
                     tag
                     tag
                     tag
-                    <typlite-list data-typlite-ir="true">
-                      text "{\"body-indent\":\"0.5em\",\"children\":[{\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Nested list item with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"underlined text\"},\"func\":\"underline\"}],\"func\":\"sequence\"},\"func\":\"item\"}],\"func\":\"list\",\"indent\":\"0pt\",\"marker\":[{\"func\":\"text\",\"text\":\"•\"},{\"func\":\"text\",\"text\":\"‣\"},{\"func\":\"text\",\"text\":\"–\"}],\"spacing\":\"auto\",\"tight\":true}"
+                    <typlite-list>
+                      <span data-typlite-field="true" name="tight" kind="boolean">
+                        text "true"
+                      <span data-typlite-field="true" name="marker" kind="array">
+                        <span data-typlite-field="true" name="0" kind="content">
+                          text "•"
+                        <span data-typlite-field="true" name="1" kind="content">
+                          text "‣"
+                        <span data-typlite-field="true" name="2" kind="content">
+                          text "–"
+                      <span data-typlite-field="true" name="indent" kind="length">
+                        text "0pt"
+                      <span data-typlite-field="true" name="body-indent" kind="length">
+                        text "0.5em"
+                      <span data-typlite-field="true" name="spacing" kind="auto">
+                        text "auto"
                       <span data-typlite-field="true" name="children" kind="array">
                         <span data-typlite-field="true" name="0" kind="list.item">
                           <span data-typlite-field="true" name="body" kind="content">
                             text "Nested list item with"
                             text " "
                             tag
-                            <span data-typlite="underline" data-typlite-ir="true">
-                              text "{\"background\":false,\"body\":{\"func\":\"text\",\"text\":\"underlined text\"},\"evade\":true,\"extent\":\"0pt\",\"func\":\"underline\",\"offset\":\"auto\",\"stroke\":\"auto\"}"
+                            <span data-typlite="underline">
+                              <span data-typlite-field="true" name="stroke" kind="auto">
+                                text "auto"
+                              <span data-typlite-field="true" name="offset" kind="auto">
+                                text "auto"
+                              <span data-typlite-field="true" name="extent" kind="length">
+                                text "0pt"
+                              <span data-typlite-field="true" name="evade" kind="boolean">
+                                text "true"
+                              <span data-typlite-field="true" name="background" kind="boolean">
+                                text "false"
                               <span data-typlite-field="true" name="body" kind="content">
                                 text "underlined text"
                             tag
@@ -106,12 +246,29 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
                     tag
                     tag
                     tag
-                    <typlite-enum data-typlite-ir="true">
-                      text "{\"body-indent\":\"0.5em\",\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"Enum item\"},\"func\":\"item\",\"number\":\"auto\"}],\"full\":false,\"func\":\"enum\",\"indent\":\"0pt\",\"number-align\":\"end + top\",\"numbering\":\"1.\",\"reversed\":false,\"spacing\":\"auto\",\"start\":\"auto\",\"tight\":true}"
+                    <typlite-enum>
+                      <span data-typlite-field="true" name="tight" kind="boolean">
+                        text "true"
+                      <span data-typlite-field="true" name="numbering" kind="string">
+                        text "1."
+                      <span data-typlite-field="true" name="start" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="full" kind="boolean">
+                        text "false"
+                      <span data-typlite-field="true" name="reversed" kind="boolean">
+                        text "false"
+                      <span data-typlite-field="true" name="indent" kind="length">
+                        text "0pt"
+                      <span data-typlite-field="true" name="body-indent" kind="length">
+                        text "0.5em"
+                      <span data-typlite-field="true" name="spacing" kind="auto">
+                        text "auto"
+                      <span data-typlite-field="true" name="number-align" kind="alignment">
+                        text "end + top"
                       <span data-typlite-field="true" name="children" kind="array">
                         <span data-typlite-field="true" name="0" kind="enum.item">
-                          <span data-typlite-field="true" name="number" kind="json">
-                            text "\"auto\""
+                          <span data-typlite-field="true" name="number" kind="auto">
+                            text "auto"
                           <span data-typlite-field="true" name="body" kind="content">
                             text "Enum item"
                     tag
@@ -131,21 +288,45 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
     tag
     tag
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"ref\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"citation\\\":{\\\"func\\\":\\\"cite\\\",\\\"key\\\":\\\"<title>\\\",\\\"supplement\\\":{\\\"children\\\":[{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Heading with\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"emphasis\\\"},\\\"func\\\":\\\"emph\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"and\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"a link\\\"},\\\"dest\\\":\\\"https://example.com\\\",\\\"func\\\":\\\"link\\\"}],\\\"func\\\":\\\"sequence\\\"}},\\\"element\\\":{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Coverage\\\"},\\\"bookmarked\\\":\\\"auto\\\",\\\"depth\\\":1,\\\"func\\\":\\\"heading\\\",\\\"hanging-indent\\\":\\\"auto\\\",\\\"label\\\":\\\"<title>\\\",\\\"level\\\":1,\\\"numbering\\\":\\\"1.\\\",\\\"offset\\\":0,\\\"outlined\\\":true,\\\"supplement\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Section\\\"}},\\\"form\\\":\\\"normal\\\",\\\"func\\\":\\\"ref\\\",\\\"supplement\\\":{\\\"children\\\":[{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Heading with\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"emphasis\\\"},\\\"func\\\":\\\"emph\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"and\\\"},{\\\"func\\\":\\\"space\\\"},{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"a link\\\"},\\\"dest\\\":\\\"https://example.com\\\",\\\"func\\\":\\\"link\\\"}],\\\"func\\\":\\\"sequence\\\"},\\\"target\\\":\\\"<title>\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"supplement\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"Heading with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"and\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"citation\"},\"body\":{\"func\":\"cite\",\"key\":\"<title>\",\"supplement\":{\"children\":[{\"func\":\"text\",\"text\":\"Heading with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"and\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}],\"func\":\"sequence\"}},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         tag
-        <span data-typlite="ref" data-typlite-ir="true">
-          text "{\"citation\":{\"func\":\"cite\",\"key\":\"<title>\",\"supplement\":{\"children\":[{\"func\":\"text\",\"text\":\"Heading with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"and\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}],\"func\":\"sequence\"}},\"element\":{\"body\":{\"func\":\"text\",\"text\":\"Coverage\"},\"bookmarked\":\"auto\",\"depth\":1,\"func\":\"heading\",\"hanging-indent\":\"auto\",\"label\":\"<title>\",\"level\":1,\"numbering\":\"1.\",\"offset\":0,\"outlined\":true,\"supplement\":{\"func\":\"text\",\"text\":\"Section\"}},\"form\":\"normal\",\"func\":\"ref\",\"supplement\":{\"children\":[{\"func\":\"text\",\"text\":\"Heading with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"and\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}],\"func\":\"sequence\"},\"target\":\"<title>\"}"
+        <span data-typlite="ref">
+          <span data-typlite-field="true" name="target" kind="label">
+            text "title"
           <span data-typlite-field="true" name="supplement" kind="content">
             text "Heading with"
             text " "
             tag
-            <span data-typlite="emph" data-typlite-ir="true">
-              text "{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"}"
+            <span data-typlite="emph">
               <span data-typlite-field="true" name="body" kind="content">
                 text "emphasis"
             tag
@@ -153,21 +334,24 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
             text "and"
             text " "
             tag
-            <span data-typlite="link" data-typlite-ir="true">
-              text "{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}"
+            <span data-typlite="link">
+              <span data-typlite-field="true" name="dest" kind="string">
+                text "https://example.com"
               <span data-typlite-field="true" name="body" kind="content">
                 text "a link"
             tag
+          <span data-typlite-field="true" name="form" kind="string">
+            text "normal"
           <span data-typlite-field="true" name="citation" kind="content">
             tag
-            <span data-typlite="cite" data-typlite-ir="true">
-              text "{\"form\":\"normal\",\"func\":\"cite\",\"key\":\"<title>\",\"style\":\"auto\",\"supplement\":{\"children\":[{\"func\":\"text\",\"text\":\"Heading with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"and\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}],\"func\":\"sequence\"}}"
+            <span data-typlite="cite">
+              <span data-typlite-field="true" name="key" kind="label">
+                text "title"
               <span data-typlite-field="true" name="supplement" kind="content">
                 text "Heading with"
                 text " "
                 tag
-                <span data-typlite="emph" data-typlite-ir="true">
-                  text "{\"body\":{\"func\":\"text\",\"text\":\"emphasis\"},\"func\":\"emph\"}"
+                <span data-typlite="emph">
                   <span data-typlite-field="true" name="body" kind="content">
                     text "emphasis"
                 tag
@@ -175,150 +359,624 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
                 text "and"
                 text " "
                 tag
-                <span data-typlite="link" data-typlite-ir="true">
-                  text "{\"body\":{\"func\":\"text\",\"text\":\"a link\"},\"dest\":\"https://example.com\",\"func\":\"link\"}"
+                <span data-typlite="link">
+                  <span data-typlite-field="true" name="dest" kind="string">
+                    text "https://example.com"
                   <span data-typlite-field="true" name="body" kind="content">
                     text "a link"
                 tag
+              <span data-typlite-field="true" name="form" kind="string">
+                text "normal"
+              <span data-typlite-field="true" name="style" kind="auto">
+                text "auto"
+            tag
+          <span data-typlite-field="true" name="element" kind="content">
+            tag
+            <typlite-heading>
+              <span data-typlite-field="true" name="level" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="depth" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="offset" kind="integer">
+                text "0"
+              <span data-typlite-field="true" name="numbering" kind="string">
+                text "1."
+              <span data-typlite-field="true" name="supplement" kind="content">
+                text "Section"
+              <span data-typlite-field="true" name="outlined" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="bookmarked" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="hanging-indent" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "Coverage"
             tag
         tag
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
+    <typlite-parbreak>
     tag
-    <typlite-quote data-typlite-ir="true">
-      text "{\"attribution\":null,\"block\":true,\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"A block quote with\"},{\"func\":\"space\"},{\"body\":{\"func\":\"text\",\"text\":\"underlined text\"},\"func\":\"underline\"},{\"func\":\"text\",\"text\":\".\"}],\"func\":\"sequence\"},\"func\":\"quote\",\"quotes\":\"auto\"}"
+    <typlite-quote>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="quotes" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="attribution" kind="none">
       <span data-typlite-field="true" name="body" kind="content">
         text "A block quote with"
         text " "
         tag
-        <span data-typlite="underline" data-typlite-ir="true">
-          text "{\"background\":false,\"body\":{\"func\":\"text\",\"text\":\"underlined text\"},\"evade\":true,\"extent\":\"0pt\",\"func\":\"underline\",\"offset\":\"auto\",\"stroke\":\"auto\"}"
+        <span data-typlite="underline">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="offset" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="evade" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="background" kind="boolean">
+            text "false"
           <span data-typlite-field="true" name="body" kind="content">
             text "underlined text"
         tag
         text "."
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-figure data-typlite-ir="true">
-      text "{\"alt\":null,\"body\":{\"func\":\"rect\",\"height\":\"0% + 8pt\",\"width\":\"0% + 16pt\"},\"caption\":{\"body\":{\"func\":\"text\",\"text\":\"A rectangle\"},\"counter\":\"counter(figure.where(kind: image))\",\"func\":\"caption\",\"kind\":\"image\",\"numbering\":\"1\",\"separator\":{\"func\":\"text\",\"text\":\": \"},\"supplement\":{\"func\":\"text\",\"text\":\"Figure\"}},\"counter\":\"counter(figure.where(kind: image))\",\"func\":\"figure\",\"gap\":\"0.65em\",\"kind\":\"image\",\"numbering\":\"1\",\"outlined\":true,\"placement\":null,\"scope\":\"column\",\"supplement\":{\"func\":\"text\",\"text\":\"Figure\"}}"
+    <typlite-figure>
       <span data-typlite-field="true" name="body" kind="content">
-        <span data-typlite="rect" data-typlite-ir="true">
-          text "{\"body\":null,\"fill\":null,\"func\":\"rect\",\"height\":\"0% + 8pt\",\"inset\":\"0% + 5pt\",\"outset\":{},\"radius\":{},\"stroke\":\"auto\",\"width\":\"0% + 16pt\"}"
+        <span data-typlite="rect">
+          <span data-typlite-field="true" name="width" kind="relative length">
+            text "0% + 16pt"
+          <span data-typlite-field="true" name="height" kind="relative length">
+            text "0% + 8pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="none">
           <span data-typlite-field="true" name="frame" kind="frame">
             frame
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="placement" kind="none">
+      <span data-typlite-field="true" name="scope" kind="string">
+        text "column"
       <span data-typlite-field="true" name="caption" kind="content">
         tag
-        <span data-typlite="figure-caption" data-typlite-ir="true">
-          text "{\"body\":{\"func\":\"text\",\"text\":\"A rectangle\"},\"counter\":\"counter(figure.where(kind: image))\",\"func\":\"caption\",\"kind\":\"image\",\"numbering\":\"1\",\"position\":\"bottom\",\"separator\":{\"func\":\"text\",\"text\":\": \"},\"supplement\":{\"func\":\"text\",\"text\":\"Figure\"}}"
+        <span data-typlite="figure-caption">
+          <span data-typlite-field="true" name="position" kind="alignment">
+            text "bottom"
+          <span data-typlite-field="true" name="separator" kind="content">
+            text ":"
+            text " "
           <span data-typlite-field="true" name="body" kind="content">
             text "A rectangle"
+          <span data-typlite-field="true" name="kind" kind="function">
+            text "image"
           <span data-typlite-field="true" name="supplement" kind="content">
             text "Figure"
+          <span data-typlite-field="true" name="numbering" kind="string">
+            text "1"
+          <span data-typlite-field="true" name="counter" kind="counter">
+            text "counter(figure.where(kind: image))"
         tag
+      <span data-typlite-field="true" name="kind" kind="function">
+        text "image"
       <span data-typlite-field="true" name="supplement" kind="content">
         text "Figure"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1"
+      <span data-typlite-field="true" name="gap" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="counter" kind="counter">
+        text "counter(figure.where(kind: image))"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-table data-typlite-ir="true">
-      text "{\"align\":[\"left\",\"right\"],\"children\":[{\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"A\"},\"func\":\"cell\"},{\"body\":{\"func\":\"text\",\"text\":\"B\"},\"func\":\"cell\"}],\"func\":\"header\"},{\"body\":{\"body\":{\"func\":\"text\",\"text\":\"C\"},\"func\":\"emph\"},\"func\":\"cell\"},{\"align\":\"center\",\"body\":{\"body\":{\"func\":\"text\",\"text\":\"D\"},\"func\":\"strong\"},\"func\":\"cell\"},{\"body\":{\"func\":\"text\",\"text\":\"E\"},\"colspan\":2,\"func\":\"cell\"},{\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"F\"},\"func\":\"cell\"},{\"body\":{\"func\":\"text\",\"text\":\"G\"},\"func\":\"cell\"}],\"func\":\"footer\"}],\"column-gutter\":[],\"columns\":[\"auto\",\"auto\"],\"fill\":null,\"func\":\"table\",\"inset\":\"0% + 5pt\",\"row-gutter\":[],\"rows\":[],\"stroke\":\"1pt + black\"}"
+    <typlite-table>
+      <span data-typlite-field="true" name="columns" kind="array">
+        <span data-typlite-field="true" name="0" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="1" kind="auto">
+          text "auto"
+      <span data-typlite-field="true" name="rows" kind="array">
+      <span data-typlite-field="true" name="gutter" kind="none">
+      <span data-typlite-field="true" name="column-gutter" kind="array">
+      <span data-typlite-field="true" name="row-gutter" kind="array">
+      <span data-typlite-field="true" name="inset" kind="relative length">
+        text "0% + 5pt"
+      <span data-typlite-field="true" name="align" kind="array">
+        <span data-typlite-field="true" name="0" kind="alignment">
+          text "left"
+        <span data-typlite-field="true" name="1" kind="alignment">
+          text "right"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="stroke">
+        text "1pt + black"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          <span data-typlite="table-header">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="level" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "A"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "B"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+        <span data-typlite-field="true" name="1" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              tag
+              <span data-typlite="emph">
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "C"
+              tag
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="2" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              tag
+              <span data-typlite="strong">
+                <span data-typlite-field="true" name="delta" kind="integer">
+                  text "300"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "D"
+              tag
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="alignment">
+              text "center"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="3" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "E"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "2"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="4" kind="content">
+          <span data-typlite="table-footer">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "F"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "G"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-grid data-typlite-ir="true">
-      text "{\"align\":\"horizon\",\"children\":[{\"body\":{\"func\":\"text\",\"text\":\"G1\"},\"func\":\"cell\"},{\"align\":\"right\",\"body\":{\"func\":\"text\",\"text\":\"G2\"},\"func\":\"cell\"}],\"column-gutter\":[],\"columns\":[\"1fr\",\"1fr\"],\"fill\":null,\"func\":\"grid\",\"inset\":{},\"row-gutter\":[],\"rows\":[],\"stroke\":{}}"
+    <typlite-grid>
+      <span data-typlite-field="true" name="columns" kind="array">
+        <span data-typlite-field="true" name="0" kind="fraction">
+          text "1fr"
+        <span data-typlite-field="true" name="1" kind="fraction">
+          text "1fr"
+      <span data-typlite-field="true" name="rows" kind="array">
+      <span data-typlite-field="true" name="gutter" kind="none">
+      <span data-typlite-field="true" name="column-gutter" kind="array">
+      <span data-typlite-field="true" name="row-gutter" kind="array">
+      <span data-typlite-field="true" name="inset" kind="dictionary">
+      <span data-typlite-field="true" name="align" kind="alignment">
+        text "horizon"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="dictionary">
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          <span data-typlite="grid-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "G1"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="1" kind="content">
+          <span data-typlite="grid-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "G2"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="alignment">
+              text "right"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
-    <typlite-align data-typlite-ir="true">
-      text "{\"alignment\":\"center\",\"body\":{\"func\":\"text\",\"text\":\"Centered\"},\"func\":\"align\"}"
+    <typlite-parbreak>
+    <typlite-align>
+      <span data-typlite-field="true" name="alignment" kind="alignment">
+        text "center"
       <span data-typlite-field="true" name="body" kind="content">
         text "Centered"
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"attrs\":{\"data-typlite\":\"box\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"baseline\\\":\\\"0% + 0pt\\\",\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Boxed\\\"},\\\"clip\\\":false,\\\"fill\\\":null,\\\"func\\\":\\\"box\\\",\\\"height\\\":\\\"auto\\\",\\\"inset\\\":{},\\\"outset\\\":{},\\\"radius\\\":{},\\\"stroke\\\":{},\\\"width\\\":\\\"auto\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Boxed\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
-        <span data-typlite="box" data-typlite-ir="true">
-          text "{\"baseline\":\"0% + 0pt\",\"body\":{\"func\":\"text\",\"text\":\"Boxed\"},\"clip\":false,\"fill\":null,\"func\":\"box\",\"height\":\"auto\",\"inset\":{},\"outset\":{},\"radius\":{},\"stroke\":{},\"width\":\"auto\"}"
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="dictionary">
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
           <span data-typlite-field="true" name="body" kind="content">
             text "Boxed"
     tag
-    <typlite-pad data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Padded\"},\"bottom\":\"0% + 1pt\",\"func\":\"pad\",\"left\":\"0% + 1pt\",\"right\":\"0% + 1pt\",\"top\":\"0% + 1pt\"}"
+    <typlite-pad>
+      <span data-typlite-field="true" name="left" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="top" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="right" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="bottom" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="x" kind="none">
+      <span data-typlite-field="true" name="y" kind="none">
+      <span data-typlite-field="true" name="rest" kind="none">
       <span data-typlite-field="true" name="body" kind="content">
         text "Padded"
-    <typlite-move data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Moved\"},\"dx\":\"0% + 1pt\",\"dy\":\"0% + 1pt\",\"func\":\"move\"}"
+    <typlite-move>
+      <span data-typlite-field="true" name="dx" kind="relative length">
+        text "0% + 1pt"
+      <span data-typlite-field="true" name="dy" kind="relative length">
+        text "0% + 1pt"
       <span data-typlite-field="true" name="body" kind="content">
         text "Moved"
-    <typlite-rotate data-typlite-ir="true">
-      text "{\"angle\":\"10deg\",\"body\":{\"func\":\"text\",\"text\":\"Rotated\"},\"func\":\"rotate\",\"origin\":\"center + horizon\",\"reflow\":false}"
+    <typlite-rotate>
+      <span data-typlite-field="true" name="angle" kind="angle">
+        text "10deg"
+      <span data-typlite-field="true" name="origin" kind="alignment">
+        text "center + horizon"
+      <span data-typlite-field="true" name="reflow" kind="boolean">
+        text "false"
       <span data-typlite-field="true" name="body" kind="content">
         text "Rotated"
-    <typlite-scale data-typlite-ir="true">
-      text "{\"body\":{\"func\":\"text\",\"text\":\"Scaled\"},\"func\":\"scale\",\"origin\":\"center + horizon\",\"reflow\":false,\"x\":\"80%\",\"y\":\"80%\"}"
+    <typlite-scale>
+      <span data-typlite-field="true" name="factor" kind="none">
+      <span data-typlite-field="true" name="x" kind="ratio">
+        text "80%"
+      <span data-typlite-field="true" name="y" kind="ratio">
+        text "80%"
+      <span data-typlite-field="true" name="origin" kind="alignment">
+        text "center + horizon"
+      <span data-typlite-field="true" name="reflow" kind="boolean">
+        text "false"
       <span data-typlite-field="true" name="body" kind="content">
         text "Scaled"
-    <typlite-skew data-typlite-ir="true">
-      text "{\"ax\":\"10deg\",\"ay\":\"0deg\",\"body\":{\"func\":\"text\",\"text\":\"Skewed\"},\"func\":\"skew\",\"origin\":\"center + horizon\",\"reflow\":false}"
+    <typlite-skew>
+      <span data-typlite-field="true" name="ax" kind="angle">
+        text "10deg"
+      <span data-typlite-field="true" name="ay" kind="angle">
+        text "0deg"
+      <span data-typlite-field="true" name="origin" kind="alignment">
+        text "center + horizon"
+      <span data-typlite-field="true" name="reflow" kind="boolean">
+        text "false"
       <span data-typlite-field="true" name="body" kind="content">
         text "Skewed"
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-paragraph data-typlite-ir="true">
-      text "{\"body\":{\"children\":[{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"highlight\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Highlighted\\\"},\\\"bottom-edge\\\":\\\"descender\\\",\\\"extent\\\":\\\"0pt\\\",\\\"fill\\\":\\\"rgb(\\\\\\\"#fffd11a1\\\\\\\")\\\",\\\"func\\\":\\\"highlight\\\",\\\"radius\\\":{},\\\"stroke\\\":{},\\\"top-edge\\\":\\\"ascender\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Highlighted\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"space\"},{\"attrs\":{\"data-typlite\":\"smallcaps\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"all\\\":false,\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Small caps\\\"},\\\"func\\\":\\\"smallcaps\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Small caps\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"strike\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"background\\\":false,\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Struck\\\"},\\\"extent\\\":\\\"0pt\\\",\\\"func\\\":\\\"strike\\\",\\\"offset\\\":\\\"auto\\\",\\\"stroke\\\":\\\"auto\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Struck\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"sub\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"baseline\\\":\\\"auto\\\",\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Subscript\\\"},\\\"func\\\":\\\"sub\\\",\\\"size\\\":\\\"auto\\\",\\\"typographic\\\":true}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Subscript\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"space\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"super\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"baseline\\\":\\\"auto\\\",\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Superscript\\\"},\\\"func\\\":\\\"super\\\",\\\"size\\\":\\\"auto\\\",\\\"typographic\\\":true}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Superscript\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
       <span data-typlite-field="true" name="body" kind="content">
         tag
-        <span data-typlite="highlight" data-typlite-ir="true">
-          text "{\"body\":{\"func\":\"text\",\"text\":\"Highlighted\"},\"bottom-edge\":\"descender\",\"extent\":\"0pt\",\"fill\":\"rgb(\\\"#fffd11a1\\\")\",\"func\":\"highlight\",\"radius\":{},\"stroke\":{},\"top-edge\":\"ascender\"}"
+        <span data-typlite="highlight">
+          <span data-typlite-field="true" name="fill" kind="color">
+            text "rgb(\\\"#fffd11a1\\\")"
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="top-edge" kind="string">
+            text "ascender"
+          <span data-typlite-field="true" name="bottom-edge" kind="string">
+            text "descender"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="radius" kind="dictionary">
           <span data-typlite-field="true" name="body" kind="content">
             text "Highlighted"
         tag
         text " "
-        <span data-typlite="smallcaps" data-typlite-ir="true">
-          text "{\"all\":false,\"body\":{\"func\":\"text\",\"text\":\"Small caps\"},\"func\":\"smallcaps\"}"
+        <span data-typlite="smallcaps">
+          <span data-typlite-field="true" name="all" kind="boolean">
+            text "false"
           <span data-typlite-field="true" name="body" kind="content">
             text "Small caps"
         text " "
         tag
-        <span data-typlite="strike" data-typlite-ir="true">
-          text "{\"background\":false,\"body\":{\"func\":\"text\",\"text\":\"Struck\"},\"extent\":\"0pt\",\"func\":\"strike\",\"offset\":\"auto\",\"stroke\":\"auto\"}"
+        <span data-typlite="strike">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="offset" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="background" kind="boolean">
+            text "false"
           <span data-typlite-field="true" name="body" kind="content">
             text "Struck"
         tag
         text " "
         tag
-        <span data-typlite="sub" data-typlite-ir="true">
-          text "{\"baseline\":\"auto\",\"body\":{\"func\":\"text\",\"text\":\"Subscript\"},\"func\":\"sub\",\"size\":\"auto\",\"typographic\":true}"
+        <span data-typlite="sub">
+          <span data-typlite-field="true" name="typographic" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="baseline" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="size" kind="auto">
+            text "auto"
           <span data-typlite-field="true" name="body" kind="content">
             text "Subscript"
         tag
         text " "
         tag
-        <span data-typlite="super" data-typlite-ir="true">
-          text "{\"baseline\":\"auto\",\"body\":{\"func\":\"text\",\"text\":\"Superscript\"},\"func\":\"super\",\"size\":\"auto\",\"typographic\":true}"
+        <span data-typlite="super">
+          <span data-typlite-field="true" name="typographic" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="baseline" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="size" kind="auto">
+            text "auto"
           <span data-typlite-field="true" name="body" kind="content">
             text "Superscript"
         tag
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-math-equation data-typlite-ir="true">
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
       <span data-typlite-field="true" name="body" kind="content-ir">
         text "{\"children\":[{\"b\":{\"func\":\"text\",\"text\":\"1\"},\"base\":{\"func\":\"symbol\",\"text\":\"x\"},\"func\":\"attach\",\"t\":{\"func\":\"text\",\"text\":\"2\"}},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"+\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"y\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"=\"},{\"func\":\"space\"},{\"func\":\"root\",\"radicand\":{\"func\":\"text\",\"text\":\"4\"}}],\"func\":\"sequence\"}"
     tag
-    <typlite-parbreak data-typlite-ir="true">
-      text "{\"func\":\"parbreak\"}"
+    <typlite-parbreak>
     tag
-    <typlite-raw data-typlite-ir="true">
-      text "{\"align\":\"start\",\"block\":true,\"func\":\"raw\",\"lang\":\"rust\",\"lines\":[{\"body\":{\"children\":[{\"attrs\":{\"style\":\"color: #d73948\"},\"body\":{\"func\":\"text\",\"text\":\"fn\"},\"func\":\"elem\",\"tag\":\"span\"},{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\" \"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},{\"attrs\":{\"style\":\"color: #4b69c6\"},\"body\":{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\"main\"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},\"func\":\"elem\",\"tag\":\"span\"},{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\"(\"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\")\"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\" \"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\"{\"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null},{\"bold\":false,\"child\":{\"func\":\"text\",\"text\":\"}\"},\"cramped\":false,\"func\":\"styled\",\"italic\":null,\"size\":\"text\",\"text_fill\":\"luma(0%)\",\"text_size\":\"TextSize(11.0pt)\",\"text_style\":\"Normal\",\"text_weight\":\"400\",\"variant\":null}],\"func\":\"sequence\"},\"count\":1,\"func\":\"line\",\"number\":1,\"text\":\"fn main() {}\"}],\"syntaxes\":[],\"tab-size\":2,\"text\":\"fn main() {}\",\"theme\":\"auto\"}"
+    <typlite-raw>
+      <span data-typlite-field="true" name="text" kind="string">
+        text "fn main() {}"
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="lang" kind="string">
+        text "rust"
+      <span data-typlite-field="true" name="align" kind="alignment">
+        text "start"
+      <span data-typlite-field="true" name="syntaxes" kind="array">
+      <span data-typlite-field="true" name="theme" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="tab-size" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="lines" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          tag
+          <span data-typlite="raw-line">
+            <span data-typlite-field="true" name="number" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="count" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="text" kind="string">
+              text "fn main() {}"
+            <span data-typlite-field="true" name="body" kind="content">
+              <span style="color: #d73948">
+                text "fn"
+              text " "
+              <span style="color: #4b69c6">
+                text "main"
+              text "("
+              text ")"
+              text " "
+              text "{"
+              text "}"
+          tag
     tag
