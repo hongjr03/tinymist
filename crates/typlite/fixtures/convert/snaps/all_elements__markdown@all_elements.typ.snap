@@ -81,14 +81,14 @@ $$\hat{x} + x_{2}^{1} + \binom{1}{2} + \cancel{x}$$
 
 $$\left\{\begin{array}{l}1 \\ 2\end{array}\right. + x + \frac{1}{2} + \sum\limits$$
 
-$$(x) + \begin{pmatrix}1 & 2 \\ 3 & 4\end{pmatrix} + \middle| + \operatorname{lim}\limits$$
+$$(x) + \begin{pmatrix}1 & 2 \\ 3 & 4\end{pmatrix} + | + \operatorname{lim}\limits$$
 
-$$\overbrace{x}^{1} + \overbracket{x}^{1} + \overline{x} + \overparen{x}^{1} + \overset{1}{x}$$
+$$\overbrace{x}^{1} + \overbrace{x}^{1} + \overline{x} + \overbrace{x}^{1} + \overset{1}{x}$$
 
 $$''' + \sqrt[3]{x} + x\nolimits + \to$$
 
-$$\underbrace{x}_{1} + \underbracket{x}_{1} + \underline{x} + \underparen{x}_{1} + \underset{1}{x} + \left(\begin{matrix}1 \\ 2\end{matrix}\right)$$
+$$\underbrace{x}_{1} + \underbrace{x}_{1} + \underline{x} + \underbrace{x}_{1} + \underset{1}{x} + \left(\begin{matrix}1 \\ 2\end{matrix}\right)$$
 
 $$\left[\begin{matrix}1 \\ 2\end{matrix}\right]$$
 
-$$\sum_{k=0}^{n} k & = 1 + 2 + \dots + n  \\  & = \frac{n(n+1)}{2}$$
+$$\sum_{k=0}^{n} k  = 1 + 2 + \dots + n  \\   = \frac{n(n+1)}{2}$$

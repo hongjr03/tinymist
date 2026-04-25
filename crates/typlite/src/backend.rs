@@ -1316,10 +1316,7 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
             out.push(' ');
             Ok(())
         }
-        "align-point" => {
-            out.push('&');
-            Ok(())
-        }
+        "align-point" => Ok(()),
         "linebreak" => {
             out.push_str(r" \\ ");
             Ok(())
@@ -1331,23 +1328,23 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
         "cases" => render_math_cases(node, out),
         "class" | "lr" | "stretch" => render_math(math_child(node, "body")?, out),
         "limits" => render_math_limit_style(node, r"\limits", out),
-        "mid" => render_math_mid(node, out),
+        "mid" => render_math(math_child(node, "body")?, out),
         "scripts" => render_math_limit_style(node, r"\nolimits", out),
         "styled" => render_math_styled(node, out),
         "frac" => render_math_frac(node, out),
         "mat" => render_math_matrix(node, out),
         "op" => render_math_op(node, out),
         "overbrace" => render_math_annotated_command(node, "overbrace", "body", out),
-        "overbracket" => render_math_annotated_command(node, "overbracket", "body", out),
+        "overbracket" => render_math_annotated_command(node, "overbrace", "body", out),
         "overline" => render_math_one_arg_command(node, "overline", "body", out),
-        "overparen" => render_math_annotated_command(node, "overparen", "body", out),
+        "overparen" => render_math_annotated_command(node, "overbrace", "body", out),
         "overshell" => render_math_annotation_command(node, "overset", out),
         "primes" => render_math_primes(node, out),
         "root" => render_math_root(node, out),
         "underbrace" => render_math_under_annotated_command(node, "underbrace", out),
-        "underbracket" => render_math_under_annotated_command(node, "underbracket", out),
+        "underbracket" => render_math_under_annotated_command(node, "underbrace", out),
         "underline" => render_math_one_arg_command(node, "underline", "body", out),
-        "underparen" => render_math_under_annotated_command(node, "underparen", out),
+        "underparen" => render_math_under_annotated_command(node, "underbrace", out),
         "undershell" => render_math_annotation_command(node, "underset", out),
         "vec" => render_math_vec(node, out),
         func => bail!("typlite markdown math rendering is not implemented for `{func}`"),
@@ -1447,21 +1444,29 @@ fn render_math_accent(node: &MathNode, out: &mut String) -> Result<()> {
         "\u{030b}" => "H",
         "\u{030c}" => "check",
         "\u{20d7}" | "\u{20d6}" | "\u{20e1}" => "vec",
-        "\u{20d1}" | "\u{20d0}" => "rightharpoonaccent",
+        "\u{20d1}" | "\u{20d0}" => "vec",
         accent => bail!("typlite markdown math accent `{accent}` is not implemented"),
     };
     render_math_one_arg_command(node, command, "base", out)
 }
 
 fn render_math_attach(node: &MathNode, out: &mut String) -> Result<()> {
+    let mut rendered = String::new();
     if math_optional_child(node, "bl")?.is_some() || math_optional_child(node, "tl")?.is_some() {
-        out.push_str("{}");
-        render_math_script_pair(node, "bl", "tl", out)?;
+        rendered.push_str("{}");
+        render_math_script_pair(node, "bl", "tl", &mut rendered)?;
     }
 
-    render_math(math_child(node, "base")?, out)?;
-    render_math_script_pair(node, "b", "t", out)?;
-    render_math_script_pair(node, "br", "tr", out)?;
+    render_math(math_child(node, "base")?, &mut rendered)?;
+    render_math_script_pair(node, "b", "t", &mut rendered)?;
+    if math_optional_child(node, "br")?.is_some() || math_optional_child(node, "tr")?.is_some() {
+        let base = std::mem::take(&mut rendered);
+        rendered.push('{');
+        rendered.push_str(&base);
+        rendered.push('}');
+        render_math_script_pair(node, "br", "tr", &mut rendered)?;
+    }
+    out.push_str(&rendered);
     Ok(())
 }
 
@@ -1629,11 +1634,6 @@ fn render_math_limit_style(node: &MathNode, suffix: &str, out: &mut String) -> R
     render_math(math_child(node, "body")?, out)?;
     out.push_str(suffix);
     Ok(())
-}
-
-fn render_math_mid(node: &MathNode, out: &mut String) -> Result<()> {
-    out.push_str(r"\middle");
-    render_math(math_child(node, "body")?, out)
 }
 
 fn render_math_styled(node: &MathNode, out: &mut String) -> Result<()> {
