@@ -30,6 +30,11 @@ fn render_blocks(blocks: &[Block], indent: usize) -> String {
 }
 
 fn render_block(block: &Block, indent: usize, out: &mut String) {
+    if let Some(body) = block.generated_body() {
+        render_blocks_into(body, indent, out);
+        return;
+    }
+
     match block {
         Block::Heading { level, body } => {
             out.push_str(&" ".repeat(indent));
@@ -62,9 +67,6 @@ fn render_block(block: &Block, indent: usize, out: &mut String) {
             out.push_str("$$");
         }
         Block::Table { rows } => render_table(rows, indent, out),
-        Block::Element(element) => {
-            render_blocks_into(&element.body, indent, out);
-        }
         Block::Raw { text, .. } => {
             out.push_str(&" ".repeat(indent));
             out.push_str(text);
@@ -76,6 +78,7 @@ fn render_block(block: &Block, indent: usize, out: &mut String) {
             items,
             ..
         } => render_list(*ordered, *start, *reversed, items, indent, out),
+        _ => {}
     }
 }
 
@@ -200,6 +203,11 @@ fn render_list(
 
 fn render_inlines(nodes: &[Inline], out: &mut String) {
     for node in nodes {
+        if let Some(body) = node.generated_body() {
+            render_inlines(body, out);
+            continue;
+        }
+
         match node {
             Inline::Text(text) => out.push_str(text),
             Inline::Emph(children) => {
@@ -240,12 +248,12 @@ fn render_inlines(nodes: &[Inline], out: &mut String) {
                 out.push('$');
             }
             Inline::Linebreak => out.push('\n'),
-            Inline::Element(element) => render_inlines(&element.body, out),
             Inline::Raw { text, .. } => {
                 out.push('`');
                 out.push_str(text);
                 out.push('`');
             }
+            _ => {}
         }
     }
 }

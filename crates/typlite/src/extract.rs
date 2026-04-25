@@ -5,7 +5,8 @@ use typst_html::{HtmlElement, HtmlNode};
 
 use crate::element_spec::{ELEMENTS, ElementMode, ElementSpec};
 use crate::ir::{
-    Block, BlockElement, Document, Inline, InlineElement, ListItem, TableCell, TableRow,
+    Block, BlockElementData, Document, Inline, InlineElementData, ListItem, TableCell, TableRow,
+    block_from_element_kind, inline_from_element_kind,
 };
 
 /// Extracts typlite IR nodes from an HTML document root.
@@ -103,11 +104,14 @@ fn block_from_element(element: &HtmlElement) -> Option<Block> {
             full: field_bool(element, "full"),
             items: collect_list_items(element, true),
         }),
-        Some(tag) => block_spec_from_tag(&tag).map(|spec| {
-            Block::Element(BlockElement {
-                kind: spec.kind,
-                body: collect_block_element_body(element, spec),
-            })
+        Some(tag) => block_spec_from_tag(&tag).and_then(|spec| {
+            block_from_element_kind(
+                spec.kind,
+                BlockElementData {
+                    fields: Vec::new(),
+                    body: collect_block_element_body(element, spec),
+                },
+            )
         }),
         None => None,
     }
@@ -268,10 +272,12 @@ fn inline_has_content(inline: &Inline) -> bool {
         | Inline::Strike(body)
         | Inline::Sub(body)
         | Inline::Super(body)
-        | Inline::Math(body)
-        | Inline::Element(InlineElement { body, .. }) => body.iter().any(inline_has_content),
+        | Inline::Math(body) => body.iter().any(inline_has_content),
         Inline::Link { dest, body } => !dest.is_empty() || body.iter().any(inline_has_content),
         Inline::Raw { text, .. } => !text.is_empty(),
+        _ => inline
+            .generated_body()
+            .is_some_and(|body| body.iter().any(inline_has_content)),
     }
 }
 
@@ -330,10 +336,15 @@ fn collect_inlines(nodes: &[HtmlNode]) -> Vec<Inline> {
                     }),
                     Some(kind) => {
                         if let Some(spec) = spec_by_kind(kind) {
-                            out.push(Inline::Element(InlineElement {
-                                kind: spec.kind,
-                                body: collect_inline_element_body(element, spec),
-                            }));
+                            if let Some(inline) = inline_from_element_kind(
+                                spec.kind,
+                                InlineElementData {
+                                    fields: Vec::new(),
+                                    body: collect_inline_element_body(element, spec),
+                                },
+                            ) {
+                                out.push(inline);
+                            }
                         }
                     }
                     None => {
