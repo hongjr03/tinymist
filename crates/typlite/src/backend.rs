@@ -1189,9 +1189,7 @@ fn render_inlines(
                 render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</span>");
             }
-            Inline::PdfAttach(_) | Inline::PdfEmbed(_) => {
-                bail!("typlite markdown PDF embedding rendering is not implemented")
-            }
+            Inline::PdfAttach(data) | Inline::PdfEmbed(data) => render_pdf_embedding(data, out),
             Inline::Ref(data) => render_ref(data, bibliography, out)?,
             Inline::Smallcaps(data) => {
                 out.push_str("<span style=\"font-variant: small-caps\">");
@@ -1328,45 +1326,41 @@ fn render_inlines_html(
             | Inline::TableHline(_)
             | Inline::TableVline(_) => {}
             Inline::H(_) => out.push(' '),
-            Inline::PdfAttach(_) | Inline::PdfEmbed(_) => {
-                bail!("typlite markdown PDF embedding rendering is not implemented")
-            }
+            Inline::PdfAttach(data) | Inline::PdfEmbed(data) => render_pdf_embedding(data, out),
             Inline::Ref(data) => render_ref(data, bibliography, out)?,
             Inline::Smartquote(data) => render_smartquote_html(data, out)?,
-            Inline::MathAccent(_)
-            | Inline::MathAttach(_)
-            | Inline::MathBinom(_)
-            | Inline::MathCancel(_)
-            | Inline::MathCases(_)
-            | Inline::MathClass(_)
-            | Inline::MathFrac(_)
-            | Inline::MathLimits(_)
-            | Inline::MathLr(_)
-            | Inline::MathMat(_)
-            | Inline::MathMid(_)
-            | Inline::MathOp(_)
-            | Inline::MathOverbrace(_)
-            | Inline::MathOverbracket(_)
-            | Inline::MathOverline(_)
-            | Inline::MathOverparen(_)
-            | Inline::MathOvershell(_)
-            | Inline::MathPrimes(_)
-            | Inline::MathRoot(_)
-            | Inline::MathScripts(_)
-            | Inline::MathStretch(_)
-            | Inline::MathUnderbrace(_)
-            | Inline::MathUnderbracket(_)
-            | Inline::MathUnderline(_)
-            | Inline::MathUnderparen(_)
-            | Inline::MathUndershell(_)
-            | Inline::MathVec(_)
-            | Inline::CurveClose(_)
-            | Inline::CurveCubic(_)
-            | Inline::CurveLine(_)
-            | Inline::CurveMove(_)
-            | Inline::CurveQuad(_) => {
-                bail!("typlite HTML table cell rendering is not implemented for generated inline")
-            }
+            Inline::MathAccent(data)
+            | Inline::MathAttach(data)
+            | Inline::MathBinom(data)
+            | Inline::MathCancel(data)
+            | Inline::MathCases(data)
+            | Inline::MathClass(data)
+            | Inline::MathFrac(data)
+            | Inline::MathLimits(data)
+            | Inline::MathLr(data)
+            | Inline::MathMat(data)
+            | Inline::MathMid(data)
+            | Inline::MathOp(data)
+            | Inline::MathOverbrace(data)
+            | Inline::MathOverbracket(data)
+            | Inline::MathOverline(data)
+            | Inline::MathOverparen(data)
+            | Inline::MathOvershell(data)
+            | Inline::MathPrimes(data)
+            | Inline::MathRoot(data)
+            | Inline::MathScripts(data)
+            | Inline::MathStretch(data)
+            | Inline::MathUnderbrace(data)
+            | Inline::MathUnderbracket(data)
+            | Inline::MathUnderline(data)
+            | Inline::MathUnderparen(data)
+            | Inline::MathUndershell(data)
+            | Inline::MathVec(data)
+            | Inline::CurveClose(data)
+            | Inline::CurveCubic(data)
+            | Inline::CurveLine(data)
+            | Inline::CurveMove(data)
+            | Inline::CurveQuad(data) => render_structured_inline_html(node, data, out)?,
         }
     }
 
@@ -1419,7 +1413,7 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
         "underparen" => render_math_under_annotated_command(node, "underbrace", out),
         "undershell" => render_math_annotation_command(node, "underset", out),
         "vec" => render_math_vec(node, out),
-        func => bail!("typlite markdown math rendering is not implemented for `{func}`"),
+        _ => render_math_generic(node, out),
     }
 }
 
@@ -1517,9 +1511,18 @@ fn render_math_accent(node: &MathNode, out: &mut String) -> Result<()> {
         "\u{030c}" => "check",
         "\u{20d7}" | "\u{20d6}" | "\u{20e1}" => "vec",
         "\u{20d1}" | "\u{20d0}" => "vec",
-        accent => bail!("typlite markdown math accent `{accent}` is not implemented"),
+        _ => return render_math_unknown_accent(node, out),
     };
     render_math_one_arg_command(node, command, "base", out)
+}
+
+fn render_math_unknown_accent(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\overset{");
+    push_latex_text_escaped(math_scalar(node, "accent")?, out);
+    out.push_str("}{");
+    render_math(math_child(node, "base")?, out)?;
+    out.push('}');
+    Ok(())
 }
 
 fn render_math_attach(node: &MathNode, out: &mut String) -> Result<()> {
@@ -1698,7 +1701,7 @@ fn render_math_frac(node: &MathNode, out: &mut String) -> Result<()> {
             Ok(())
         }
         Some("vertical") | None => render_math_two_arg_command(node, "frac", "num", "denom", out),
-        Some(style) => bail!("typlite markdown math fraction style `{style}` is not implemented"),
+        Some(_) => render_math_two_arg_command(node, "frac", "num", "denom", out),
     }
 }
 
@@ -1839,7 +1842,51 @@ fn render_math_value(value: &MathValue, out: &mut String) -> Result<()> {
         }
         MathValue::Node(node) => render_math(node, out),
         MathValue::Nodes(nodes) => render_math_nodes(nodes, out),
-        MathValue::Rows(_) => bail!("math row value cannot be rendered as a scalar expression"),
+        MathValue::Rows(rows) => {
+            out.push_str(r"\begin{matrix}");
+            render_math_rows(rows, out)?;
+            out.push_str(r"\end{matrix}");
+            Ok(())
+        }
+    }
+}
+
+fn render_math_generic(node: &MathNode, out: &mut String) -> Result<()> {
+    out.push_str(r"\operatorname{");
+    push_latex_text_escaped(&node.func.replace(".", "-"), out);
+    out.push('}');
+
+    if node.fields.is_empty() {
+        return Ok(());
+    }
+
+    out.push_str(r"\left(");
+    for (index, field) in node.fields.iter().enumerate() {
+        if index > 0 {
+            out.push_str(", ");
+        }
+        push_latex_text_escaped(&field.name, out);
+        out.push('=');
+        render_math_value(&field.value, out)?;
+    }
+    out.push_str(r"\right)");
+    Ok(())
+}
+
+fn push_latex_text_escaped(value: &str, out: &mut String) {
+    for ch in value.chars() {
+        match ch {
+            '\\' => out.push_str(r"\backslash{}"),
+            '{' => out.push_str(r"\{"),
+            '}' => out.push_str(r"\}"),
+            '_' => out.push_str(r"\_"),
+            '^' => out.push_str(r"\^{}"),
+            '&' => out.push_str(r"\&"),
+            '%' => out.push_str(r"\%"),
+            '$' => out.push_str(r"\$"),
+            '#' => out.push_str(r"\#"),
+            _ => out.push(ch),
+        }
     }
 }
 
@@ -2061,7 +2108,10 @@ fn single_frame(inlines: &[Inline]) -> Option<&FrameImage> {
 
 fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) -> Result<()> {
     if frame.svg.contains("viewBox=\"0 0 0 0\"") {
-        bail!("typlite markdown frame image for {alt} is empty");
+        out.push_str("<!-- typlite-empty-frame: ");
+        push_html_comment_escaped(alt, out);
+        out.push_str(" -->");
+        return Ok(());
     }
 
     out.push_str("<img alt=\"");
@@ -2071,6 +2121,19 @@ fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) -> Result
     out.push_str("\">");
 
     Ok(())
+}
+
+fn render_pdf_embedding(data: &InlineElementData, out: &mut String) {
+    out.push_str("<!-- typlite-pdf");
+    if let Some(path) = data
+        .scalar("path")
+        .or_else(|| data.scalar("source"))
+        .filter(|value| !value.is_empty())
+    {
+        out.push_str(": ");
+        push_html_comment_escaped(path, out);
+    }
+    out.push_str(" -->");
 }
 
 fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
@@ -2454,10 +2517,9 @@ fn render_cite(
     out: &mut String,
 ) -> Result<()> {
     let Some(key) = data.scalar("key").or_else(|| data.scalar("label")) else {
-        bail!("typlite markdown cite rendering requires key or label");
+        render_structured_inline(&Inline::Cite(data.clone()), data, out)?;
+        return Ok(());
     };
-    ensure_default_cite_field(data, "form", "normal")?;
-    ensure_default_cite_field(data, "style", "auto")?;
 
     let key = key.trim_start_matches('<').trim_end_matches('>');
     if let Some(citation) = bibliography.citation(key) {
@@ -2466,7 +2528,12 @@ fn render_cite(
         return Ok(());
     }
 
-    bail!("typlite markdown cite rendering requires rendered bibliography citation for `{key}`")
+    out.push_str("[@");
+    push_markdown_link_text_escaped(key, out);
+    out.push_str("](#ref-");
+    out.push_str(key);
+    out.push(')');
+    Ok(())
 }
 
 fn render_ref(
@@ -2475,11 +2542,9 @@ fn render_ref(
     out: &mut String,
 ) -> Result<()> {
     let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) else {
-        bail!("typlite markdown ref rendering requires target or label");
+        render_structured_inline(&Inline::Ref(data.clone()), data, out)?;
+        return Ok(());
     };
-    if let Some(form) = data.scalar("form").filter(|form| *form != "normal") {
-        bail!("typlite markdown ref rendering does not support form `{form}`");
-    }
 
     let target = target.trim_start_matches('<').trim_end_matches('>');
     if let Some(citation) = bibliography.citation(target) {
@@ -2501,7 +2566,7 @@ fn render_ref(
         return Ok(());
     }
 
-    bail!("typlite markdown ref rendering requires supplement or resolved element for `{target}`")
+    render_ref_text_link(target, target, out)
 }
 
 fn render_citation_link(id: &str, key: &str, citation: &str, out: &mut String) {
@@ -2541,8 +2606,8 @@ fn render_ref_element_link(
         [Block::Figure { caption, .. }] if has_semantic_inlines(caption) => {
             render_ref_link(target, caption, bibliography, out)
         }
-        [_] => render_ref_text_link(target, target, out),
-        _ => bail!("typlite markdown ref rendering expected one resolved element for `{target}`"),
+        [_] | [_, ..] => render_ref_text_link(target, target, out),
+        [] => render_ref_text_link(target, target, out),
     }
 }
 
@@ -2563,7 +2628,7 @@ fn render_inline_quote(
     let quoted = match data.scalar("quotes").unwrap_or("auto") {
         "auto" | "true" => true,
         "false" => false,
-        value => bail!("typlite markdown quote rendering does not support quotes `{value}`"),
+        _ => true,
     };
 
     if quoted {
@@ -2594,7 +2659,7 @@ fn render_inline_quote_html(
     let quoted = match data.scalar("quotes").unwrap_or("auto") {
         "auto" | "true" => true,
         "false" => false,
-        value => bail!("typlite HTML quote rendering does not support quotes `{value}`"),
+        _ => true,
     };
 
     if quoted {
@@ -2645,9 +2710,7 @@ fn smartquote_char(data: &InlineElementData) -> Result<char> {
     match data.scalar("double").unwrap_or("true") {
         "true" => Ok('"'),
         "false" => Ok('\''),
-        value => {
-            bail!("typlite markdown smartquote rendering requires boolean double, got `{value}`")
-        }
+        _ => Ok('"'),
     }
 }
 
@@ -2661,14 +2724,6 @@ fn is_auto_inlines(value: &[Inline]) -> bool {
 
 fn is_none_inlines(value: &[Inline]) -> bool {
     matches!(value, [Inline::Text(text)] if text.as_str() == "none")
-}
-
-fn ensure_default_cite_field(data: &InlineElementData, field: &str, default: &str) -> Result<()> {
-    if let Some(value) = data.scalar(field).filter(|value| *value != default) {
-        bail!("typlite markdown cite rendering does not support {field} `{value}`");
-    }
-
-    Ok(())
 }
 
 fn render_structured_inline(
@@ -2688,6 +2743,19 @@ fn render_structured_inline(
     }
     out.push(')');
 
+    Ok(())
+}
+
+fn render_structured_inline_html(
+    node: &Inline,
+    data: &InlineElementData,
+    out: &mut String,
+) -> Result<()> {
+    let mut rendered = String::new();
+    render_structured_inline(node, data, &mut rendered)?;
+    out.push_str("<code>");
+    push_html_escaped(&rendered, out);
+    out.push_str("</code>");
     Ok(())
 }
 
