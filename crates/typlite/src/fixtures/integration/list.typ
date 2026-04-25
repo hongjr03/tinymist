@@ -1,2 +1,0 @@
-- Some *item*
-- Another _item_
