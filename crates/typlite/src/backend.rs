@@ -1,22 +1,24 @@
 //! Experimental backends for typlite IR.
 
+use crate::Result;
 use crate::ir::{
     Block, Document, ElementFieldValue, FrameImage, Inline, InlineElementData, TableRow,
 };
+use tinymist_std::error::prelude::*;
 
 /// Renders a document IR as Markdown.
-pub fn render_markdown(doc: &Document) -> String {
+pub fn render_markdown(doc: &Document) -> Result<String> {
     render_blocks(&doc.blocks, 0)
 }
 
-fn render_blocks(blocks: &[Block], indent: usize) -> String {
+fn render_blocks(blocks: &[Block], indent: usize) -> Result<String> {
     let mut out = String::new();
 
     let mut rendered_count = 0usize;
 
     for block in blocks {
         let mut rendered = String::new();
-        render_block(block, indent, &mut rendered);
+        render_block(block, indent, &mut rendered)?;
         if rendered.is_empty() {
             continue;
         }
@@ -28,24 +30,24 @@ fn render_blocks(blocks: &[Block], indent: usize) -> String {
         out.push_str(&rendered);
     }
 
-    out
+    Ok(out)
 }
 
-fn render_block(block: &Block, indent: usize, out: &mut String) {
+fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
     match block {
         Block::Heading { level, body } => {
             out.push_str(&" ".repeat(indent));
             out.push_str(&"#".repeat(*level as usize));
             out.push(' ');
-            render_inlines(body, out);
+            render_inlines(body, out)?;
         }
         Block::Paragraph(body) => {
             out.push_str(&" ".repeat(indent));
-            render_inlines(body, out);
+            render_inlines(body, out)?;
         }
-        Block::Quote(blocks) => render_quote(blocks, indent, out),
+        Block::Quote(blocks) => render_quote(blocks, indent, out)?,
         Block::Figure { body, caption } => {
-            render_blocks_into(body, indent, out);
+            render_blocks_into(body, indent, out)?;
             if !caption.is_empty() {
                 if !body.is_empty() {
                     out.push('\n');
@@ -53,17 +55,17 @@ fn render_block(block: &Block, indent: usize, out: &mut String) {
                 }
                 out.push_str(&" ".repeat(indent));
                 out.push_str("Figure: ");
-                render_inlines(caption, out);
+                render_inlines(caption, out)?;
             }
         }
-        Block::Align(blocks) => render_blocks_into(blocks, indent, out),
+        Block::Align(blocks) => render_blocks_into(blocks, indent, out)?,
         Block::Math(body) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("$$");
-            render_inlines(body, out);
+            render_inlines(body, out)?;
             out.push_str("$$");
         }
-        Block::Table { rows } => render_table(rows, indent, out),
+        Block::Table { rows } => render_table(rows, indent, out)?,
         Block::Raw { text, .. } => {
             out.push_str(&" ".repeat(indent));
             out.push_str(text);
@@ -74,33 +76,37 @@ fn render_block(block: &Block, indent: usize, out: &mut String) {
             reversed,
             items,
             ..
-        } => render_list(*ordered, *start, *reversed, items, indent, out),
+        } => render_list(*ordered, *start, *reversed, items, indent, out)?,
         Block::Block(data)
         | Block::Columns(data)
         | Block::Stack(data)
         | Block::Terms(data)
-        | Block::Title(data) => render_blocks_into(&data.body, indent, out),
+        | Block::Title(data) => render_blocks_into(&data.body, indent, out)?,
         Block::Colbreak(_) | Block::Parbreak(_) | Block::V(_) => {}
         Block::Outline(data) => {
             if let Some(title) = data.field("title") {
                 out.push_str(&" ".repeat(indent));
-                render_field_value(title, out);
+                render_field_value(title, out)?;
             }
         }
         Block::Pagebreak(_) => {
             out.push_str(&" ".repeat(indent));
             out.push_str("<div style=\"break-after: page\"></div>");
         }
-        Block::Bibliography(_) => unimplemented!("typlite markdown bibliography rendering"),
+        Block::Bibliography(_) => {
+            bail!("typlite markdown bibliography rendering is not implemented")
+        }
     }
+
+    Ok(())
 }
 
-fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) {
+fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
     let mut rendered_count = 0usize;
 
     for block in blocks {
         let mut rendered = String::new();
-        render_block(block, indent, &mut rendered);
+        render_block(block, indent, &mut rendered)?;
         if rendered.is_empty() {
             continue;
         }
@@ -111,10 +117,12 @@ fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) {
         rendered_count += 1;
         out.push_str(&rendered);
     }
+
+    Ok(())
 }
 
-fn render_quote(blocks: &[Block], indent: usize, out: &mut String) {
-    let body = render_blocks(blocks, 0);
+fn render_quote(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
+    let body = render_blocks(blocks, 0)?;
     let prefix = format!("{}> ", " ".repeat(indent));
 
     for (index, line) in body.lines().enumerate() {
@@ -124,19 +132,21 @@ fn render_quote(blocks: &[Block], indent: usize, out: &mut String) {
         out.push_str(&prefix);
         out.push_str(line);
     }
+
+    Ok(())
 }
 
-fn render_table(rows: &[TableRow], indent: usize, out: &mut String) {
+fn render_table(rows: &[TableRow], indent: usize, out: &mut String) -> Result<()> {
     if rows.is_empty() {
-        return;
+        return Ok(());
     }
 
     let columns = rows.iter().map(|row| row.cells.len()).max().unwrap_or(0);
     if columns == 0 {
-        return;
+        return Ok(());
     }
 
-    render_table_row(&rows[0], columns, indent, out);
+    render_table_row(&rows[0], columns, indent, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push('|');
@@ -146,20 +156,24 @@ fn render_table(rows: &[TableRow], indent: usize, out: &mut String) {
 
     for row in &rows[1..] {
         out.push('\n');
-        render_table_row(row, columns, indent, out);
+        render_table_row(row, columns, indent, out)?;
     }
+
+    Ok(())
 }
 
-fn render_table_row(row: &TableRow, columns: usize, indent: usize, out: &mut String) {
+fn render_table_row(row: &TableRow, columns: usize, indent: usize, out: &mut String) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push('|');
     for index in 0..columns {
         out.push(' ');
         if let Some(cell) = row.cells.get(index) {
-            render_inlines(&cell.body, out);
+            render_inlines(&cell.body, out)?;
         }
         out.push_str(" |");
     }
+
+    Ok(())
 }
 
 fn render_list(
@@ -169,7 +183,7 @@ fn render_list(
     items: &[crate::ir::ListItem],
     indent: usize,
     out: &mut String,
-) {
+) -> Result<()> {
     let mut next_number = if reversed {
         start.unwrap_or(items.len() as i64)
     } else {
@@ -194,7 +208,7 @@ fn render_list(
         };
         let prefix = format!("{}{} ", " ".repeat(indent), marker);
         let continuation = indent + marker.len() + 1;
-        let body = render_blocks(&item.body, continuation);
+        let body = render_blocks(&item.body, continuation)?;
 
         if body.is_empty() {
             out.push_str(&prefix);
@@ -212,51 +226,53 @@ fn render_list(
             out.push_str(line);
         }
     }
+
+    Ok(())
 }
 
-fn render_inlines(nodes: &[Inline], out: &mut String) {
+fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
     for node in nodes {
         match node {
             Inline::Text(text) => out.push_str(text),
             Inline::Emph(children) => {
                 out.push('*');
-                render_inlines(children, out);
+                render_inlines(children, out)?;
                 out.push('*');
             }
             Inline::Strong(children) => {
                 out.push_str("**");
-                render_inlines(children, out);
+                render_inlines(children, out)?;
                 out.push_str("**");
             }
             Inline::Link { dest, body } => {
                 out.push('[');
-                render_inlines(body, out);
+                render_inlines(body, out)?;
                 out.push_str("](");
                 out.push_str(dest);
                 out.push(')');
             }
             Inline::Strike(children) => {
                 out.push_str("~~");
-                render_inlines(children, out);
+                render_inlines(children, out)?;
                 out.push_str("~~");
             }
             Inline::Sub(children) => {
                 out.push_str("<sub>");
-                render_inlines(children, out);
+                render_inlines(children, out)?;
                 out.push_str("</sub>");
             }
             Inline::Super(children) => {
                 out.push_str("<sup>");
-                render_inlines(children, out);
+                render_inlines(children, out)?;
                 out.push_str("</sup>");
             }
             Inline::Math(children) => {
                 out.push('$');
-                render_inlines(children, out);
+                render_inlines(children, out)?;
                 out.push('$');
             }
             Inline::Linebreak => out.push('\n'),
-            Inline::Frame(frame) => render_frame_image("frame", frame, out),
+            Inline::Frame(frame) => render_frame_image("frame", frame, out)?,
             Inline::Raw { text, .. } => {
                 out.push('`');
                 out.push_str(text);
@@ -279,7 +295,7 @@ fn render_inlines(nodes: &[Inline], out: &mut String) {
             | Inline::ParLine(data)
             | Inline::PdfArtifact(data)
             | Inline::Quote(data)
-            | Inline::RawLine(data) => render_inlines(&data.body, out),
+            | Inline::RawLine(data) => render_inlines(&data.body, out)?,
             Inline::Circle(data)
             | Inline::Curve(data)
             | Inline::Ellipse(data)
@@ -287,15 +303,15 @@ fn render_inlines(nodes: &[Inline], out: &mut String) {
             | Inline::Path(data)
             | Inline::Polygon(data)
             | Inline::Rect(data)
-            | Inline::Square(data) => render_element_frame(node, data, out),
-            Inline::Cite(data) => render_cite(data, out),
+            | Inline::Square(data) => render_element_frame(node, data, out)?,
+            Inline::Cite(data) => render_cite(data, out)?,
             Inline::Document(_) | Inline::Hide(_) | Inline::Metadata(_) | Inline::Page(_) => {}
             Inline::FigureCaption(data) | Inline::FootnoteEntry(data) => {
-                render_inlines(&data.body, out)
+                render_inlines(&data.body, out)?
             }
             Inline::Footnote(data) => {
                 out.push_str("<sup>");
-                render_inlines(&data.body, out);
+                render_inlines(&data.body, out)?;
                 out.push_str("</sup>");
             }
             Inline::GridHline(_)
@@ -306,10 +322,10 @@ fn render_inlines(nodes: &[Inline], out: &mut String) {
             Inline::H(_) => out.push(' '),
             Inline::Highlight(data) => {
                 out.push_str("<mark>");
-                render_inlines(&data.body, out);
+                render_inlines(&data.body, out)?;
                 out.push_str("</mark>");
             }
-            Inline::Image(data) => render_image(data, out),
+            Inline::Image(data) => render_image(data, out)?,
             Inline::MathAccent(data)
             | Inline::MathAttach(data)
             | Inline::MathBinom(data)
@@ -341,38 +357,40 @@ fn render_inlines(nodes: &[Inline], out: &mut String) {
             | Inline::CurveCubic(data)
             | Inline::CurveLine(data)
             | Inline::CurveMove(data)
-            | Inline::CurveQuad(data) => render_structured_inline(node, data, out),
-            Inline::OutlineEntry(data) => render_inlines(&data.body, out),
+            | Inline::CurveQuad(data) => render_structured_inline(node, data, out)?,
+            Inline::OutlineEntry(data) => render_inlines(&data.body, out)?,
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
-                render_inlines(&data.body, out);
+                render_inlines(&data.body, out)?;
                 out.push_str("</span>");
             }
             Inline::PdfAttach(_) | Inline::PdfEmbed(_) => {
-                unimplemented!("typlite markdown PDF embedding rendering")
+                bail!("typlite markdown PDF embedding rendering is not implemented")
             }
-            Inline::Ref(data) => render_ref(data, out),
+            Inline::Ref(data) => render_ref(data, out)?,
             Inline::Smallcaps(data) => {
                 out.push_str("<span style=\"font-variant: small-caps\">");
-                render_inlines(&data.body, out);
+                render_inlines(&data.body, out)?;
                 out.push_str("</span>");
             }
             Inline::Smartquote(_) => {}
             Inline::Underline(data) => {
                 out.push_str("<u>");
-                render_inlines(&data.body, out);
+                render_inlines(&data.body, out)?;
                 out.push_str("</u>");
             }
         }
     }
+
+    Ok(())
 }
 
-fn render_element_frame(node: &Inline, data: &InlineElementData, out: &mut String) {
-    let kind = inline_kind(node);
+fn render_element_frame(node: &Inline, data: &InlineElementData, out: &mut String) -> Result<()> {
+    let kind = inline_kind(node)?;
     let Some(frame) = data.inlines("frame").and_then(single_frame) else {
-        unimplemented!("typlite markdown {kind} rendering requires html.frame");
+        bail!("typlite markdown {kind} rendering requires html.frame");
     };
-    render_frame_image(kind, frame, out);
+    render_frame_image(kind, frame, out)
 }
 
 fn single_frame(inlines: &[Inline]) -> Option<&FrameImage> {
@@ -382,9 +400,9 @@ fn single_frame(inlines: &[Inline]) -> Option<&FrameImage> {
     }
 }
 
-fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) {
+fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) -> Result<()> {
     if frame.svg.contains("viewBox=\"0 0 0 0\"") {
-        unimplemented!("typlite markdown frame image for {alt} is empty");
+        bail!("typlite markdown frame image for {alt} is empty");
     }
 
     out.push_str("<img alt=\"");
@@ -392,11 +410,13 @@ fn render_frame_image(alt: &str, frame: &FrameImage, out: &mut String) {
     out.push_str("\" src=\"data:image/svg+xml;utf8,");
     push_url_escaped(&frame.svg, out);
     out.push_str("\">");
+
+    Ok(())
 }
 
-fn render_image(data: &InlineElementData, out: &mut String) {
+fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
     let Some(source) = data.scalar("source").filter(|source| !source.is_empty()) else {
-        unimplemented!("typlite markdown image rendering requires source");
+        bail!("typlite markdown image rendering requires source");
     };
 
     out.push_str("![");
@@ -406,43 +426,53 @@ fn render_image(data: &InlineElementData, out: &mut String) {
     out.push_str("](");
     out.push_str(source);
     out.push(')');
+
+    Ok(())
 }
 
-fn render_cite(data: &InlineElementData, out: &mut String) {
+fn render_cite(data: &InlineElementData, out: &mut String) -> Result<()> {
     let Some(key) = data.scalar("key").or_else(|| data.scalar("label")) else {
-        unimplemented!("typlite markdown cite rendering requires key or label");
+        bail!("typlite markdown cite rendering requires key or label");
     };
     out.push_str("[@");
     out.push_str(key.trim_start_matches('<').trim_end_matches('>'));
     out.push(']');
+
+    Ok(())
 }
 
-fn render_ref(data: &InlineElementData, out: &mut String) {
+fn render_ref(data: &InlineElementData, out: &mut String) -> Result<()> {
     let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) else {
-        unimplemented!("typlite markdown ref rendering requires target or label");
+        bail!("typlite markdown ref rendering requires target or label");
     };
     if let Some(supplement) = data
         .inlines("supplement")
         .filter(|value| !value.is_empty() && !is_auto_inlines(value))
     {
         out.push('[');
-        render_inlines(supplement, out);
+        render_inlines(supplement, out)?;
         out.push_str("](#");
         out.push_str(target.trim_start_matches('<').trim_end_matches('>'));
         out.push(')');
-        return;
+        return Ok(());
     }
 
     out.push('@');
     out.push_str(target.trim_start_matches('<').trim_end_matches('>'));
+
+    Ok(())
 }
 
 fn is_auto_inlines(value: &[Inline]) -> bool {
     matches!(value, [Inline::Text(text)] if text.as_str() == "auto")
 }
 
-fn render_structured_inline(node: &Inline, data: &InlineElementData, out: &mut String) {
-    out.push_str(inline_kind(node));
+fn render_structured_inline(
+    node: &Inline,
+    data: &InlineElementData,
+    out: &mut String,
+) -> Result<()> {
+    out.push_str(inline_kind(node)?);
     out.push('(');
     for (index, field) in data.fields.iter().enumerate() {
         if index > 0 {
@@ -450,21 +480,25 @@ fn render_structured_inline(node: &Inline, data: &InlineElementData, out: &mut S
         }
         out.push_str(field.name);
         out.push_str(": ");
-        render_field_value(&field.value, out);
+        render_field_value(&field.value, out)?;
     }
     out.push(')');
+
+    Ok(())
 }
 
-fn render_field_value(value: &ElementFieldValue, out: &mut String) {
+fn render_field_value(value: &ElementFieldValue, out: &mut String) -> Result<()> {
     match value {
         ElementFieldValue::Scalar(value) => out.push_str(value),
-        ElementFieldValue::Inlines(value) => render_inlines(value, out),
-        ElementFieldValue::Blocks(value) => out.push_str(&render_blocks(value, 0)),
+        ElementFieldValue::Inlines(value) => render_inlines(value, out)?,
+        ElementFieldValue::Blocks(value) => out.push_str(&render_blocks(value, 0)?),
     }
+
+    Ok(())
 }
 
-fn inline_kind(node: &Inline) -> &'static str {
-    match node {
+fn inline_kind(node: &Inline) -> Result<&'static str> {
+    let kind = match node {
         Inline::Box(_) => "box",
         Inline::Circle(_) => "circle",
         Inline::Cite(_) => "cite",
@@ -557,8 +591,10 @@ fn inline_kind(node: &Inline) -> &'static str {
         | Inline::Math(_)
         | Inline::Linebreak
         | Inline::Frame(_)
-        | Inline::Raw { .. } => unimplemented!("not a generated inline element"),
-    }
+        | Inline::Raw { .. } => bail!("not a generated inline element"),
+    };
+
+    Ok(kind)
 }
 
 fn push_html_escaped(value: &str, out: &mut String) {

@@ -196,7 +196,7 @@ impl Typlite {
         let ir = extract_document(&html);
 
         match self.format {
-            Format::Md => Ok(render_markdown(&ir).into()),
+            Format::Md => Ok(render_markdown(&ir)?.into()),
             Format::LaTeX => bail!("typlite LaTeX conversion is not implemented"),
             Format::Text => bail!("typlite text conversion is not implemented"),
             #[cfg(feature = "docx")]
