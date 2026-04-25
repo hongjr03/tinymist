@@ -13,12 +13,16 @@ use tinymist_std::error::prelude::*;
 #[derive(Debug, Default, Clone)]
 pub struct BibliographyContext {
     entries: BTreeMap<EcoString, EcoString>,
+    citations: BTreeMap<EcoString, EcoString>,
     order: Vec<EcoString>,
 }
 
 impl BibliographyContext {
     /// Creates a bibliography context from rendered entries.
-    pub fn new(entries: impl IntoIterator<Item = (EcoString, EcoString)>) -> Self {
+    pub fn new(
+        entries: impl IntoIterator<Item = (EcoString, EcoString)>,
+        citations: impl IntoIterator<Item = (EcoString, EcoString)>,
+    ) -> Self {
         let mut map = BTreeMap::new();
         let mut order = Vec::new();
 
@@ -31,6 +35,7 @@ impl BibliographyContext {
 
         Self {
             entries: map,
+            citations: citations.into_iter().collect(),
             order,
         }
     }
@@ -45,6 +50,10 @@ impl BibliographyContext {
 
     fn is_empty(&self) -> bool {
         self.entries.is_empty()
+    }
+
+    fn citation(&self, key: &str) -> Option<&str> {
+        self.citations.get(key).map(EcoString::as_str)
     }
 }
 
@@ -98,11 +107,11 @@ fn render_block(
             out.push_str(&" ".repeat(indent));
             out.push_str(&"#".repeat(*level as usize));
             out.push(' ');
-            render_inlines(body, out)?;
+            render_inlines(body, bibliography, out)?;
         }
         Block::Paragraph(body) => {
             out.push_str(&" ".repeat(indent));
-            render_inlines(body, out)?;
+            render_inlines(body, bibliography, out)?;
         }
         Block::Quote(blocks) => render_quote(blocks, indent, bibliography, out)?,
         Block::Figure { body, caption, alt } => {
@@ -119,7 +128,7 @@ fn render_block(
                 out.push('\n');
                 out.push_str(&" ".repeat(indent));
                 out.push_str("<figcaption>");
-                render_inlines_html(caption, out)?;
+                render_inlines_html(caption, bibliography, out)?;
                 out.push_str("</figcaption>");
             }
             out.push('\n');
@@ -135,7 +144,9 @@ fn render_block(
             render_math(body, out)?;
             out.push_str("$$");
         }
-        Block::Table { rows, alignments } => render_table(rows, alignments, indent, out)?,
+        Block::Table { rows, alignments } => {
+            render_table(rows, alignments, indent, bibliography, out)?
+        }
         Block::Raw { lang, text } => {
             out.push_str(&" ".repeat(indent));
             out.push_str("```");
@@ -261,7 +272,7 @@ fn render_block_html(
     match block {
         Block::Paragraph(body) => {
             out.push_str(&" ".repeat(indent));
-            render_inlines_html(body, out)
+            render_inlines_html(body, bibliography, out)
         }
         Block::Raw { lang, text } => {
             out.push_str(&" ".repeat(indent));
@@ -573,6 +584,7 @@ fn render_table(
     rows: &[TableRow],
     alignments: &[TableAlign],
     indent: usize,
+    bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
     if rows.is_empty() {
@@ -585,10 +597,10 @@ fn render_table(
     }
 
     if requires_html_table(rows) {
-        return render_html_table(rows, indent, out);
+        return render_html_table(rows, indent, bibliography, out);
     }
 
-    render_table_row(&rows[0], columns, indent, out)?;
+    render_table_row(&rows[0], columns, indent, bibliography, out)?;
     out.push('\n');
     out.push_str(&" ".repeat(indent));
     out.push('|');
@@ -605,7 +617,7 @@ fn render_table(
 
     for row in &rows[1..] {
         out.push('\n');
-        render_table_row(row, columns, indent, out)?;
+        render_table_row(row, columns, indent, bibliography, out)?;
     }
 
     Ok(())
@@ -619,7 +631,12 @@ fn requires_html_table(rows: &[TableRow]) -> bool {
     })
 }
 
-fn render_html_table(rows: &[TableRow], indent: usize, out: &mut String) -> Result<()> {
+fn render_html_table(
+    rows: &[TableRow],
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let indentation = " ".repeat(indent);
     out.push_str(&indentation);
     out.push_str("<table>");
@@ -648,7 +665,7 @@ fn render_html_table(rows: &[TableRow], indent: usize, out: &mut String) -> Resu
                 out.push('"');
             }
             out.push('>');
-            render_inlines_html(&cell.body, out)?;
+            render_inlines_html(&cell.body, bibliography, out)?;
             out.push_str("</td>");
         }
         out.push('\n');
@@ -680,13 +697,19 @@ fn table_align_marker(align: TableAlign) -> &'static str {
     }
 }
 
-fn render_table_row(row: &TableRow, columns: usize, indent: usize, out: &mut String) -> Result<()> {
+fn render_table_row(
+    row: &TableRow,
+    columns: usize,
+    indent: usize,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     out.push_str(&" ".repeat(indent));
     out.push('|');
     for index in 0..columns {
         out.push(' ');
         if let Some(cell) = row.cells.get(index) {
-            render_inlines(&cell.body, out)?;
+            render_inlines(&cell.body, bibliography, out)?;
         }
         out.push_str(" |");
     }
@@ -762,7 +785,7 @@ fn render_terms(
         }
 
         out.push_str(&" ".repeat(indent));
-        render_inlines(&item.term, out)?;
+        render_inlines(item.term.as_slice(), bibliography, out)?;
 
         let description = render_blocks(&item.description, indent + 2, bibliography)?;
         if !description.is_empty() {
@@ -783,40 +806,44 @@ fn render_terms(
     Ok(())
 }
 
-fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
+fn render_inlines(
+    nodes: &[Inline],
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     for node in nodes {
         match node {
             Inline::Text(text) => out.push_str(text),
             Inline::Emph(children) => {
                 out.push('*');
-                render_inlines(children, out)?;
+                render_inlines(children, bibliography, out)?;
                 out.push('*');
             }
             Inline::Strong(children) => {
                 out.push_str("**");
-                render_inlines(children, out)?;
+                render_inlines(children, bibliography, out)?;
                 out.push_str("**");
             }
             Inline::Link { dest, body } => {
                 out.push('[');
-                render_inlines(body, out)?;
+                render_inlines(body, bibliography, out)?;
                 out.push_str("](");
                 out.push_str(dest);
                 out.push(')');
             }
             Inline::Strike(children) => {
                 out.push_str("~~");
-                render_inlines(children, out)?;
+                render_inlines(children, bibliography, out)?;
                 out.push_str("~~");
             }
             Inline::Sub(children) => {
                 out.push_str("<sub>");
-                render_inlines(children, out)?;
+                render_inlines(children, bibliography, out)?;
                 out.push_str("</sub>");
             }
             Inline::Super(children) => {
                 out.push_str("<sup>");
-                render_inlines(children, out)?;
+                render_inlines(children, bibliography, out)?;
                 out.push_str("</sup>");
             }
             Inline::Math(children) => {
@@ -831,7 +858,7 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
                 out.push_str(text);
                 out.push('`');
             }
-            Inline::Repeat(data) => render_repeat(data, out)?,
+            Inline::Repeat(data) => render_repeat(data, bibliography, out)?,
             Inline::TableCell(data)
             | Inline::TableFooter(data)
             | Inline::TableHeader(data)
@@ -839,16 +866,18 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::GridFooter(data)
             | Inline::GridHeader(data)
             | Inline::ParLine(data)
-            | Inline::RawLine(data) => render_inlines(&data.body, out)?,
-            Inline::PdfArtifact(data) => render_pdf_artifact(data, out)?,
-            Inline::Box(data) => render_box(data, out)?,
-            Inline::Move(data) => render_move(data, out)?,
-            Inline::Pad(data) => render_pad(data, out)?,
-            Inline::Place(data) => render_place(data, out)?,
-            Inline::Rotate(data) => render_transform(data, "rotate", &["angle"], out)?,
-            Inline::Scale(data) => render_scale(data, out)?,
-            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], out)?,
-            Inline::Quote(data) => render_inline_quote(data, out)?,
+            | Inline::RawLine(data) => render_inlines(&data.body, bibliography, out)?,
+            Inline::PdfArtifact(data) => render_pdf_artifact(data, bibliography, out)?,
+            Inline::Box(data) => render_box(data, bibliography, out)?,
+            Inline::Move(data) => render_move(data, bibliography, out)?,
+            Inline::Pad(data) => render_pad(data, bibliography, out)?,
+            Inline::Place(data) => render_place(data, bibliography, out)?,
+            Inline::Rotate(data) => {
+                render_transform(data, "rotate", &["angle"], bibliography, out)?
+            }
+            Inline::Scale(data) => render_scale(data, bibliography, out)?,
+            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], bibliography, out)?,
+            Inline::Quote(data) => render_inline_quote(data, bibliography, out)?,
             Inline::Circle(data)
             | Inline::Curve(data)
             | Inline::Ellipse(data)
@@ -857,14 +886,14 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::Polygon(data)
             | Inline::Rect(data)
             | Inline::Square(data) => render_element_frame(node, data, out)?,
-            Inline::Cite(data) => render_cite(data, out)?,
+            Inline::Cite(data) => render_cite(data, bibliography, out)?,
             Inline::Metadata(data) => render_metadata(data, out),
             Inline::Document(_) | Inline::Hide(_) | Inline::Page(_) => {}
-            Inline::FigureCaption(data) => render_inlines(&data.body, out)?,
+            Inline::FigureCaption(data) => render_inlines(&data.body, bibliography, out)?,
             Inline::FootnoteEntry(_) => {}
             Inline::Footnote(data) => {
                 out.push_str("^[");
-                render_inlines(&data.body, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push(']');
             }
             Inline::GridHline(_)
@@ -875,7 +904,7 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             Inline::H(_) => out.push(' '),
             Inline::Highlight(data) => {
                 out.push_str("<mark>");
-                render_inlines(&data.body, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</mark>");
             }
             Inline::Image(data) => render_image(data, out)?,
@@ -911,25 +940,25 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::CurveLine(data)
             | Inline::CurveMove(data)
             | Inline::CurveQuad(data) => render_structured_inline(node, data, out)?,
-            Inline::OutlineEntry(data) => render_inlines(&data.body, out)?,
+            Inline::OutlineEntry(data) => render_inlines(&data.body, bibliography, out)?,
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
-                render_inlines(&data.body, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</span>");
             }
             Inline::PdfAttach(_) | Inline::PdfEmbed(_) => {
                 bail!("typlite markdown PDF embedding rendering is not implemented")
             }
-            Inline::Ref(data) => render_ref(data, out)?,
+            Inline::Ref(data) => render_ref(data, bibliography, out)?,
             Inline::Smallcaps(data) => {
                 out.push_str("<span style=\"font-variant: small-caps\">");
-                render_inlines(&data.body, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</span>");
             }
             Inline::Smartquote(data) => render_smartquote(data, out)?,
             Inline::Underline(data) => {
                 out.push_str("<u>");
-                render_inlines(&data.body, out)?;
+                render_inlines(&data.body, bibliography, out)?;
                 out.push_str("</u>");
             }
         }
@@ -938,40 +967,44 @@ fn render_inlines(nodes: &[Inline], out: &mut String) -> Result<()> {
     Ok(())
 }
 
-fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
+fn render_inlines_html(
+    nodes: &[Inline],
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     for node in nodes {
         match node {
             Inline::Text(text) => push_html_escaped(text, out),
             Inline::Emph(children) => {
                 out.push_str("<em>");
-                render_inlines_html(children, out)?;
+                render_inlines_html(children, bibliography, out)?;
                 out.push_str("</em>");
             }
             Inline::Strong(children) => {
                 out.push_str("<strong>");
-                render_inlines_html(children, out)?;
+                render_inlines_html(children, bibliography, out)?;
                 out.push_str("</strong>");
             }
             Inline::Link { dest, body } => {
                 out.push_str("<a href=\"");
                 push_html_escaped(dest, out);
                 out.push_str("\">");
-                render_inlines_html(body, out)?;
+                render_inlines_html(body, bibliography, out)?;
                 out.push_str("</a>");
             }
             Inline::Strike(children) => {
                 out.push_str("<del>");
-                render_inlines_html(children, out)?;
+                render_inlines_html(children, bibliography, out)?;
                 out.push_str("</del>");
             }
             Inline::Sub(children) => {
                 out.push_str("<sub>");
-                render_inlines_html(children, out)?;
+                render_inlines_html(children, bibliography, out)?;
                 out.push_str("</sub>");
             }
             Inline::Super(children) => {
                 out.push_str("<sup>");
-                render_inlines_html(children, out)?;
+                render_inlines_html(children, bibliography, out)?;
                 out.push_str("</sup>");
             }
             Inline::Raw { text, .. } => {
@@ -988,31 +1021,31 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             Inline::Frame(frame) => render_frame_image("frame", frame, out)?,
             Inline::Footnote(data) => {
                 out.push_str("<sup>");
-                render_inlines_html(&data.body, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</sup>");
             }
             Inline::Highlight(data) => {
                 out.push_str("<mark>");
-                render_inlines_html(&data.body, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</mark>");
             }
             Inline::Image(data) => render_image_html(data, out)?,
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
-                render_inlines_html(&data.body, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</span>");
             }
             Inline::Smallcaps(data) => {
                 out.push_str("<span style=\"font-variant: small-caps\">");
-                render_inlines_html(&data.body, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</span>");
             }
             Inline::Underline(data) => {
                 out.push_str("<u>");
-                render_inlines_html(&data.body, out)?;
+                render_inlines_html(&data.body, bibliography, out)?;
                 out.push_str("</u>");
             }
-            Inline::Repeat(data) => render_repeat(data, out)?,
+            Inline::Repeat(data) => render_repeat(data, bibliography, out)?,
             Inline::TableCell(data)
             | Inline::TableFooter(data)
             | Inline::TableHeader(data)
@@ -1022,16 +1055,18 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::ParLine(data)
             | Inline::RawLine(data)
             | Inline::FigureCaption(data)
-            | Inline::OutlineEntry(data) => render_inlines_html(&data.body, out)?,
-            Inline::PdfArtifact(data) => render_pdf_artifact(data, out)?,
-            Inline::Box(data) => render_box(data, out)?,
-            Inline::Move(data) => render_move(data, out)?,
-            Inline::Pad(data) => render_pad(data, out)?,
-            Inline::Place(data) => render_place(data, out)?,
-            Inline::Rotate(data) => render_transform(data, "rotate", &["angle"], out)?,
-            Inline::Scale(data) => render_scale(data, out)?,
-            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], out)?,
-            Inline::Quote(data) => render_inline_quote_html(data, out)?,
+            | Inline::OutlineEntry(data) => render_inlines_html(&data.body, bibliography, out)?,
+            Inline::PdfArtifact(data) => render_pdf_artifact(data, bibliography, out)?,
+            Inline::Box(data) => render_box(data, bibliography, out)?,
+            Inline::Move(data) => render_move(data, bibliography, out)?,
+            Inline::Pad(data) => render_pad(data, bibliography, out)?,
+            Inline::Place(data) => render_place(data, bibliography, out)?,
+            Inline::Rotate(data) => {
+                render_transform(data, "rotate", &["angle"], bibliography, out)?
+            }
+            Inline::Scale(data) => render_scale(data, bibliography, out)?,
+            Inline::Skew(data) => render_transform(data, "skew", &["ax", "ay"], bibliography, out)?,
+            Inline::Quote(data) => render_inline_quote_html(data, bibliography, out)?,
             Inline::FootnoteEntry(_) => {}
             Inline::Circle(data)
             | Inline::Curve(data)
@@ -1041,7 +1076,7 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             | Inline::Polygon(data)
             | Inline::Rect(data)
             | Inline::Square(data) => render_element_frame(node, data, out)?,
-            Inline::Cite(data) => render_cite(data, out)?,
+            Inline::Cite(data) => render_cite(data, bibliography, out)?,
             Inline::Metadata(data) => render_metadata(data, out),
             Inline::Document(_) | Inline::Hide(_) | Inline::Page(_) => {}
             Inline::GridHline(_)
@@ -1053,7 +1088,7 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
             Inline::PdfAttach(_) | Inline::PdfEmbed(_) => {
                 bail!("typlite markdown PDF embedding rendering is not implemented")
             }
-            Inline::Ref(data) => render_ref(data, out)?,
+            Inline::Ref(data) => render_ref(data, bibliography, out)?,
             Inline::Smartquote(data) => render_smartquote_html(data, out)?,
             Inline::MathAccent(_)
             | Inline::MathAttach(_)
@@ -1432,15 +1467,23 @@ fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
     Ok(())
 }
 
-fn render_box(data: &InlineElementData, out: &mut String) -> Result<()> {
-    render_layout_span(data, out, |data, out| {
+fn render_box(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_span(data, bibliography, out, |data, out| {
         out.push_str("display: inline-block");
         push_optional_css_length(data, "width", "width", out);
         push_optional_css_length(data, "height", "height", out);
     })
 }
 
-fn render_repeat(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_repeat(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     out.push_str("<span data-typlite-repeat=\"true\"");
     if let Some(gap) = data.scalar("gap").filter(|value| !is_auto_or_none(value)) {
         out.push_str(" data-gap=\"");
@@ -1462,22 +1505,30 @@ fn render_repeat(data: &InlineElementData, out: &mut String) -> Result<()> {
         out.push_str("; justify-content: space-between");
     }
     out.push_str("\">");
-    render_inlines_html(&data.body, out)?;
+    render_inlines_html(&data.body, bibliography, out)?;
     out.push_str("</span>");
     Ok(())
 }
 
-fn render_pdf_artifact(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_pdf_artifact(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     out.push_str("<span data-typlite-pdf-artifact=\"");
     push_html_escaped(data.scalar("kind").unwrap_or("artifact"), out);
     out.push_str("\">");
-    render_inlines_html(&data.body, out)?;
+    render_inlines_html(&data.body, bibliography, out)?;
     out.push_str("</span>");
     Ok(())
 }
 
-fn render_pad(data: &InlineElementData, out: &mut String) -> Result<()> {
-    render_layout_span(data, out, |data, out| {
+fn render_pad(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_span(data, bibliography, out, |data, out| {
         out.push_str("display: inline-block");
         push_optional_css_length(data, "left", "padding-left", out);
         push_optional_css_length(data, "top", "padding-top", out);
@@ -1486,8 +1537,12 @@ fn render_pad(data: &InlineElementData, out: &mut String) -> Result<()> {
     })
 }
 
-fn render_move(data: &InlineElementData, out: &mut String) -> Result<()> {
-    render_layout_span(data, out, |data, out| {
+fn render_move(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_span(data, bibliography, out, |data, out| {
         out.push_str("display: inline-block; transform: translate(");
         push_css_length(data.scalar("dx").unwrap_or("0pt"), out);
         out.push_str(", ");
@@ -1496,8 +1551,12 @@ fn render_move(data: &InlineElementData, out: &mut String) -> Result<()> {
     })
 }
 
-fn render_place(data: &InlineElementData, out: &mut String) -> Result<()> {
-    render_layout_span(data, out, |data, out| {
+fn render_place(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_span(data, bibliography, out, |data, out| {
         out.push_str("display: inline-block; position: relative");
         if let Some(dx) = data.scalar("dx").filter(|value| !is_auto_or_none(value)) {
             out.push_str("; left: ");
@@ -1514,9 +1573,10 @@ fn render_transform(
     data: &InlineElementData,
     function: &str,
     fields: &[&str],
+    bibliography: &BibliographyContext,
     out: &mut String,
 ) -> Result<()> {
-    render_layout_span(data, out, |data, out| {
+    render_layout_span(data, bibliography, out, |data, out| {
         out.push_str("display: inline-block; transform: ");
         out.push_str(function);
         out.push('(');
@@ -1530,8 +1590,12 @@ fn render_transform(
     })
 }
 
-fn render_scale(data: &InlineElementData, out: &mut String) -> Result<()> {
-    render_layout_span(data, out, |data, out| {
+fn render_scale(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
+    render_layout_span(data, bibliography, out, |data, out| {
         out.push_str("display: inline-block; transform: scale(");
         push_css_scale(
             data.scalar("x")
@@ -1552,13 +1616,14 @@ fn render_scale(data: &InlineElementData, out: &mut String) -> Result<()> {
 
 fn render_layout_span(
     data: &InlineElementData,
+    bibliography: &BibliographyContext,
     out: &mut String,
     push_style: impl FnOnce(&InlineElementData, &mut String),
 ) -> Result<()> {
     out.push_str("<span style=\"");
     push_style(data, out);
     out.push_str("\">");
-    render_inlines_html(&data.body, out)?;
+    render_inlines_html(&data.body, bibliography, out)?;
     out.push_str("</span>");
     Ok(())
 }
@@ -1606,28 +1671,31 @@ fn is_auto_or_none(value: &str) -> bool {
     value.is_empty() || value == "auto" || value == "none"
 }
 
-fn render_cite(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_cite(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let Some(key) = data.scalar("key").or_else(|| data.scalar("label")) else {
         bail!("typlite markdown cite rendering requires key or label");
     };
     ensure_default_cite_field(data, "form", "normal")?;
     ensure_default_cite_field(data, "style", "auto")?;
 
-    out.push_str("[@");
-    out.push_str(key.trim_start_matches('<').trim_end_matches('>'));
-    if let Some(supplement) = data
-        .inlines("supplement")
-        .filter(|value| has_semantic_inlines(value))
-    {
-        out.push_str(", ");
-        render_inlines(supplement, out)?;
+    let key = key.trim_start_matches('<').trim_end_matches('>');
+    if let Some(citation) = bibliography.citation(key) {
+        out.push_str(citation);
+        return Ok(());
     }
-    out.push(']');
 
-    Ok(())
+    bail!("typlite markdown cite rendering requires rendered bibliography citation for `{key}`")
 }
 
-fn render_ref(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_ref(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let Some(target) = data.scalar("target").or_else(|| data.scalar("label")) else {
         bail!("typlite markdown ref rendering requires target or label");
     };
@@ -1636,11 +1704,16 @@ fn render_ref(data: &InlineElementData, out: &mut String) -> Result<()> {
     }
 
     let target = target.trim_start_matches('<').trim_end_matches('>');
+    if let Some(citation) = bibliography.citation(target) {
+        out.push_str(citation);
+        return Ok(());
+    }
+
     if let Some(supplement) = data
         .inlines("supplement")
         .filter(|value| has_semantic_inlines(value))
     {
-        render_ref_link(target, supplement, out)?;
+        render_ref_link(target, supplement, bibliography, out)?;
         return Ok(());
     }
 
@@ -1648,7 +1721,7 @@ fn render_ref(data: &InlineElementData, out: &mut String) -> Result<()> {
         .inlines("element")
         .filter(|value| has_semantic_inlines(value))
     {
-        render_ref_link(target, element, out)?;
+        render_ref_link(target, element, bibliography, out)?;
         return Ok(());
     }
 
@@ -1657,16 +1730,25 @@ fn render_ref(data: &InlineElementData, out: &mut String) -> Result<()> {
     Ok(())
 }
 
-fn render_ref_link(target: &str, body: &[Inline], out: &mut String) -> Result<()> {
+fn render_ref_link(
+    target: &str,
+    body: &[Inline],
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     out.push('[');
-    render_inlines(body, out)?;
+    render_inlines(body, bibliography, out)?;
     out.push_str("](#");
     out.push_str(target);
     out.push(')');
     Ok(())
 }
 
-fn render_inline_quote(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_inline_quote(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let quoted = match data.scalar("quotes").unwrap_or("auto") {
         "auto" | "true" => true,
         "false" => false,
@@ -1676,7 +1758,7 @@ fn render_inline_quote(data: &InlineElementData, out: &mut String) -> Result<()>
     if quoted {
         out.push('"');
     }
-    render_inlines(&data.body, out)?;
+    render_inlines(&data.body, bibliography, out)?;
     if quoted {
         out.push('"');
     }
@@ -1686,14 +1768,18 @@ fn render_inline_quote(data: &InlineElementData, out: &mut String) -> Result<()>
         .filter(|value| has_semantic_inlines(value))
     {
         out.push_str(" (");
-        render_inlines(attribution, out)?;
+        render_inlines(attribution, bibliography, out)?;
         out.push(')');
     }
 
     Ok(())
 }
 
-fn render_inline_quote_html(data: &InlineElementData, out: &mut String) -> Result<()> {
+fn render_inline_quote_html(
+    data: &InlineElementData,
+    bibliography: &BibliographyContext,
+    out: &mut String,
+) -> Result<()> {
     let quoted = match data.scalar("quotes").unwrap_or("auto") {
         "auto" | "true" => true,
         "false" => false,
@@ -1703,7 +1789,7 @@ fn render_inline_quote_html(data: &InlineElementData, out: &mut String) -> Resul
     if quoted {
         out.push_str("<q>");
     }
-    render_inlines_html(&data.body, out)?;
+    render_inlines_html(&data.body, bibliography, out)?;
     if quoted {
         out.push_str("</q>");
     }
@@ -1713,7 +1799,7 @@ fn render_inline_quote_html(data: &InlineElementData, out: &mut String) -> Resul
         .filter(|value| has_semantic_inlines(value))
     {
         out.push_str(" <cite>");
-        render_inlines_html(attribution, out)?;
+        render_inlines_html(attribution, bibliography, out)?;
         out.push_str("</cite>");
     }
 
@@ -1797,7 +1883,9 @@ fn render_structured_inline(
 fn render_field_value(value: &ElementFieldValue, out: &mut String) -> Result<()> {
     match value {
         ElementFieldValue::Scalar(value) => out.push_str(value),
-        ElementFieldValue::Inlines(value) => render_inlines(value, out)?,
+        ElementFieldValue::Inlines(value) => {
+            render_inlines(value, &BibliographyContext::default(), out)?
+        }
         ElementFieldValue::Blocks(value) => {
             out.push_str(&render_blocks(value, 0, &BibliographyContext::default())?)
         }

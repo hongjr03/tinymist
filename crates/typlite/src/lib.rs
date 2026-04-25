@@ -491,6 +491,16 @@ fn render_bibliography_entries(
     }
 
     let rendered = driver.finish(BibliographyRequest::new(&style, None, &locales));
+    let mut citations = Vec::new();
+    for (key, citation) in cited.iter().zip(&rendered.citations) {
+        let mut rendered = String::new();
+        citation
+            .citation
+            .write_buf(&mut rendered, BufWriteFormat::Plain)
+            .context_ut("cannot render bibliography citation")?;
+        citations.push((key.as_str().into(), rendered.into()));
+    }
+
     let Some(bibliography) = rendered.bibliography else {
         return Ok(BibliographyContext::default());
     };
@@ -504,7 +514,7 @@ fn render_bibliography_entries(
         entries.push((item.key.into(), rendered.into()));
     }
 
-    Ok(BibliographyContext::new(entries))
+    Ok(BibliographyContext::new(entries, citations))
 }
 
 fn is_auto_or_none(value: &str) -> bool {

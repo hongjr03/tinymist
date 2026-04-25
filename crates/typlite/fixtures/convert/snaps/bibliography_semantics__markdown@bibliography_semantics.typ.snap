@@ -3,9 +3,9 @@ source: crates/typlite/tests/convert.rs
 expression: markdown
 input_file: crates/typlite/fixtures/convert/bibliography_semantics.typ
 ---
-Reference citation: @doe2020.
+Reference citation: (Doe, 2020).
 
-Function citation: [@doe2020].
+Function citation: (Doe, 2020).
 
 <section data-typlite-bibliography="true">
   <h2>References</h2>

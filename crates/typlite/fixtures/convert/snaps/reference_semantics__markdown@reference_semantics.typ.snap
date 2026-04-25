@@ -11,8 +11,4 @@ Named reference: [the target section](#target-section).
 
 Explicit reference: [custom target](#target-section).
 
-Citation: [@target-section].
-
-Citation with supplement: [@target-section, chapter 2].
-
 Footnote call: ^[Footnote body with *emphasis*.]
