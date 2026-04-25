@@ -663,22 +663,45 @@ pub(super) fn inline_element_body(
 }
 
 fn json_func(object: &Map<String, Value>) -> Result<&str> {
-    object
-        .get("func")
-        .and_then(Value::as_str)
-        .context("encoded content is missing string field `func`")
+    EncodedObject::new(object).func()
 }
 
 fn json_array<'a>(object: &'a Map<String, Value>, name: &str) -> &'a [Value] {
-    object
-        .get(name)
-        .and_then(Value::as_array)
-        .map(Vec::as_slice)
-        .unwrap_or_default()
+    EncodedObject::new(object).array(name)
 }
 
 fn json_scalar(object: &Map<String, Value>, name: &str) -> Option<EcoString> {
-    object.get(name).map(scalar)
+    EncodedObject::new(object).scalar(name)
+}
+
+#[derive(Clone, Copy)]
+struct EncodedObject<'a> {
+    fields: &'a Map<String, Value>,
+}
+
+impl<'a> EncodedObject<'a> {
+    fn new(fields: &'a Map<String, Value>) -> Self {
+        Self { fields }
+    }
+
+    fn func(self) -> Result<&'a str> {
+        self.fields
+            .get("func")
+            .and_then(Value::as_str)
+            .context("encoded content is missing string field `func`")
+    }
+
+    fn array(self, name: &str) -> &'a [Value] {
+        self.fields
+            .get(name)
+            .and_then(Value::as_array)
+            .map(Vec::as_slice)
+            .unwrap_or_default()
+    }
+
+    fn scalar(self, name: &str) -> Option<EcoString> {
+        self.fields.get(name).map(scalar)
+    }
 }
 
 fn spec_by_selector_or_kind(kind: &str) -> Option<&'static ElementSpec> {
