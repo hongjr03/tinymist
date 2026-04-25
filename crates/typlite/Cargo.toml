@@ -32,6 +32,9 @@ typst-syntax.workspace = true
 insta.workspace = true
 tinymist-tests.workspace = true
 
+[build-dependencies]
+typst.workspace = true
+
 [features]
 default = ["no-content-hint", "cli"]
 clap = []

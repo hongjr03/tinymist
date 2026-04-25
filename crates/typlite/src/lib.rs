@@ -134,7 +134,10 @@ impl TypliteFeat {
             )
             .context_ut("cannot map typlite IR package manifest")?;
         world
-            .map_shadow_by_id(package_id, Bytes::new(include_bytes!("typlite-ir.typ")))
+            .map_shadow_by_id(
+                package_id,
+                Bytes::from_string(include_str!(concat!(env!("OUT_DIR"), "/typlite-ir.typ"))),
+            )
             .context_ut("cannot map typlite IR package")?;
         world
             .map_shadow_by_id(wrapped_source_id, Bytes::from_string(original_source))
