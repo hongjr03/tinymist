@@ -6,6 +6,7 @@ use crate::ir::{
     MathNode, MathValue, TableAlign, TableRow, TermItem,
 };
 use ecow::EcoString;
+use std::cell::RefCell;
 use std::collections::BTreeMap;
 use tinymist_std::error::prelude::*;
 
@@ -14,6 +15,7 @@ use tinymist_std::error::prelude::*;
 pub struct BibliographyContext {
     entries: BTreeMap<EcoString, EcoString>,
     citations: BTreeMap<EcoString, EcoString>,
+    citation_offsets: RefCell<BTreeMap<EcoString, usize>>,
     order: Vec<EcoString>,
 }
 
@@ -36,8 +38,13 @@ impl BibliographyContext {
         Self {
             entries: map,
             citations: citations.into_iter().collect(),
+            citation_offsets: RefCell::default(),
             order,
         }
+    }
+
+    fn reset_render_state(&self) {
+        self.citation_offsets.borrow_mut().clear();
     }
 
     fn ordered_entries(&self) -> impl Iterator<Item = (&str, &str)> {
@@ -55,6 +62,21 @@ impl BibliographyContext {
     fn citation(&self, key: &str) -> Option<&str> {
         self.citations.get(key).map(EcoString::as_str)
     }
+
+    fn next_citation_id(&self, key: &str) -> String {
+        let mut offsets = self.citation_offsets.borrow_mut();
+        let offset = offsets.entry(key.into()).or_default();
+        *offset += 1;
+        format!("cite-{key}-{offset}")
+    }
+
+    fn citation_count(&self, key: &str) -> usize {
+        self.citation_offsets
+            .borrow()
+            .get(key)
+            .copied()
+            .unwrap_or_default()
+    }
 }
 
 /// Renders a document IR as Markdown.
@@ -67,6 +89,7 @@ pub fn render_markdown_with_bibliography(
     doc: &Document,
     bibliography: &BibliographyContext,
 ) -> Result<String> {
+    bibliography.reset_render_state();
     render_blocks(&doc.blocks, 0, bibliography)
 }
 
@@ -409,6 +432,15 @@ fn render_bibliography(
             push_html_escaped(key, out);
             out.push_str("\" class=\"csl-entry\">");
             push_html_escaped(entry, out);
+            for citation_index in 1..=bibliography.citation_count(key) {
+                out.push_str(" <a href=\"#cite-");
+                push_html_escaped(key, out);
+                out.push('-');
+                out.push_str(&citation_index.to_string());
+                out.push_str(
+                    "\" class=\"csl-backref\" aria-label=\"Back to citation\">&#8617;</a>",
+                );
+            }
             out.push_str("</div>");
         }
     }
@@ -1684,7 +1716,8 @@ fn render_cite(
 
     let key = key.trim_start_matches('<').trim_end_matches('>');
     if let Some(citation) = bibliography.citation(key) {
-        out.push_str(citation);
+        let id = bibliography.next_citation_id(key);
+        render_citation_link(&id, key, citation, out);
         return Ok(());
     }
 
@@ -1705,7 +1738,8 @@ fn render_ref(
 
     let target = target.trim_start_matches('<').trim_end_matches('>');
     if let Some(citation) = bibliography.citation(target) {
-        out.push_str(citation);
+        let id = bibliography.next_citation_id(target);
+        render_citation_link(&id, target, citation, out);
         return Ok(());
     }
 
@@ -1728,6 +1762,16 @@ fn render_ref(
     out.push('@');
     out.push_str(target);
     Ok(())
+}
+
+fn render_citation_link(id: &str, key: &str, citation: &str, out: &mut String) {
+    out.push_str("<a id=\"");
+    push_html_escaped(id, out);
+    out.push_str("\" href=\"#ref-");
+    push_html_escaped(key, out);
+    out.push_str("\">");
+    push_html_escaped(citation, out);
+    out.push_str("</a>");
 }
 
 fn render_ref_link(
