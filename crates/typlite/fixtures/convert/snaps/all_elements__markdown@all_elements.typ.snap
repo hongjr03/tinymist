@@ -1,0 +1,54 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/all_elements.typ
+---
+# Element Sweep
+
+Block body with
+
+horizontal spacing and a
+
+line break.
+
+Column one
+
+Column two
+
+Stack A
+
+Stack B
+
+Outline
+
+Placed . Hidden
+
+Box Circle Ellipse Rect Square   
+
+Overline Underline Highlight Smallcaps 
+
+Footnote body
+
+PDF artifact
+
+| H1 | H2 |
+| --- | --- |
+| Merged |  |
+| F1 | F2 |
+
+| GH1 | GH2 |
+| --- | --- |
+| Grid merged |  |
+| GF1 | GF2 |
+
+$${  "func": "sequence",  "children": [    {      "func": "accent",      "base": {        "func": "symbol",        "text": "x"      },      "accent": "̂"    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "attach",      "base": {        "func": "symbol",        "text": "x"      },      "t": {        "func": "text",        "text": "1"      },      "b": {        "func": "text",        "text": "2"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "binom",      "upper": {        "func": "text",        "text": "1"      },      "lower": [        {          "func": "text",          "text": "2"        }      ]    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "cancel",      "body": {        "func": "symbol",        "text": "x"      }    }  ]}$$
+
+$${  "func": "sequence",  "children": [    {      "func": "cases",      "children": [        {          "func": "text",          "text": "1"        },        {          "func": "text",          "text": "2"        }      ]    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "class",      "class": "normal",      "body": {        "func": "symbol",        "text": "x"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "frac",      "num": {        "func": "text",        "text": "1"      },      "denom": {        "func": "text",        "text": "2"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "limits",      "body": {        "func": "symbol",        "text": "∑"      },      "inline": false    }  ]}$$
+
+$${  "func": "sequence",  "children": [    {      "func": "lr",      "body": {        "func": "lr",        "body": {          "func": "sequence",          "children": [            {              "func": "symbol",              "text": "("            },            {              "func": "symbol",              "text": "x"            },            {              "func": "symbol",              "text": ")"            }          ]        }      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "mat",      "rows": [        [          {            "func": "text",            "text": "1"          },          {            "func": "text",            "text": "2"          }        ],        [          {            "func": "text",            "text": "3"          },          {            "func": "text",            "text": "4"          }        ]      ]    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "mid",      "body": {        "func": "symbol",        "text": "|"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "op",      "text": {        "func": "text",        "text": "lim"      },      "limits": true    }  ]}$$
+
+$${  "func": "sequence",  "children": [    {      "func": "overbrace",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "overbracket",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "overline",      "body": {        "func": "symbol",        "text": "x"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "overparen",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "overshell",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    }  ]}$$
+
+$${  "func": "sequence",  "children": [    {      "func": "primes",      "count": 3    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "root",      "index": {        "func": "text",        "text": "3"      },      "radicand": {        "func": "symbol",        "text": "x"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "scripts",      "body": {        "func": "symbol",        "text": "x"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "stretch",      "body": {        "func": "symbol",        "text": "→"      }    }  ]}$$
+
+$${  "func": "sequence",  "children": [    {      "func": "underbrace",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "underbracket",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "underline",      "body": {        "func": "symbol",        "text": "x"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "underparen",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "undershell",      "body": {        "func": "symbol",        "text": "x"      },      "annotation": {        "func": "text",        "text": "1"      }    },    {      "func": "space"    },    {      "func": "symbol",      "text": "+"    },    {      "func": "space"    },    {      "func": "vec",      "children": [        {          "func": "text",          "text": "1"        },        {          "func": "text",          "text": "2"        }      ]    }  ]}$$

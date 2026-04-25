@@ -1,0 +1,5893 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/all_elements.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      text "Element Sweep"
+    <meta name="authors" content="Typlite">
+  <body>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1."
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Element Sweep"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="metadata">
+          <span data-typlite-field="true" name="value" kind="dictionary">
+            <span data-typlite-field="true" name="fixture" kind="string">
+              text "all-elements"
+        tag
+    tag
+    <typlite-parbreak>
+    <typlite-block>
+      <span data-typlite-field="true" name="width" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="height" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="breakable" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="dictionary">
+      <span data-typlite-field="true" name="radius" kind="dictionary">
+      <span data-typlite-field="true" name="inset" kind="dictionary">
+      <span data-typlite-field="true" name="outset" kind="dictionary">
+      <span data-typlite-field="true" name="spacing" kind="none">
+      <span data-typlite-field="true" name="above" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="below" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="clip" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="sticky" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Block body with"
+        text " "
+        <span data-typlite="h">
+          <span data-typlite-field="true" name="amount" kind="length">
+            text "1em"
+          <span data-typlite-field="true" name="weak" kind="boolean">
+            text "false"
+        text " "
+        text "horizontal spacing and a"
+        text " "
+        <span data-typlite="linebreak">
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "false"
+        text " "
+        text "line break."
+    <typlite-parbreak>
+    <typlite-columns>
+      <span data-typlite-field="true" name="count" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="gutter" kind="relative length">
+        text "0% + 4pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <typlite-paragraph>
+          <span data-typlite-field="true" name="leading" kind="length">
+            text "0.65em"
+          <span data-typlite-field="true" name="spacing" kind="length">
+            text "1.2em"
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+            <span data-typlite-field="true" name="spacing" kind="dictionary">
+              <span data-typlite-field="true" name="min" kind="relative length">
+                text "66.67% + 0pt"
+              <span data-typlite-field="true" name="max" kind="relative length">
+                text "150% + 0pt"
+            <span data-typlite-field="true" name="tracking" kind="dictionary">
+              <span data-typlite-field="true" name="min" kind="length">
+                text "0pt"
+              <span data-typlite-field="true" name="max" kind="length">
+                text "0pt"
+          <span data-typlite-field="true" name="linebreaks" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+            <span data-typlite-field="true" name="amount" kind="length">
+              text "0pt"
+            <span data-typlite-field="true" name="all" kind="boolean">
+              text "false"
+          <span data-typlite-field="true" name="hanging-indent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Column one"
+        tag
+        <typlite-colbreak>
+          <span data-typlite-field="true" name="weak" kind="boolean">
+            text "false"
+        tag
+        <typlite-paragraph>
+          <span data-typlite-field="true" name="leading" kind="length">
+            text "0.65em"
+          <span data-typlite-field="true" name="spacing" kind="length">
+            text "1.2em"
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+            <span data-typlite-field="true" name="spacing" kind="dictionary">
+              <span data-typlite-field="true" name="min" kind="relative length">
+                text "66.67% + 0pt"
+              <span data-typlite-field="true" name="max" kind="relative length">
+                text "150% + 0pt"
+            <span data-typlite-field="true" name="tracking" kind="dictionary">
+              <span data-typlite-field="true" name="min" kind="length">
+                text "0pt"
+              <span data-typlite-field="true" name="max" kind="length">
+                text "0pt"
+          <span data-typlite-field="true" name="linebreaks" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+            <span data-typlite-field="true" name="amount" kind="length">
+              text "0pt"
+            <span data-typlite-field="true" name="all" kind="boolean">
+              text "false"
+          <span data-typlite-field="true" name="hanging-indent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Column two"
+        tag
+    <typlite-parbreak>
+    <typlite-stack>
+      <span data-typlite-field="true" name="dir" kind="direction">
+        text "ttb"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "2pt"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          text "Stack A"
+        <span data-typlite-field="true" name="1" kind="content">
+          text "Stack B"
+    <typlite-parbreak>
+    tag
+    tag
+    <typlite-terms>
+      <span data-typlite-field="true" name="tight" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="separator" kind="content">
+        <span data-typlite="h">
+          <span data-typlite-field="true" name="amount" kind="length">
+            text "0.6em"
+          <span data-typlite-field="true" name="weak" kind="boolean">
+            text "true"
+      <span data-typlite-field="true" name="indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "2em"
+      <span data-typlite-field="true" name="spacing" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="terms.item">
+          <span data-typlite-field="true" name="term" kind="content">
+            text "Term A"
+          <span data-typlite-field="true" name="description" kind="content">
+            text "Description A"
+        <span data-typlite-field="true" name="1" kind="terms.item">
+          <span data-typlite-field="true" name="term" kind="content">
+            text "Term B"
+          <span data-typlite-field="true" name="description" kind="content">
+            text "Description B"
+    tag
+    tag
+    tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-outline>
+      <span data-typlite-field="true" name="title" kind="content">
+        text "Outline"
+      <span data-typlite-field="true" name="target" kind="selector">
+        text "heading"
+      <span data-typlite-field="true" name="depth" kind="none">
+      <span data-typlite-field="true" name="indent" kind="auto">
+        text "auto"
+    tag
+    <typlite-parbreak>
+    <typlite-pagebreak>
+      <span data-typlite-field="true" name="weak" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="to" kind="none">
+    <typlite-v>
+      <span data-typlite-field="true" name="amount" kind="length">
+        text "2pt"
+      <span data-typlite-field="true" name="weak" kind="boolean">
+        text "false"
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="place">
+          <span data-typlite-field="true" name="alignment" kind="alignment">
+            text "right + top"
+          <span data-typlite-field="true" name="scope" kind="string">
+            text "column"
+          <span data-typlite-field="true" name="float" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="clearance" kind="length">
+            text "1.5em"
+          <span data-typlite-field="true" name="dx" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="dy" kind="relative length">
+            text "0% + 1pt"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Placed"
+        tag
+        text " "
+        tag
+        <span data-typlite="repeat">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "."
+          <span data-typlite-field="true" name="gap" kind="length">
+            text "1pt"
+          <span data-typlite-field="true" name="justify" kind="boolean">
+            text "true"
+        tag
+        text " "
+        tag
+        <span data-typlite="hide">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Hidden"
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        <span data-typlite="box">
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="baseline" kind="relative length">
+            text "0% + 0pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="dictionary">
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="clip" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Box"
+        text " "
+        <span data-typlite="circle">
+          <span data-typlite-field="true" name="radius" kind="none">
+          <span data-typlite-field="true" name="width" kind="relative length">
+            text "0% + 6pt"
+          <span data-typlite-field="true" name="height" kind="relative length">
+            text "0% + 6pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Circle"
+        text " "
+        <span data-typlite="ellipse">
+          <span data-typlite-field="true" name="width" kind="relative length">
+            text "0% + 8pt"
+          <span data-typlite-field="true" name="height" kind="relative length">
+            text "0% + 4pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Ellipse"
+        text " "
+        <span data-typlite="rect">
+          <span data-typlite-field="true" name="width" kind="relative length">
+            text "0% + 8pt"
+          <span data-typlite-field="true" name="height" kind="relative length">
+            text "0% + 4pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Rect"
+        text " "
+        <span data-typlite="square">
+          <span data-typlite-field="true" name="size" kind="none">
+          <span data-typlite-field="true" name="width" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="height" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="inset" kind="relative length">
+            text "0% + 5pt"
+          <span data-typlite-field="true" name="outset" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Square"
+        text " "
+        <span data-typlite="line">
+          <span data-typlite-field="true" name="start" kind="array">
+            <span data-typlite-field="true" name="0" kind="relative length">
+              text "0% + 0pt"
+            <span data-typlite-field="true" name="1" kind="relative length">
+              text "0% + 0pt"
+          <span data-typlite-field="true" name="end" kind="none">
+          <span data-typlite-field="true" name="length" kind="relative length">
+            text "0% + 8pt"
+          <span data-typlite-field="true" name="angle" kind="angle">
+            text "0deg"
+          <span data-typlite-field="true" name="stroke" kind="stroke">
+            text "1pt + black"
+        text " "
+        <span data-typlite="polygon">
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="fill-rule" kind="string">
+            text "non-zero"
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="vertices" kind="array">
+            <span data-typlite-field="true" name="0" kind="array">
+              <span data-typlite-field="true" name="0" kind="relative length">
+                text "0% + 0pt"
+              <span data-typlite-field="true" name="1" kind="relative length">
+                text "0% + 0pt"
+            <span data-typlite-field="true" name="1" kind="array">
+              <span data-typlite-field="true" name="0" kind="relative length">
+                text "0% + 4pt"
+              <span data-typlite-field="true" name="1" kind="relative length">
+                text "0% + 0pt"
+            <span data-typlite-field="true" name="2" kind="array">
+              <span data-typlite-field="true" name="0" kind="relative length">
+                text "0% + 2pt"
+              <span data-typlite-field="true" name="1" kind="relative length">
+                text "0% + 4pt"
+        text " "
+        <span data-typlite="curve">
+          <span data-typlite-field="true" name="fill" kind="none">
+          <span data-typlite-field="true" name="fill-rule" kind="string">
+            text "non-zero"
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="components" kind="array">
+            <span data-typlite-field="true" name="0" kind="content">
+              <span data-typlite="curve-move">
+                <span data-typlite-field="true" name="start" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 0pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 0pt"
+                <span data-typlite-field="true" name="relative" kind="boolean">
+                  text "false"
+            <span data-typlite-field="true" name="1" kind="content">
+              <span data-typlite="curve-line">
+                <span data-typlite-field="true" name="end" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 4pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 0pt"
+                <span data-typlite-field="true" name="relative" kind="boolean">
+                  text "false"
+            <span data-typlite-field="true" name="2" kind="content">
+              <span data-typlite="curve-quad">
+                <span data-typlite-field="true" name="control" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 6pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 2pt"
+                <span data-typlite-field="true" name="end" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 8pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 0pt"
+                <span data-typlite-field="true" name="relative" kind="boolean">
+                  text "false"
+            <span data-typlite-field="true" name="3" kind="content">
+              <span data-typlite="curve-cubic">
+                <span data-typlite-field="true" name="control-start" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 10pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 2pt"
+                <span data-typlite-field="true" name="control-end" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 12pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + -2pt"
+                <span data-typlite-field="true" name="end" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 14pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 0pt"
+                <span data-typlite-field="true" name="relative" kind="boolean">
+                  text "false"
+            <span data-typlite-field="true" name="4" kind="content">
+              <span data-typlite="curve-close">
+                <span data-typlite-field="true" name="mode" kind="string">
+                  text "smooth"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="overline">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="offset" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="evade" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="background" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Overline"
+        tag
+        text " "
+        tag
+        <span data-typlite="underline">
+          <span data-typlite-field="true" name="stroke" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="offset" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="evade" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="background" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Underline"
+        tag
+        text " "
+        tag
+        <span data-typlite="highlight">
+          <span data-typlite-field="true" name="fill" kind="color">
+            text "rgb(\\\"#fffd11a1\\\")"
+          <span data-typlite-field="true" name="stroke" kind="dictionary">
+          <span data-typlite-field="true" name="top-edge" kind="string">
+            text "ascender"
+          <span data-typlite-field="true" name="bottom-edge" kind="string">
+            text "descender"
+          <span data-typlite-field="true" name="extent" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="radius" kind="dictionary">
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Highlight"
+        tag
+        text " "
+        <span data-typlite="smallcaps">
+          <span data-typlite-field="true" name="all" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Smallcaps"
+        text " "
+        <span data-typlite="smartquote">
+          <span data-typlite-field="true" name="double" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="enabled" kind="boolean">
+            text "true"
+          <span data-typlite-field="true" name="alternative" kind="boolean">
+            text "false"
+          <span data-typlite-field="true" name="quotes" kind="auto">
+            text "auto"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="footnote">
+          <span data-typlite-field="true" name="numbering" kind="string">
+            text "1"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Footnote body"
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="ref">
+          <span data-typlite-field="true" name="target" kind="label">
+            text "sweep"
+          <span data-typlite-field="true" name="supplement" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="form" kind="string">
+            text "normal"
+          <span data-typlite-field="true" name="citation" kind="content">
+            tag
+            <span data-typlite="cite">
+              <span data-typlite-field="true" name="key" kind="label">
+                text "sweep"
+              <span data-typlite-field="true" name="supplement" kind="none">
+              <span data-typlite-field="true" name="form" kind="string">
+                text "normal"
+              <span data-typlite-field="true" name="style" kind="auto">
+                text "auto"
+            tag
+          <span data-typlite-field="true" name="element" kind="content">
+            tag
+            <typlite-heading>
+              <span data-typlite-field="true" name="level" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="depth" kind="integer">
+                text "1"
+              <span data-typlite-field="true" name="offset" kind="integer">
+                text "0"
+              <span data-typlite-field="true" name="numbering" kind="string">
+                text "1."
+              <span data-typlite-field="true" name="supplement" kind="content">
+                text "Section"
+              <span data-typlite-field="true" name="outlined" kind="boolean">
+                text "true"
+              <span data-typlite-field="true" name="bookmarked" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="hanging-indent" kind="auto">
+                text "auto"
+              <span data-typlite-field="true" name="body" kind="content">
+                text "Element Sweep"
+            tag
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="pdf-artifact">
+          <span data-typlite-field="true" name="kind" kind="string">
+            text "page"
+          <span data-typlite-field="true" name="body" kind="content">
+            text "PDF artifact"
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-table>
+      <span data-typlite-field="true" name="columns" kind="array">
+        <span data-typlite-field="true" name="0" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="1" kind="auto">
+          text "auto"
+      <span data-typlite-field="true" name="rows" kind="array">
+      <span data-typlite-field="true" name="gutter" kind="none">
+      <span data-typlite-field="true" name="column-gutter" kind="array">
+      <span data-typlite-field="true" name="row-gutter" kind="array">
+      <span data-typlite-field="true" name="inset" kind="relative length">
+        text "0% + 5pt"
+      <span data-typlite-field="true" name="align" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="stroke">
+        text "1pt + black"
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          <span data-typlite="table-header">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="level" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "H1"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "H2"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+        <span data-typlite-field="true" name="1" kind="content">
+          <span data-typlite="table-hline">
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="start" kind="integer">
+              text "0"
+            <span data-typlite-field="true" name="end" kind="none">
+            <span data-typlite-field="true" name="stroke" kind="stroke">
+              text "1pt + black"
+            <span data-typlite-field="true" name="position" kind="alignment">
+              text "top"
+        <span data-typlite-field="true" name="2" kind="content">
+          <span data-typlite="table-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "Merged"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "2"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="3" kind="content">
+          <span data-typlite="table-vline">
+            <span data-typlite-field="true" name="x" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="start" kind="integer">
+              text "0"
+            <span data-typlite-field="true" name="end" kind="none">
+            <span data-typlite-field="true" name="stroke" kind="stroke">
+              text "1pt + black"
+            <span data-typlite-field="true" name="position" kind="alignment">
+              text "start"
+        <span data-typlite-field="true" name="4" kind="content">
+          <span data-typlite="table-footer">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "F1"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="table-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "F2"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-grid>
+      <span data-typlite-field="true" name="columns" kind="array">
+        <span data-typlite-field="true" name="0" kind="auto">
+          text "auto"
+        <span data-typlite-field="true" name="1" kind="auto">
+          text "auto"
+      <span data-typlite-field="true" name="rows" kind="array">
+      <span data-typlite-field="true" name="gutter" kind="none">
+      <span data-typlite-field="true" name="column-gutter" kind="array">
+      <span data-typlite-field="true" name="row-gutter" kind="array">
+      <span data-typlite-field="true" name="inset" kind="dictionary">
+      <span data-typlite-field="true" name="align" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="fill" kind="none">
+      <span data-typlite-field="true" name="stroke" kind="dictionary">
+      <span data-typlite-field="true" name="children" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          <span data-typlite="grid-header">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="level" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="grid-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "GH1"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="grid-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "GH2"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+        <span data-typlite-field="true" name="1" kind="content">
+          <span data-typlite="grid-hline">
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="start" kind="integer">
+              text "0"
+            <span data-typlite-field="true" name="end" kind="none">
+            <span data-typlite-field="true" name="stroke" kind="stroke">
+              text "1pt + black"
+            <span data-typlite-field="true" name="position" kind="alignment">
+              text "top"
+        <span data-typlite-field="true" name="2" kind="content">
+          <span data-typlite="grid-cell">
+            <span data-typlite-field="true" name="body" kind="content">
+              text "Grid merged"
+            <span data-typlite-field="true" name="x" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="y" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="colspan" kind="integer">
+              text "2"
+            <span data-typlite-field="true" name="rowspan" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="inset" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="align" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="fill" kind="auto">
+              text "auto"
+            <span data-typlite-field="true" name="stroke" kind="dictionary">
+            <span data-typlite-field="true" name="breakable" kind="auto">
+              text "auto"
+        <span data-typlite-field="true" name="3" kind="content">
+          <span data-typlite="grid-vline">
+            <span data-typlite-field="true" name="x" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="start" kind="integer">
+              text "0"
+            <span data-typlite-field="true" name="end" kind="none">
+            <span data-typlite-field="true" name="stroke" kind="stroke">
+              text "1pt + black"
+            <span data-typlite-field="true" name="position" kind="alignment">
+              text "start"
+        <span data-typlite-field="true" name="4" kind="content">
+          <span data-typlite="grid-footer">
+            <span data-typlite-field="true" name="repeat" kind="boolean">
+              text "true"
+            <span data-typlite-field="true" name="children" kind="array">
+              <span data-typlite-field="true" name="0" kind="content">
+                <span data-typlite="grid-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "GF1"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+              <span data-typlite-field="true" name="1" kind="content">
+                <span data-typlite="grid-cell">
+                  <span data-typlite-field="true" name="body" kind="content">
+                    text "GF2"
+                  <span data-typlite-field="true" name="x" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="y" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="colspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="rowspan" kind="integer">
+                    text "1"
+                  <span data-typlite-field="true" name="inset" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="align" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="fill" kind="auto">
+                    text "auto"
+                  <span data-typlite-field="true" name="stroke" kind="dictionary">
+                  <span data-typlite-field="true" name="breakable" kind="auto">
+                    text "auto"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"text\": \"Equation\""
+        <br>
+        text "}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"accent\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"base\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"accent\": \"\u{302}\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"attach\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"base\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"t\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"b\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"2\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"binom\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"upper\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"lower\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"2\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "]"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"cancel\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "]"
+        <br>
+        text "}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"text\": \"Equation\""
+        <br>
+        text "}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"cases\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"2\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "]"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"class\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"class\": \"normal\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"frac\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"num\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"denom\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"2\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"limits\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"∑\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"inline\": false"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "]"
+        <br>
+        text "}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"text\": \"Equation\""
+        <br>
+        text "}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"lr\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"lr\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"(\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \")\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "]"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"mat\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"rows\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"2\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "],"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"3\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"4\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "]"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "]"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"mid\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"|\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"op\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"lim\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"limits\": true"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "]"
+        <br>
+        text "}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"text\": \"Equation\""
+        <br>
+        text "}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"overbrace\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"overbracket\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"overline\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"overparen\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"overshell\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "]"
+        <br>
+        text "}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"text\": \"Equation\""
+        <br>
+        text "}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"primes\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"count\": 3"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"root\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"index\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"3\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"radicand\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"scripts\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"stretch\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"→\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "]"
+        <br>
+        text "}"
+    tag
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"text\": \"Equation\""
+        <br>
+        text "}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content">
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"func\": \"sequence\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"underbrace\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"underbracket\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"underline\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"underparen\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"undershell\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"body\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"x\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"annotation\": {"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"symbol\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"+\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"space\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"vec\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"children\": ["
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"1\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "},"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "{"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"func\": \"text\","
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "\"text\": \"2\""
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+          text " "
+        text "]"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+          text " "
+          text " "
+        text "}"
+        <br>
+        <span style="white-space: pre-wrap">
+          text " "
+          text " "
+        text "]"
+        <br>
+        text "}"
+    tag
+    <section role="doc-endnotes">
+      <ol style="list-style-type: none">
+        tag
+        <li>
+          tag
+          <span data-typlite="footnote-entry">
+            <span data-typlite-field="true" name="note" kind="content">
+              tag
+              <span data-typlite="footnote">
+                <span data-typlite-field="true" name="numbering" kind="string">
+                  text "1"
+                <span data-typlite-field="true" name="body" kind="content">
+                  text "Footnote body"
+              tag
+            <span data-typlite-field="true" name="separator" kind="content">
+              <span data-typlite="line">
+                <span data-typlite-field="true" name="start" kind="array">
+                  <span data-typlite-field="true" name="0" kind="relative length">
+                    text "0% + 0pt"
+                  <span data-typlite-field="true" name="1" kind="relative length">
+                    text "0% + 0pt"
+                <span data-typlite-field="true" name="end" kind="none">
+                <span data-typlite-field="true" name="length" kind="relative length">
+                  text "30% + 0pt"
+                <span data-typlite-field="true" name="angle" kind="angle">
+                  text "0deg"
+                <span data-typlite-field="true" name="stroke" kind="stroke">
+                  text "0.5pt"
+            <span data-typlite-field="true" name="clearance" kind="length">
+              text "1em"
+            <span data-typlite-field="true" name="gap" kind="length">
+              text "0.5em"
+            <span data-typlite-field="true" name="indent" kind="length">
+              text "1em"
+          tag
+        tag
