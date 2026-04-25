@@ -165,8 +165,10 @@ impl ElementSpec {
 
     fn mode(&self) -> Mode {
         match self.selector().as_str() {
-            "enum" | "grid" | "heading" | "list" | "par" | "parbreak" | "table" => Mode::Block,
-            "raw" => Mode::BlockOrInline,
+            "bibliography" | "block" | "colbreak" | "columns" | "enum" | "figure" | "grid"
+            | "heading" | "list" | "outline" | "pagebreak" | "par" | "parbreak" | "stack"
+            | "table" | "terms" | "title" | "v" | "align" => Mode::Block,
+            "math.equation" | "quote" | "raw" => Mode::BlockOrInline,
             _ => Mode::Inline,
         }
     }

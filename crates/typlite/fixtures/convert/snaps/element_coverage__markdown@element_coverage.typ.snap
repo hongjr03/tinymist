@@ -21,9 +21,9 @@ input_file: crates/typlite/fixtures/convert/element_coverage.typ
 
 A block quote with underlined text.
 
+Centered
 
-
-Centered Boxed Padded Moved Rotated Scaled Skewed
+Boxed Padded Moved Rotated Scaled Skewed
 
 Highlighted Small caps Struck Subscript Superscript
 
