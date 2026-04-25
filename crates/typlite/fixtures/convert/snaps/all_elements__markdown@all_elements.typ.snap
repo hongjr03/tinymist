@@ -85,7 +85,7 @@ $$(x) + \begin{pmatrix}1 & 2 \\ 3 & 4\end{pmatrix} + | + \operatorname{lim}\limi
 
 $$\overbrace{x}^{1} + \overbrace{x}^{1} + \overline{x} + \overbrace{x}^{1} + \overset{1}{x}$$
 
-$$''' + \sqrt[3]{x} + x\nolimits + \to$$
+$$''' + \sqrt[3]{x} + x + \to$$
 
 $$\underbrace{x}_{1} + \underbrace{x}_{1} + \underline{x} + \underbrace{x}_{1} + \underset{1}{x} + \left(\begin{matrix}1 \\ 2\end{matrix}\right)$$
 

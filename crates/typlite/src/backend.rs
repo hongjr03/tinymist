@@ -1329,7 +1329,7 @@ fn render_math(node: &MathNode, out: &mut String) -> Result<()> {
         "class" | "lr" | "stretch" => render_math(math_child(node, "body")?, out),
         "limits" => render_math_limit_style(node, r"\limits", out),
         "mid" => render_math(math_child(node, "body")?, out),
-        "scripts" => render_math_limit_style(node, r"\nolimits", out),
+        "scripts" => render_math(math_child(node, "body")?, out),
         "styled" => render_math_styled(node, out),
         "frac" => render_math_frac(node, out),
         "mat" => render_math_matrix(node, out),
