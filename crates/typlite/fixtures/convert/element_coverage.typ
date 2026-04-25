@@ -1,4 +1,6 @@
-= Coverage
+#set heading(numbering: "1.")
+
+= Coverage<title>
 
 - List item with #emph[emphasis]
 - List item with #link("https://example.com")[a link]
@@ -8,6 +10,8 @@
     - Nested list item with #underline[underlined text]
     + Enum item
 - back to the first level
+
+@title[Heading with #emph[emphasis] and #link("https://example.com")[a link]]
 
 #quote(block: true)[A block quote with #underline[underlined text].]
 
