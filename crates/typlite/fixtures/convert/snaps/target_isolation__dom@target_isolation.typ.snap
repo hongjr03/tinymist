@@ -1,0 +1,40 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/target_isolation.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    <typlite-parbreak>
+    tag
+    <typlite-raw>
+      <span data-typlite-field="true" name="text" kind="string">
+        text "hello"
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="lang" kind="string">
+        text "typ"
+      <span data-typlite-field="true" name="align" kind="alignment">
+        text "start"
+      <span data-typlite-field="true" name="syntaxes" kind="array">
+      <span data-typlite-field="true" name="theme" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="tab-size" kind="integer">
+        text "2"
+      <span data-typlite-field="true" name="lines" kind="array">
+        <span data-typlite-field="true" name="0" kind="content">
+          tag
+          <span data-typlite="raw-line">
+            <span data-typlite-field="true" name="number" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="count" kind="integer">
+              text "1"
+            <span data-typlite-field="true" name="text" kind="string">
+              text "hello"
+            <span data-typlite-field="true" name="body" kind="content">
+              text "hello"
+          tag
+    tag

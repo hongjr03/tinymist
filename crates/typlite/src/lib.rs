@@ -25,8 +25,10 @@ use tinymist_std::error::prelude::*;
 use typst::Library as TypstLibrary;
 use typst::World;
 use typst::WorldExt;
+use typst::comemo::Tracked;
 use typst::foundations::{
-    Bytes, Content, Repr, SequenceElem, Str, StyleChain, StyledElem, SymbolElem, Value, func,
+    Binding, Bytes, Content, Context, Func, NativeFunc, Repr, SequenceElem, Str, StyleChain,
+    StyledElem, SymbolElem, Target, TargetElem, Value, func,
 };
 use typst::math::EquationElem;
 use typst::text::TextElem;
@@ -179,16 +181,41 @@ impl TypliteFeat {
 
 fn typlite_library(library: &Arc<LazyHash<TypstLibrary>>) -> Arc<LazyHash<TypstLibrary>> {
     let mut library = library.as_ref().clone();
-    library
-        .global
-        .scope_mut()
-        .define_func::<__typlite_encode_content>();
+    let scope = library.global.scope_mut();
+    scope.define_func::<__typlite_encode_content>();
+    scope.bind(
+        "target".into(),
+        Binding::detached(Func::from(__typlite_target::data())),
+    );
+    if let Some(Value::Module(mut std)) = scope.get("std").map(|binding| binding.read().clone()) {
+        std.scope_mut().bind(
+            "target".into(),
+            Binding::detached(Func::from(__typlite_target::data())),
+        );
+        scope.bind("std".into(), Binding::detached(std));
+    }
+    if let Value::Module(mut std) = library.std.read().clone() {
+        std.scope_mut().bind(
+            "target".into(),
+            Binding::detached(Func::from(__typlite_target::data())),
+        );
+        library.std = Binding::detached(std);
+    }
     Arc::new(library)
 }
 
 #[func(name = "__typlite_encode_content", title = "Typlite content encoder")]
 fn __typlite_encode_content(body: Content) -> Str {
     Str::from(serde_json::to_string(&encode_content(&body)).unwrap_or_else(|_| "{}".to_owned()))
+}
+
+#[func(contextual, name = "target", title = "Typlite target")]
+fn __typlite_target(context: Tracked<Context>) -> typst::diag::HintedStrResult<Str> {
+    let target = context.styles()?.get(TargetElem::target);
+    Ok(match target {
+        Target::Html => Str::from("typlite"),
+        Target::Paged => Str::from("paged"),
+    })
 }
 
 fn encode_content(body: &Content) -> serde_json::Value {

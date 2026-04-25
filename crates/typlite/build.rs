@@ -113,7 +113,7 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
 
 #let frame_node(name, value) = field_node(name, "frame", html.frame(value))
 
-#let html_target(value, fallback) = if target() == "html" {
+#let typlite_target(value, fallback) = if target() == "typlite" {
   value
 } else {
   fallback
@@ -186,7 +186,7 @@ fn write_typst_ir_lib(out_dir: &Path, elements: &[ElementSpec]) {
         };
 
         out.push_str(&format!(
-            "  show {selector}: it => html_target({call}, it)\n"
+            "  show {selector}: it => typlite_target({call}, it)\n"
         ));
     }
 
