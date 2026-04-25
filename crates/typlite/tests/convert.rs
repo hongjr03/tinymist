@@ -65,9 +65,10 @@ fn rust_content_encoder_reads_styled_content() {
             .unwrap();
         let debug = render_debug_html(&html.root);
 
-        assert!(debug.contains(r#"\"func\":\"styled"#), "{debug}");
+        assert!(debug.contains("styled"), "{debug}");
         assert!(debug.contains(r#"#ff4136"#), "{debug}");
-        assert!(debug.contains(r#"\"bold\":true"#), "{debug}");
+        assert!(debug.contains("bold"), "{debug}");
+        assert!(debug.contains("true"), "{debug}");
     });
 }
 

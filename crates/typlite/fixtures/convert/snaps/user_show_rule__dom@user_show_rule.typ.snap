@@ -8,75 +8,26 @@ input_file: crates/typlite/fixtures/convert/user_show_rule.typ
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   <body>
-    <typlite-parbreak>
+    <typlite-parbreak data-typlite-ir="true">
+      text "{\"func\":\"parbreak\"}"
     tag
-    <typlite-paragraph>
-      <span data-typlite-field="true" name="leading" kind="length">
-        text "0.65em"
-      <span data-typlite-field="true" name="spacing" kind="length">
-        text "1.2em"
-      <span data-typlite-field="true" name="justify" kind="boolean">
-        text "false"
-      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
-        <span data-typlite-field="true" name="spacing" kind="dictionary">
-          <span data-typlite-field="true" name="min" kind="relative length">
-            text "66.67% + 0pt"
-          <span data-typlite-field="true" name="max" kind="relative length">
-            text "150% + 0pt"
-        <span data-typlite-field="true" name="tracking" kind="dictionary">
-          <span data-typlite-field="true" name="min" kind="length">
-            text "0pt"
-          <span data-typlite-field="true" name="max" kind="length">
-            text "0pt"
-      <span data-typlite-field="true" name="linebreaks" kind="auto">
-        text "auto"
-      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
-        <span data-typlite-field="true" name="amount" kind="length">
-          text "0pt"
-        <span data-typlite-field="true" name="all" kind="boolean">
-          text "false"
-      <span data-typlite-field="true" name="hanging-indent" kind="length">
-        text "0pt"
+    <typlite-paragraph data-typlite-ir="true">
+      text "{\"body\":{\"children\":[{\"func\":\"tag\"},{\"func\":\"tag\"},{\"attrs\":{\"data-typlite\":\"strong\",\"data-typlite-ir\":\"true\"},\"body\":{\"children\":[{\"func\":\"text\",\"text\":\"{\\\"body\\\":{\\\"func\\\":\\\"text\\\",\\\"text\\\":\\\"Title\\\"},\\\"delta\\\":300,\\\"func\\\":\\\"strong\\\"}\"},{\"attrs\":{\"data-typlite-field\":\"true\",\"kind\":\"content\",\"name\":\"body\"},\"body\":{\"func\":\"text\",\"text\":\"Title\"},\"func\":\"elem\",\"tag\":\"span\"}],\"func\":\"sequence\"},\"func\":\"elem\",\"tag\":\"span\"},{\"func\":\"tag\"},{\"func\":\"tag\"}],\"func\":\"sequence\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
       <span data-typlite-field="true" name="body" kind="content">
         tag
         tag
-        <span data-typlite="strong">
-          <span data-typlite-field="true" name="delta" kind="integer">
-            text "300"
+        <span data-typlite="strong" data-typlite-ir="true">
+          text "{\"body\":{\"func\":\"text\",\"text\":\"Title\"},\"delta\":300,\"func\":\"strong\"}"
           <span data-typlite-field="true" name="body" kind="content">
             text "Title"
         tag
         tag
     tag
-    <typlite-parbreak>
+    <typlite-parbreak data-typlite-ir="true">
+      text "{\"func\":\"parbreak\"}"
     tag
-    <typlite-paragraph>
-      <span data-typlite-field="true" name="leading" kind="length">
-        text "0.65em"
-      <span data-typlite-field="true" name="spacing" kind="length">
-        text "1.2em"
-      <span data-typlite-field="true" name="justify" kind="boolean">
-        text "false"
-      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
-        <span data-typlite-field="true" name="spacing" kind="dictionary">
-          <span data-typlite-field="true" name="min" kind="relative length">
-            text "66.67% + 0pt"
-          <span data-typlite-field="true" name="max" kind="relative length">
-            text "150% + 0pt"
-        <span data-typlite-field="true" name="tracking" kind="dictionary">
-          <span data-typlite-field="true" name="min" kind="length">
-            text "0pt"
-          <span data-typlite-field="true" name="max" kind="length">
-            text "0pt"
-      <span data-typlite-field="true" name="linebreaks" kind="auto">
-        text "auto"
-      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
-        <span data-typlite-field="true" name="amount" kind="length">
-          text "0pt"
-        <span data-typlite-field="true" name="all" kind="boolean">
-          text "false"
-      <span data-typlite-field="true" name="hanging-indent" kind="length">
-        text "0pt"
+    <typlite-paragraph data-typlite-ir="true">
+      text "{\"body\":{\"func\":\"text\",\"text\":\"Hello world.\"},\"first-line-indent\":{\"all\":false,\"amount\":\"0pt\"},\"func\":\"par\",\"hanging-indent\":\"0pt\",\"justification-limits\":{\"spacing\":{\"max\":\"150% + 0pt\",\"min\":\"66.67% + 0pt\"},\"tracking\":{\"max\":\"0pt\",\"min\":\"0pt\"}},\"justify\":false,\"leading\":\"0.65em\",\"linebreaks\":\"auto\",\"spacing\":\"1.2em\"}"
       <span data-typlite-field="true" name="body" kind="content">
         text "Hello world."
     tag
