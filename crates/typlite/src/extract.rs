@@ -402,6 +402,9 @@ fn inline_has_content(inline: &Inline) -> bool {
         | Inline::Square(data) => data
             .inlines("frame")
             .is_some_and(|frames| !frames.is_empty()),
+        Inline::Image(data) => data
+            .scalar("source")
+            .is_some_and(|source| !source.is_empty()),
         Inline::Box(data)
         | Inline::Cite(data)
         | Inline::CurveClose(data)
@@ -421,7 +424,6 @@ fn inline_has_content(inline: &Inline) -> bool {
         | Inline::H(data)
         | Inline::Hide(data)
         | Inline::Highlight(data)
-        | Inline::Image(data)
         | Inline::MathAccent(data)
         | Inline::MathAttach(data)
         | Inline::MathBinom(data)

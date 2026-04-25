@@ -56,12 +56,12 @@ fn render_block(block: &Block, indent: usize, out: &mut String) -> Result<()> {
                 out.push('"');
             }
             out.push_str(">\n");
-            render_blocks_into(body, indent, out)?;
+            render_blocks_html_into(body, indent, out)?;
             if !caption.is_empty() {
                 out.push('\n');
                 out.push_str(&" ".repeat(indent));
                 out.push_str("<figcaption>");
-                render_inlines(caption, out)?;
+                render_inlines_html(caption, out)?;
                 out.push_str("</figcaption>");
             }
             out.push('\n');
@@ -138,6 +138,49 @@ fn render_blocks_into(blocks: &[Block], indent: usize, out: &mut String) -> Resu
     }
 
     Ok(())
+}
+
+fn render_blocks_html_into(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
+    let mut rendered_count = 0usize;
+
+    for block in blocks {
+        let mut rendered = String::new();
+        render_block_html(block, indent, &mut rendered)?;
+        if rendered.is_empty() {
+            continue;
+        }
+
+        if rendered_count > 0 {
+            out.push('\n');
+        }
+        rendered_count += 1;
+        out.push_str(&rendered);
+    }
+
+    Ok(())
+}
+
+fn render_block_html(block: &Block, indent: usize, out: &mut String) -> Result<()> {
+    match block {
+        Block::Paragraph(body) => {
+            out.push_str(&" ".repeat(indent));
+            render_inlines_html(body, out)
+        }
+        Block::Raw { lang, text } => {
+            out.push_str(&" ".repeat(indent));
+            out.push_str("<pre><code");
+            if let Some(lang) = lang {
+                out.push_str(" class=\"language-");
+                push_html_escaped(lang, out);
+                out.push('"');
+            }
+            out.push('>');
+            push_html_escaped(text, out);
+            out.push_str("</code></pre>");
+            Ok(())
+        }
+        _ => render_block(block, indent, out),
+    }
 }
 
 fn render_quote(blocks: &[Block], indent: usize, out: &mut String) -> Result<()> {
@@ -576,7 +619,7 @@ fn render_inlines_html(nodes: &[Inline], out: &mut String) -> Result<()> {
                 render_inlines_html(&data.body, out)?;
                 out.push_str("</mark>");
             }
-            Inline::Image(data) => render_image(data, out)?,
+            Inline::Image(data) => render_image_html(data, out)?,
             Inline::Overline(data) => {
                 out.push_str("<span style=\"text-decoration: overline\">");
                 render_inlines_html(&data.body, out)?;
@@ -991,6 +1034,22 @@ fn render_image(data: &InlineElementData, out: &mut String) -> Result<()> {
     out.push_str("](");
     push_markdown_url(source, out);
     out.push(')');
+
+    Ok(())
+}
+
+fn render_image_html(data: &InlineElementData, out: &mut String) -> Result<()> {
+    let Some(source) = data.scalar("source").filter(|source| !source.is_empty()) else {
+        bail!("typlite HTML image rendering requires source");
+    };
+
+    out.push_str("<img alt=\"");
+    if let Some(alt) = data.scalar("alt") {
+        push_html_escaped(alt, out);
+    }
+    out.push_str("\" src=\"");
+    push_html_escaped(source, out);
+    out.push_str("\">");
 
     Ok(())
 }

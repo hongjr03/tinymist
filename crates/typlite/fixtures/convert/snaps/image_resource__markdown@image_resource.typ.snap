@@ -1,0 +1,13 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/image_resource.typ
+---
+# Image Resource
+
+![Sample \[box\]](sample.svg)
+
+<figure aria-label="Figure [alt]">
+<img alt="Figure sample" src="sample.svg">
+<figcaption>Image figure</figcaption>
+</figure>

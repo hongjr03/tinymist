@@ -1,0 +1,144 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/image_resource.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-heading>
+      <span data-typlite-field="true" name="level" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="depth" kind="integer">
+        text "1"
+      <span data-typlite-field="true" name="offset" kind="integer">
+        text "0"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Section"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="bookmarked" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="hanging-indent" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Image Resource"
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="image">
+          <span data-typlite-field="true" name="source" kind="string">
+            text "sample.svg"
+          <span data-typlite-field="true" name="format" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="alt" kind="string">
+            text "Sample [box]"
+          <span data-typlite-field="true" name="page" kind="integer">
+            text "1"
+          <span data-typlite-field="true" name="fit" kind="string">
+            text "cover"
+          <span data-typlite-field="true" name="scaling" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="icc" kind="auto">
+            text "auto"
+        tag
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-figure>
+      <span data-typlite-field="true" name="body" kind="content">
+        tag
+        <span data-typlite="image">
+          <span data-typlite-field="true" name="source" kind="string">
+            text "sample.svg"
+          <span data-typlite-field="true" name="format" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="width" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="height" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="alt" kind="string">
+            text "Figure sample"
+          <span data-typlite-field="true" name="page" kind="integer">
+            text "1"
+          <span data-typlite-field="true" name="fit" kind="string">
+            text "cover"
+          <span data-typlite-field="true" name="scaling" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="icc" kind="auto">
+            text "auto"
+        tag
+      <span data-typlite-field="true" name="alt" kind="string">
+        text "Figure [alt]"
+      <span data-typlite-field="true" name="placement" kind="none">
+      <span data-typlite-field="true" name="scope" kind="string">
+        text "column"
+      <span data-typlite-field="true" name="caption" kind="content">
+        tag
+        <span data-typlite="figure-caption">
+          <span data-typlite-field="true" name="position" kind="alignment">
+            text "bottom"
+          <span data-typlite-field="true" name="separator" kind="content">
+            text ":"
+            text " "
+          <span data-typlite-field="true" name="body" kind="content">
+            text "Image figure"
+          <span data-typlite-field="true" name="kind" kind="function">
+            text "image"
+          <span data-typlite-field="true" name="supplement" kind="content">
+            text "Figure"
+          <span data-typlite-field="true" name="numbering" kind="string">
+            text "1"
+          <span data-typlite-field="true" name="counter" kind="counter">
+            text "counter(figure.where(kind: image))"
+        tag
+      <span data-typlite-field="true" name="kind" kind="function">
+        text "image"
+      <span data-typlite-field="true" name="supplement" kind="content">
+        text "Figure"
+      <span data-typlite-field="true" name="numbering" kind="string">
+        text "1"
+      <span data-typlite-field="true" name="gap" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="outlined" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="counter" kind="counter">
+        text "counter(figure.where(kind: image))"
+    tag
