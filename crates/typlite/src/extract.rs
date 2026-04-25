@@ -1,5 +1,7 @@
 //! Experimental extraction from Typst HTML custom elements into typlite IR.
 
+mod encoded;
+
 use ecow::EcoString;
 use serde_json::{Map, Value};
 use tinymist_std::error::prelude::*;
@@ -10,8 +12,8 @@ use crate::Result;
 use crate::element_spec::{ELEMENTS, ElementMode, ElementSpec};
 use crate::ir::{
     Block, BlockElementData, Document, ElementField, ElementFieldValue, FrameImage, Inline,
-    InlineElementData, ListItem, MathField, MathNode, MathValue, TableAlign, TableCell, TableRow,
-    TermItem, block_from_element_kind, inline_from_element_kind,
+    InlineElementData, ListItem, MathNode, TableAlign, TableCell, TableRow, TermItem,
+    block_from_element_kind, inline_from_element_kind,
 };
 
 /// Extracts typlite IR nodes from an HTML document root.
@@ -173,7 +175,7 @@ fn element_field_blocks(
     }
 
     if let Some(value) = encoded_field(element, name)? {
-        return content_blocks_from_json(&value, introspector);
+        return encoded::content_blocks(&value, introspector);
     }
 
     Ok(Vec::new())
@@ -189,7 +191,7 @@ fn element_field_inlines(
     }
 
     if let Some(value) = encoded_field(element, name)? {
-        return content_inlines_from_json(&value, introspector);
+        return encoded::content_inlines(&value, introspector);
     }
 
     Ok(Vec::new())
@@ -201,7 +203,7 @@ fn element_field_math(element: &HtmlElement, name: &str) -> Result<MathNode> {
     }
 
     if let Some(value) = encoded_field(element, name)? {
-        return parse_math_node(&value);
+        return encoded::math_node(&value);
     }
 
     math_field(element, name)
@@ -214,7 +216,7 @@ fn collect_list_items(
 ) -> Result<Vec<ListItem>> {
     let Some(children) = field_children(element, "children") else {
         if let Some(Value::Array(children)) = encoded_field(element, "children")? {
-            return list_items_from_array(&children, ordered, introspector);
+            return encoded::list_items_from_array(&children, ordered, introspector);
         }
         return Ok(Vec::new());
     };
@@ -245,7 +247,7 @@ fn collect_list_items(
 fn collect_term_items(element: &HtmlElement, introspector: &Introspector) -> Result<Vec<TermItem>> {
     let Some(children) = field_children(element, "children") else {
         if let Some(Value::Array(children)) = encoded_field(element, "children")? {
-            return term_items_from_array(&children, introspector);
+            return encoded::term_items_from_array(&children, introspector);
         }
         return Ok(Vec::new());
     };
@@ -268,76 +270,6 @@ fn collect_term_items(element: &HtmlElement, introspector: &Introspector) -> Res
         items.push(TermItem { term, description });
     }
 
-    Ok(items)
-}
-
-fn list_items_from_json(
-    value: Option<&Value>,
-    ordered: bool,
-    introspector: &Introspector,
-) -> Result<Vec<ListItem>> {
-    let Some(Value::Array(children)) = value else {
-        return Ok(Vec::new());
-    };
-    list_items_from_array(children, ordered, introspector)
-}
-
-fn list_items_from_array(
-    children: &[Value],
-    ordered: bool,
-    introspector: &Introspector,
-) -> Result<Vec<ListItem>> {
-    let mut items = Vec::new();
-    for item in children {
-        let Some(item) = item.as_object() else {
-            continue;
-        };
-        let body = item
-            .get("body")
-            .map(|body| content_blocks_from_json(body, introspector))
-            .transpose()?
-            .unwrap_or_default();
-        let number = ordered
-            .then(|| {
-                item.get("number")
-                    .map(scalar_from_json)
-                    .filter(|value| value.as_str() != "auto")
-            })
-            .flatten();
-
-        items.push(ListItem { number, body });
-    }
-    Ok(items)
-}
-
-fn term_items_from_json(
-    value: Option<&Value>,
-    introspector: &Introspector,
-) -> Result<Vec<TermItem>> {
-    let Some(Value::Array(children)) = value else {
-        return Ok(Vec::new());
-    };
-    term_items_from_array(children, introspector)
-}
-
-fn term_items_from_array(children: &[Value], introspector: &Introspector) -> Result<Vec<TermItem>> {
-    let mut items = Vec::new();
-    for item in children {
-        let Some(item) = item.as_object() else {
-            continue;
-        };
-        let term = item
-            .get("term")
-            .map(|term| content_inlines_from_json(term, introspector))
-            .transpose()?
-            .unwrap_or_default();
-        let description = item
-            .get("description")
-            .map(|description| content_blocks_from_json(description, introspector))
-            .transpose()?
-            .unwrap_or_default();
-        items.push(TermItem { term, description });
-    }
     Ok(items)
 }
 
@@ -366,7 +298,7 @@ fn collect_table_rows(
             let mut rows = Vec::new();
             let mut row = Vec::new();
             for child in &children {
-                collect_table_cells_from_json(child, cell_kind, introspector, &mut row)?;
+                encoded::collect_table_cells(child, cell_kind, introspector, &mut row)?;
                 let mut occupied_columns: usize = row.iter().map(|cell| cell.colspan).sum();
                 while occupied_columns >= columns {
                     let mut drained = Vec::new();
@@ -416,7 +348,7 @@ fn collect_table_rows(
 
 fn collect_table_alignments(element: &HtmlElement) -> Vec<TableAlign> {
     if let Some(value) = encoded_field(element, "align").ok().flatten() {
-        return table_alignments_from_json(&value);
+        return encoded::table_alignments(&value);
     }
 
     let Some(children) = field_children(element, "align") else {
@@ -438,24 +370,6 @@ fn collect_table_alignments(element: &HtmlElement) -> Vec<TableAlign> {
         }
     } else {
         alignments
-    }
-}
-
-fn table_alignments_from_json(value: &Value) -> Vec<TableAlign> {
-    match value {
-        Value::Array(values) => values
-            .iter()
-            .map(scalar_from_json)
-            .map(|value| table_alignment(&value))
-            .collect(),
-        _ => {
-            let alignment = table_alignment(&scalar_from_json(value));
-            if alignment == TableAlign::Default {
-                Vec::new()
-            } else {
-                vec![alignment]
-            }
-        }
     }
 }
 
@@ -499,52 +413,6 @@ fn collect_table_cells(
 
     for child in &element.children {
         collect_table_cells(child, cell_kind, introspector, out)?;
-    }
-
-    Ok(())
-}
-
-fn collect_table_cells_from_json(
-    value: &Value,
-    cell_kind: &str,
-    introspector: &Introspector,
-    out: &mut Vec<TableCell>,
-) -> Result<()> {
-    let Some(object) = value.as_object() else {
-        return Ok(());
-    };
-
-    let func = json_func(object)?;
-    if func == cell_kind || func == cell_kind.replace('-', ".") || func == "cell" {
-        out.push(TableCell {
-            body: object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-            colspan: json_scalar(object, "colspan")
-                .and_then(|value| value.parse::<usize>().ok())
-                .unwrap_or(1),
-            rowspan: json_scalar(object, "rowspan")
-                .and_then(|value| value.parse::<usize>().ok())
-                .unwrap_or(1),
-            align: json_scalar(object, "align")
-                .map(|value| table_alignment(&value))
-                .unwrap_or(TableAlign::Default),
-        });
-        return Ok(());
-    }
-
-    for value in object.values() {
-        match value {
-            Value::Array(values) => {
-                for value in values {
-                    collect_table_cells_from_json(value, cell_kind, introspector, out)?;
-                }
-            }
-            Value::Object(_) => collect_table_cells_from_json(value, cell_kind, introspector, out)?,
-            _ => {}
-        }
     }
 
     Ok(())
@@ -787,7 +655,7 @@ fn collect_inline_element_body(
     }
 
     if let Some(object) = encoded_object(element)? {
-        return inline_element_body_from_object(&object, spec, introspector);
+        return encoded::inline_element_body(&object, spec, introspector);
     }
 
     Ok(Vec::new())
@@ -819,7 +687,7 @@ fn collect_element_fields(
             } else if let Some(value) = object.get(name) {
                 fields.push(ElementField {
                     name,
-                    value: element_field_value_from_json(name, value, mode, introspector)?,
+                    value: encoded::element_field_value(name, value, mode, introspector)?,
                 });
             }
         }
@@ -885,35 +753,6 @@ fn collect_element_field_value(
     }
 }
 
-fn element_field_value_from_json(
-    name: &str,
-    value: &Value,
-    mode: FieldMode,
-    introspector: &Introspector,
-) -> Result<ElementFieldValue> {
-    if name == "element" {
-        return Ok(ElementFieldValue::Blocks(content_blocks_from_json(
-            value,
-            introspector,
-        )?));
-    }
-
-    if is_content_field_name(name) {
-        Ok(match mode {
-            FieldMode::Block => {
-                ElementFieldValue::Blocks(content_blocks_from_json(value, introspector)?)
-            }
-            FieldMode::Inline => {
-                ElementFieldValue::Inlines(content_inlines_from_json(value, introspector)?)
-            }
-        })
-    } else if matches!(name, "source" | "sources") {
-        Ok(ElementFieldValue::Scalar(source_scalar_from_json(value)))
-    } else {
-        Ok(ElementFieldValue::Scalar(scalar_from_json(value)))
-    }
-}
-
 fn content_fields(spec: &'static ElementSpec) -> impl Iterator<Item = &'static str> {
     spec.fields
         .iter()
@@ -937,492 +776,8 @@ fn is_content_field_name(field: &str) -> bool {
     )
 }
 
-fn content_inlines_from_json(value: &Value, introspector: &Introspector) -> Result<Vec<Inline>> {
-    if let Value::Array(values) = value {
-        let mut out = Vec::new();
-        for value in values {
-            out.extend(content_inlines_from_json(value, introspector)?);
-        }
-        return Ok(out);
-    }
-
-    let Some(object) = value.as_object() else {
-        return Ok(vec![Inline::Text(scalar_from_json(value))]);
-    };
-    let func = json_func(object)?;
-
-    Ok(match func {
-        "sequence" => {
-            let mut out = Vec::new();
-            for child in json_array(object, "children") {
-                out.extend(content_inlines_from_json(child, introspector)?);
-            }
-            out
-        }
-        "styled" => object
-            .get("child")
-            .map(|child| content_inlines_from_json(child, introspector))
-            .transpose()?
-            .unwrap_or_default(),
-        "text" | "symbol" => vec![Inline::Text(
-            json_scalar(object, "text").unwrap_or_default(),
-        )],
-        "tag" | "frame" => Vec::new(),
-        "elem" => html_elem_inlines_from_json(object, introspector)?,
-        "space" | "h" => vec![Inline::Text(" ".into())],
-        "linebreak" => vec![Inline::Linebreak],
-        "emph" => vec![Inline::Emph(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "strong" => vec![Inline::Strong(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "link" => vec![Inline::Link {
-            dest: json_scalar(object, "dest").unwrap_or_default(),
-            body: object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        }],
-        "strike" => vec![Inline::Strike(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "sub" => vec![Inline::Sub(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "super" => vec![Inline::Super(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "equation" => vec![Inline::Math(parse_math_node(
-            object
-                .get("body")
-                .context("encoded equation is missing `body`")?,
-        )?)],
-        "raw" => vec![Inline::Raw {
-            lang: json_scalar(object, "lang").filter(|lang| lang.as_str() != "none"),
-            text: json_scalar(object, "text").unwrap_or_default(),
-        }],
-        kind => {
-            let Some(spec) = spec_by_selector_or_kind(kind) else {
-                bail!("typlite content inline rendering is not implemented for `{kind}`");
-            };
-            let Some(inline) = inline_from_element_kind(
-                spec.kind,
-                InlineElementData {
-                    fields: element_fields_from_object(
-                        object,
-                        spec,
-                        FieldMode::Inline,
-                        introspector,
-                    )?,
-                    body: inline_element_body_from_object(object, spec, introspector)?,
-                },
-            ) else {
-                bail!("encoded element `{kind}` is not an inline element");
-            };
-            vec![inline]
-        }
-    })
-}
-
-fn content_blocks_from_json(value: &Value, introspector: &Introspector) -> Result<Vec<Block>> {
-    if let Value::Array(values) = value {
-        let mut out = Vec::new();
-        for value in values {
-            out.extend(content_blocks_from_json(value, introspector)?);
-        }
-        return Ok(out);
-    }
-
-    let Some(object) = value.as_object() else {
-        let text = scalar_from_json(value);
-        return Ok((!text.trim().is_empty())
-            .then(|| Block::Paragraph(vec![Inline::Text(text)]))
-            .into_iter()
-            .collect());
-    };
-    let func = json_func(object)?;
-
-    Ok(match func {
-        "sequence" => {
-            let mut out = Vec::new();
-            let mut inlines = Vec::new();
-            for child in json_array(object, "children") {
-                let child_blocks = content_blocks_from_json(child, introspector)?;
-                if child_blocks.len() == 1
-                    && let Block::Paragraph(child_inlines) = &child_blocks[0]
-                {
-                    inlines.extend(child_inlines.clone());
-                } else {
-                    flush_paragraph(&mut inlines, &mut out);
-                    out.extend(child_blocks);
-                }
-            }
-            flush_paragraph(&mut inlines, &mut out);
-            out
-        }
-        "styled" => object
-            .get("child")
-            .map(|child| content_blocks_from_json(child, introspector))
-            .transpose()?
-            .unwrap_or_default(),
-        "tag" | "frame" => Vec::new(),
-        "text" | "symbol" | "space" | "h" | "linebreak" | "equation" | "elem" => {
-            let inlines = content_inlines_from_json(value, introspector)?;
-            if inlines.iter().any(inline_has_content) {
-                vec![Block::Paragraph(inlines)]
-            } else {
-                Vec::new()
-            }
-        }
-        kind => {
-            if let Some(block) = block_from_object(kind, object, introspector)? {
-                vec![block]
-            } else {
-                let inlines = content_inlines_from_json(value, introspector)?;
-                if inlines.iter().any(inline_has_content) {
-                    vec![Block::Paragraph(inlines)]
-                } else {
-                    Vec::new()
-                }
-            }
-        }
-    })
-}
-
-fn html_elem_inlines_from_json(
-    object: &Map<String, Value>,
-    introspector: &Introspector,
-) -> Result<Vec<Inline>> {
-    let attrs = object.get("attrs").and_then(Value::as_object);
-    let Some(kind) = attrs
-        .and_then(|attrs| attrs.get("data-typlite"))
-        .and_then(Value::as_str)
-    else {
-        return object
-            .get("body")
-            .map(|body| content_inlines_from_json(body, introspector))
-            .transpose()
-            .map(Option::unwrap_or_default);
-    };
-
-    let Some(body) = object.get("body") else {
-        return Ok(Vec::new());
-    };
-    let raw = content_inlines_from_json(body, introspector)?
-        .into_iter()
-        .filter_map(|inline| match inline {
-            Inline::Text(text) => Some(text),
-            _ => None,
-        })
-        .collect::<EcoString>();
-    let value = serde_json::from_str::<Value>(&raw).with_context_ut(
-        "cannot parse nested typlite HTML transport",
-        || {
-            Some(Box::new([
-                ("kind", kind.to_owned()),
-                ("raw", raw.to_string()),
-            ]))
-        },
-    )?;
-    let object = value
-        .as_object()
-        .context("nested typlite HTML transport must be an object")?;
-
-    Ok(match kind {
-        "emph" => vec![Inline::Emph(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "strong" => vec![Inline::Strong(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )],
-        "raw" => vec![Inline::Raw {
-            lang: json_scalar(object, "lang").filter(|lang| lang.as_str() != "none"),
-            text: json_scalar(object, "text").unwrap_or_default(),
-        }],
-        "math-equation" => vec![Inline::Math(parse_math_node(
-            object
-                .get("body")
-                .context("encoded math equation is missing `body`")?,
-        )?)],
-        kind => {
-            let Some(spec) = spec_by_selector_or_kind(kind) else {
-                bail!("nested typlite HTML transport `{kind}` is not implemented");
-            };
-            let Some(inline) = inline_from_element_kind(
-                spec.kind,
-                InlineElementData {
-                    fields: element_fields_from_object(
-                        object,
-                        spec,
-                        FieldMode::Inline,
-                        introspector,
-                    )?,
-                    body: inline_element_body_from_object(object, spec, introspector)?,
-                },
-            ) else {
-                bail!("nested typlite HTML transport `{kind}` is not an inline element");
-            };
-            vec![inline]
-        }
-    })
-}
-
-fn block_from_object(
-    kind: &str,
-    object: &Map<String, Value>,
-    introspector: &Introspector,
-) -> Result<Option<Block>> {
-    Ok(match kind {
-        "heading" => Some(Block::Heading {
-            level: json_scalar(object, "level")
-                .and_then(|level| level.parse::<u8>().ok())
-                .unwrap_or(1),
-            body: object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        }),
-        "par" | "paragraph" => Some(Block::Paragraph(
-            object
-                .get("body")
-                .map(|body| content_inlines_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )),
-        "math.equation" | "math-equation" | "equation" => Some(Block::Math(parse_math_node(
-            object
-                .get("body")
-                .context("encoded equation is missing `body`")?,
-        )?)),
-        "raw" => Some(Block::Raw {
-            lang: json_scalar(object, "lang").filter(|lang| lang.as_str() != "none"),
-            text: json_scalar(object, "text").unwrap_or_default(),
-        }),
-        "quote" => Some(Block::Quote(
-            object
-                .get("body")
-                .map(|body| content_blocks_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        )),
-        "figure" => Some(Block::Figure {
-            body: object
-                .get("body")
-                .map(|body| content_blocks_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-            caption: object
-                .get("caption")
-                .map(|caption| content_inlines_from_json(caption, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-            alt: json_scalar(object, "alt")
-                .filter(|value| !value.is_empty() && value.as_str() != "none"),
-        }),
-        "align" => Some(Block::Align {
-            alignment: json_scalar(object, "alignment"),
-            body: object
-                .get("body")
-                .map(|body| content_blocks_from_json(body, introspector))
-                .transpose()?
-                .unwrap_or_default(),
-        }),
-        "list" => Some(Block::List {
-            ordered: false,
-            tight: json_scalar(object, "tight").is_some_and(|value| value.as_str() == "true"),
-            numbering: None,
-            start: None,
-            reversed: false,
-            full: false,
-            items: list_items_from_json(object.get("children"), false, introspector)?,
-        }),
-        "enum" => Some(Block::List {
-            ordered: true,
-            tight: json_scalar(object, "tight").is_some_and(|value| value.as_str() == "true"),
-            numbering: json_scalar(object, "numbering").filter(|value| value.as_str() != "none"),
-            start: json_scalar(object, "start")
-                .filter(|value| value.as_str() != "auto")
-                .and_then(|value| value.parse::<i64>().ok()),
-            reversed: json_scalar(object, "reversed").is_some_and(|value| value.as_str() == "true"),
-            full: json_scalar(object, "full").is_some_and(|value| value.as_str() == "true"),
-            items: list_items_from_json(object.get("children"), true, introspector)?,
-        }),
-        "terms" => Some(Block::Terms {
-            items: term_items_from_json(object.get("children"), introspector)?,
-        }),
-        "table" | "grid" => {
-            let cell_kind = if kind == "grid" {
-                "grid-cell"
-            } else {
-                "table-cell"
-            };
-            let columns = object
-                .get("columns")
-                .and_then(Value::as_array)
-                .map(Vec::len)
-                .filter(|columns| *columns > 0)
-                .unwrap_or(1);
-            let mut rows = Vec::new();
-            let mut row = Vec::new();
-            if let Some(Value::Array(children)) = object.get("children") {
-                for child in children {
-                    collect_table_cells_from_json(child, cell_kind, introspector, &mut row)?;
-                    let mut occupied_columns: usize = row.iter().map(|cell| cell.colspan).sum();
-                    while occupied_columns >= columns {
-                        let mut drained = Vec::new();
-                        let mut drained_columns = 0usize;
-                        while drained_columns < columns {
-                            let cell = row.remove(0);
-                            drained_columns += cell.colspan;
-                            drained.push(cell);
-                        }
-                        rows.push(TableRow { cells: drained });
-                        occupied_columns = row.iter().map(|cell| cell.colspan).sum();
-                    }
-                }
-            }
-            if !row.is_empty() {
-                rows.push(TableRow { cells: row });
-            }
-            Some(Block::Table {
-                rows,
-                alignments: object
-                    .get("align")
-                    .map(table_alignments_from_json)
-                    .unwrap_or_default(),
-            })
-        }
-        kind => {
-            let Some(spec) = spec_by_selector_or_kind(kind) else {
-                return Ok(None);
-            };
-            block_from_element_kind(
-                spec.kind,
-                BlockElementData {
-                    fields: element_fields_from_object(
-                        object,
-                        spec,
-                        FieldMode::Block,
-                        introspector,
-                    )?,
-                    body: block_element_body_from_object(object, spec, introspector)?,
-                },
-            )
-        }
-    })
-}
-
-fn element_fields_from_object(
-    object: &Map<String, Value>,
-    spec: &'static ElementSpec,
-    mode: FieldMode,
-    introspector: &Introspector,
-) -> Result<Vec<ElementField>> {
-    let mut fields = Vec::new();
-    for name in spec.fields.iter().copied() {
-        if let Some(value) = object.get(name) {
-            fields.push(ElementField {
-                name,
-                value: element_field_value_from_json(name, value, mode, introspector)?,
-            });
-        }
-    }
-    Ok(fields)
-}
-
-fn block_element_body_from_object(
-    object: &Map<String, Value>,
-    spec: &'static ElementSpec,
-    introspector: &Introspector,
-) -> Result<Vec<Block>> {
-    let mut blocks = Vec::new();
-    for field in content_fields(spec) {
-        if let Some(value) = object.get(field) {
-            blocks.extend(content_blocks_from_json(value, introspector)?);
-        }
-    }
-    Ok(blocks)
-}
-
-fn inline_element_body_from_object(
-    object: &Map<String, Value>,
-    spec: &'static ElementSpec,
-    introspector: &Introspector,
-) -> Result<Vec<Inline>> {
-    if let Some(value) = object.get("body") {
-        return content_inlines_from_json(value, introspector);
-    }
-
-    for field in content_fields(spec) {
-        if field == "body" {
-            continue;
-        }
-        if let Some(value) = object.get(field) {
-            return content_inlines_from_json(value, introspector);
-        }
-    }
-
-    Ok(Vec::new())
-}
-
-fn json_func(object: &Map<String, Value>) -> Result<&str> {
-    object
-        .get("func")
-        .and_then(Value::as_str)
-        .context("encoded content is missing string field `func`")
-}
-
-fn json_array<'a>(object: &'a Map<String, Value>, name: &str) -> &'a [Value] {
-    object
-        .get(name)
-        .and_then(Value::as_array)
-        .map(Vec::as_slice)
-        .unwrap_or_default()
-}
-
-fn json_scalar(object: &Map<String, Value>, name: &str) -> Option<EcoString> {
-    object.get(name).map(scalar_from_json)
-}
-
 fn spec_by_kind(kind: &str) -> Option<&'static ElementSpec> {
     ELEMENTS.iter().find(|spec| spec.kind.name() == kind)
-}
-
-fn spec_by_selector_or_kind(kind: &str) -> Option<&'static ElementSpec> {
-    ELEMENTS
-        .iter()
-        .find(|spec| spec.selector == kind || spec.kind.name() == kind)
 }
 
 fn collect_text(nodes: &[HtmlNode], introspector: &Introspector) -> EcoString {
@@ -1482,83 +837,7 @@ fn math_field(element: &HtmlElement, name: &str) -> Result<MathNode> {
     };
     let value =
         serde_json::from_str::<Value>(&raw).context_ut("cannot parse math field as JSON")?;
-    parse_math_node(&value)
-}
-
-fn parse_math_node(value: &Value) -> Result<MathNode> {
-    let Some(object) = value.as_object() else {
-        bail!("math node must be encoded as an object, got {value}");
-    };
-    let func = object
-        .get("func")
-        .and_then(Value::as_str)
-        .context("math node is missing string field `func`")?;
-
-    let mut fields = Vec::new();
-    for (name, value) in object {
-        if name == "func" {
-            continue;
-        }
-        fields.push(MathField {
-            name: name.as_str().into(),
-            value: parse_math_value(value).with_context_ut("cannot parse math field", || {
-                Some(Box::new([
-                    ("func", func.to_owned()),
-                    ("field", name.to_owned()),
-                    ("value", value.to_string()),
-                ]))
-            })?,
-        });
-    }
-
-    Ok(MathNode {
-        func: func.into(),
-        fields,
-    })
-}
-
-fn parse_math_value(value: &Value) -> Result<MathValue> {
-    match value {
-        Value::Null => Ok(MathValue::None),
-        Value::Bool(value) => Ok(MathValue::Bool(*value)),
-        Value::Number(value) => Ok(MathValue::Scalar(value.to_string().into())),
-        Value::String(value) => Ok(MathValue::Scalar(value.as_str().into())),
-        Value::Object(_) => Ok(MathValue::Node(Box::new(parse_math_node(value)?))),
-        Value::Array(values) => parse_math_array(values),
-    }
-}
-
-fn parse_math_array(values: &[Value]) -> Result<MathValue> {
-    if values.is_empty() {
-        return Ok(MathValue::Nodes(Vec::new()));
-    }
-
-    if values.iter().all(Value::is_object) {
-        let mut nodes = Vec::new();
-        for value in values {
-            nodes.push(parse_math_node(value)?);
-        }
-        return Ok(MathValue::Nodes(nodes));
-    }
-
-    if values.iter().all(Value::is_array) {
-        let mut rows = Vec::new();
-        for row in values {
-            let Some(row) = row.as_array() else {
-                unreachable!("checked by all(Value::is_array)");
-            };
-            let mut cells = Vec::new();
-            for cell in row {
-                cells.push(parse_math_node(cell)?);
-            }
-            rows.push(cells);
-        }
-        return Ok(MathValue::Rows(rows));
-    }
-
-    Ok(MathValue::Scalar(
-        Value::Array(values.to_vec()).to_string().into(),
-    ))
+    encoded::math_node(&value)
 }
 
 fn tag_name(element: &HtmlElement) -> Option<String> {
@@ -1576,7 +855,7 @@ fn attr(element: &HtmlElement, name: &str) -> Option<EcoString> {
 
 fn field_value(element: &HtmlElement, name: &str) -> Option<EcoString> {
     if let Some(value) = encoded_field(element, name).ok().flatten() {
-        return Some(scalar_from_json(&value));
+        return Some(encoded::scalar(&value));
     }
 
     field_element(element, name).map(|field| collect_text_without_frames(&field.children))
@@ -1607,37 +886,6 @@ fn encoded_object(element: &HtmlElement) -> Result<Option<Map<String, Value>>> {
         bail!("typlite IR must be encoded as an object, got {value}");
     };
     Ok(Some(object))
-}
-
-fn scalar_from_json(value: &Value) -> EcoString {
-    match value {
-        Value::Null => "none".into(),
-        Value::Bool(value) => {
-            if *value {
-                "true".into()
-            } else {
-                "false".into()
-            }
-        }
-        Value::Number(value) => value.to_string().into(),
-        Value::String(value) => value.as_str().into(),
-        Value::Array(_) | Value::Object(_) => value.to_string().into(),
-    }
-}
-
-fn source_scalar_from_json(value: &Value) -> EcoString {
-    source_value_from_json(value).to_string().into()
-}
-
-fn source_value_from_json(value: &Value) -> Value {
-    match value {
-        Value::String(value) => {
-            serde_json::json!({ "kind": "string", "value": value })
-        }
-        Value::Array(values) => Value::Array(values.iter().map(source_value_from_json).collect()),
-        Value::Object(_) => value.clone(),
-        Value::Null | Value::Bool(_) | Value::Number(_) => value.clone(),
-    }
 }
 
 fn collect_text_without_frames(nodes: &[HtmlNode]) -> EcoString {
