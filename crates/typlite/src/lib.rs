@@ -11,6 +11,7 @@ pub mod element_spec {
 mod extract;
 pub mod ir;
 
+use std::ops::Range;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -23,8 +24,9 @@ use typst::WorldExt;
 use typst::diag::SourceDiagnostic;
 use typst::foundations::Bytes;
 use typst_syntax::VirtualPath;
+use typst_syntax::ast::{Expr, SetRule};
 use typst_syntax::package::PackageSpec;
-use typst_syntax::{FileId, Span};
+use typst_syntax::{FileId, LinkedNode, Span, SyntaxKind};
 
 use crate::backend::{BibliographyContext, render_markdown_with_diagnostics};
 use crate::content::typlite_library;
@@ -121,11 +123,11 @@ impl TypliteFeat {
             .text()
             .to_owned();
 
-        let wrap_content = format!(
-            r#"#import "@local/typlite-ir:0.1.0": typlite
-#typlite(include "__typlite_source.typ")
+        let wrap_content = r#"#import "@local/typlite-ir:0.1.0": typlite
+#show: typlite
+#include "__typlite_source.typ"
 "#
-        );
+        .to_owned();
 
         let task_inputs = TaskInputs {
             entry: Some(entry.select_in_workspace(wrap_main_id.vpath().as_rooted_path())),
@@ -211,9 +213,8 @@ impl Typlite {
             .entry_state()
             .main()
             .context("no main file in workspace")?;
-        let (world, wrap_info) = self.feat.prepare_world(&self.world, self.format)?;
-        let compiled = typst::compile::<typst_html::HtmlDocument>(&world);
-        let html = compiled.output?;
+        let (mut world, wrap_info) = self.feat.prepare_world(&self.world, self.format)?;
+        let html = compile_html_with_page_set_suppression(&mut world)?;
         let ir = extract_document(&html)?;
         let bibliography = BibliographyContext::from_document(&ir, &world, entry)?;
 
@@ -238,6 +239,92 @@ impl Typlite {
     pub fn to_docx(self) -> Result<Vec<u8>> {
         let _ = (self.world, self.feat, self.format);
         bail!("typlite DOCX conversion is not implemented in the placeholder crate")
+    }
+}
+
+fn compile_html_with_page_set_suppression(
+    world: &mut LspWorld,
+) -> Result<typst_html::HtmlDocument> {
+    for _ in 0..32 {
+        let compiled = typst::compile::<typst_html::HtmlDocument>(world);
+        match compiled.output {
+            Ok(html) => return Ok(html),
+            Err(errors) if suppress_page_set_diagnostics(world, &errors)? => {}
+            Err(errors) => return Err(errors.into()),
+        }
+    }
+
+    bail!("typlite page set suppression did not converge")
+}
+
+fn suppress_page_set_diagnostics(
+    world: &mut LspWorld,
+    errors: &ecow::EcoVec<SourceDiagnostic>,
+) -> Result<bool> {
+    for error in errors {
+        if error.message.as_str() != "page configuration is not allowed inside of containers" {
+            continue;
+        }
+
+        if suppress_page_sets_in_source(world, error.span)? {
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
+}
+
+fn suppress_page_sets_in_source(world: &mut LspWorld, span: Span) -> Result<bool> {
+    let Some(file_id) = span.id() else {
+        return Ok(false);
+    };
+
+    let source = world
+        .source(file_id)
+        .context_ut("cannot fetch source for page set suppression")?;
+    let mut ranges = vec![];
+    collect_page_set_rule_ranges(&LinkedNode::new(source.root()), &mut ranges);
+    if ranges.is_empty() {
+        return Ok(false);
+    }
+
+    let text = source.text();
+    let mut rewritten = text.to_owned();
+    for range in ranges.into_iter().rev() {
+        let original = &text[range.clone()];
+        let replacement = if original.starts_with('#') {
+            "#none"
+        } else {
+            "none"
+        };
+        rewritten.replace_range(range, &replacement);
+    }
+
+    if rewritten == text {
+        return Ok(false);
+    }
+
+    // The source file on disk must stay untouched. We shadow just the compile
+    // world so Typst does not realize page configuration in HTML fragments.
+    world
+        .map_shadow_by_id(file_id, Bytes::from_string(rewritten))
+        .context_ut("cannot shadow source for page set suppression")?;
+    let _ = world.take_db();
+
+    Ok(true)
+}
+
+fn collect_page_set_rule_ranges(node: &LinkedNode, ranges: &mut Vec<Range<usize>>) {
+    if node.kind() == SyntaxKind::SetRule
+        && let Some(rule) = node.get().cast::<SetRule>()
+        && let Expr::Ident(target) = rule.target()
+        && target.as_str() == "page"
+    {
+        ranges.push(node.range());
+    }
+
+    for child in node.children() {
+        collect_page_set_rule_ranges(&child, ranges);
     }
 }
 

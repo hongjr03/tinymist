@@ -1,0 +1,8 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/page_set_inside_show.typ
+---
+# Title
+
+Hello world.
