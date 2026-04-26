@@ -1,0 +1,77 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/bibliography_csl_path.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-paragraph>
+      <span data-typlite-field="true" name="leading" kind="length">
+        text "0.65em"
+      <span data-typlite-field="true" name="spacing" kind="length">
+        text "1.2em"
+      <span data-typlite-field="true" name="justify" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="justification-limits" kind="dictionary">
+        <span data-typlite-field="true" name="spacing" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="relative length">
+            text "66.67% + 0pt"
+          <span data-typlite-field="true" name="max" kind="relative length">
+            text "150% + 0pt"
+        <span data-typlite-field="true" name="tracking" kind="dictionary">
+          <span data-typlite-field="true" name="min" kind="length">
+            text "0pt"
+          <span data-typlite-field="true" name="max" kind="length">
+            text "0pt"
+      <span data-typlite-field="true" name="linebreaks" kind="auto">
+        text "auto"
+      <span data-typlite-field="true" name="first-line-indent" kind="dictionary">
+        <span data-typlite-field="true" name="amount" kind="length">
+          text "0pt"
+        <span data-typlite-field="true" name="all" kind="boolean">
+          text "false"
+      <span data-typlite-field="true" name="hanging-indent" kind="length">
+        text "0pt"
+      <span data-typlite-field="true" name="body" kind="content">
+        text "Citation"
+        text ":"
+        text " "
+        tag
+        <span data-typlite="ref">
+          <span data-typlite-field="true" name="target" kind="label">
+            text "doe2020"
+          <span data-typlite-field="true" name="supplement" kind="auto">
+            text "auto"
+          <span data-typlite-field="true" name="form" kind="string">
+            text "normal"
+          <span data-typlite-field="true" name="citation" kind="content">
+            tag
+            <span data-typlite="cite">
+              <span data-typlite-field="true" name="key" kind="label">
+                text "doe2020"
+              <span data-typlite-field="true" name="supplement" kind="none">
+              <span data-typlite-field="true" name="form" kind="string">
+                text "normal"
+              <span data-typlite-field="true" name="style" kind="auto">
+                text "auto"
+            tag
+          <span data-typlite-field="true" name="element" kind="none">
+        tag
+        text "."
+    tag
+    <typlite-parbreak>
+    tag
+    <typlite-bibliography>
+      <span data-typlite-field="true" name="sources" kind="source">
+        text "[{\"kind\":\"string\",\"value\":\"refs.yml\"}]"
+      <span data-typlite-field="true" name="title" kind="content">
+        text "References"
+      <span data-typlite-field="true" name="full" kind="boolean">
+        text "false"
+      <span data-typlite-field="true" name="style" kind="string">
+        text "apa.csl"
+    tag

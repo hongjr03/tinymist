@@ -1,0 +1,11 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/bibliography_csl_path.typ
+---
+Citation: <a id="cite-doe2020-1" href="#ref-doe2020">[A Tiny Reference]</a>.
+
+<section data-typlite-bibliography="true">
+  <h2>References</h2>
+  <div id="ref-doe2020" class="csl-entry">A Tiny Reference <a href="#cite-doe2020-1" class="csl-backref" aria-label="Back to citation">&#8617;</a></div>
+</section>

@@ -48,7 +48,13 @@ impl BibliographyContext {
             cited
         };
 
-        render_bibliography_entries(&library, &cited, style.as_deref().unwrap_or("ieee"))
+        render_bibliography_entries(
+            &library,
+            &cited,
+            style.as_deref().unwrap_or("ieee"),
+            world,
+            entry,
+        )
     }
 }
 
