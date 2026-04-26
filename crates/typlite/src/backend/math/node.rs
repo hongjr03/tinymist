@@ -25,6 +25,7 @@ pub(in crate::backend) fn render_math(node: &MathNode, out: &mut String) -> Resu
             out.push(' ');
             Ok(())
         }
+        "v" => Ok(()),
         "align-point" => Ok(()),
         "linebreak" => {
             out.push_str(r" \\ ");

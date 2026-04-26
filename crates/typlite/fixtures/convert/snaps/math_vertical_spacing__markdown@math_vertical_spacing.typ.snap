@@ -1,0 +1,6 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/math_vertical_spacing.typ
+---
+$$\alpha ∼ Normal(144, 15)  \\  \sigma ∼ Cauchy(0, 2)$$

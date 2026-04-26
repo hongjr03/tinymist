@@ -1,0 +1,23 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: render_debug_html(&html.root)
+input_file: crates/typlite/fixtures/convert/math_vertical_spacing.typ
+---
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    tag
+    <typlite-math-equation>
+      <span data-typlite-field="true" name="block" kind="boolean">
+        text "true"
+      <span data-typlite-field="true" name="numbering" kind="none">
+      <span data-typlite-field="true" name="number-align" kind="alignment">
+        text "end + horizon"
+      <span data-typlite-field="true" name="supplement" kind="content-ir">
+        text "{\"func\":\"text\",\"text\":\"Equation\"}"
+      <span data-typlite-field="true" name="alt" kind="none">
+      <span data-typlite-field="true" name="body" kind="content-ir">
+        text "{\"children\":[{\"func\":\"symbol\",\"text\":\"α\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"amount\":\"0pt\",\"func\":\"v\"},{\"func\":\"symbol\",\"text\":\"∼\"},{\"func\":\"space\"},{\"children\":[{\"func\":\"text\",\"text\":\"Normal\"},{\"body\":{\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"text\",\"text\":\"144\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"15\"},{\"func\":\"symbol\",\"text\":\")\"}],\"func\":\"sequence\"},\"func\":\"lr\"}],\"func\":\"sequence\"},{\"func\":\"space\"},{\"func\":\"linebreak\"},{\"func\":\"space\"},{\"func\":\"symbol\",\"text\":\"σ\"},{\"func\":\"space\"},{\"func\":\"align-point\"},{\"amount\":\"0pt\",\"func\":\"v\"},{\"func\":\"symbol\",\"text\":\"∼\"},{\"func\":\"space\"},{\"children\":[{\"func\":\"text\",\"text\":\"Cauchy\"},{\"body\":{\"children\":[{\"func\":\"symbol\",\"text\":\"(\"},{\"func\":\"text\",\"text\":\"0\"},{\"func\":\"symbol\",\"text\":\",\"},{\"func\":\"space\"},{\"func\":\"text\",\"text\":\"2\"},{\"func\":\"symbol\",\"text\":\")\"}],\"func\":\"sequence\"},\"func\":\"lr\"}],\"func\":\"sequence\"}],\"func\":\"sequence\"}"
+    tag
