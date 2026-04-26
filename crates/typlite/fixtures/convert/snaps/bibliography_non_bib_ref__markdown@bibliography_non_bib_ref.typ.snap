@@ -1,0 +1,19 @@
+---
+source: crates/typlite/tests/convert.rs
+expression: markdown
+input_file: crates/typlite/fixtures/convert/bibliography_non_bib_ref.typ
+---
+<a id="fig-one"></a>
+<figure>
+<img alt="rect" src="data:image/svg+xml;utf8,%3Csvg%20class%3D%22typst-frame%22%20style%3D%22overflow%3A%20visible%3B%20width%3A%200.9090909090909091em%3B%20height%3A%200.9090909090909091em%3B%22%20viewBox%3D%220%200%2010%2010%22%20width%3D%2210pt%22%20height%3D%2210pt%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xmlns%3Ah5%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxhtml%22%3E%3Cg%3E%3Cpath%20class%3D%22typst-shape%22%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20stroke-width%3D%221%22%20stroke-linecap%3D%22butt%22%20stroke-linejoin%3D%22miter%22%20stroke-miterlimit%3D%224%22%20d%3D%22M%200%200v%2010%20h%2010%20v%20-10%20Z%20%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<figcaption>A figure.</figcaption>
+</figure>
+
+Bibliography ref: <a id="cite-doe2020-1" href="#ref-doe2020">(Doe, 2020)</a>.
+
+Figure ref: [A figure.](#fig-one).
+
+<section data-typlite-bibliography="true">
+  <h2>References</h2>
+  <div id="ref-doe2020" class="csl-entry">Doe, J. (2020). A Tiny Reference. Journal of Small Documents. <a href="#cite-doe2020-1" class="csl-backref" aria-label="Back to citation">&#8617;</a></div>
+</section>

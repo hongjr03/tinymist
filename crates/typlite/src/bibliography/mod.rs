@@ -44,7 +44,7 @@ impl BibliographyContext {
             library.keys().map(ToOwned::to_owned).collect::<Vec<_>>()
         } else {
             let mut cited = Vec::new();
-            collect_cite_keys(&doc.blocks, &mut cited);
+            collect_cite_keys(&doc.blocks, &library, &mut cited);
             cited
         };
 
