@@ -6798,6 +6798,7 @@ dependencies = [
  "typlite",
  "typst",
  "typst-assets 0.14.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typst-layout",
  "typst-library",
  "typst-macros",
  "typst-shim",
