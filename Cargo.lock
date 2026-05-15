@@ -7480,6 +7480,7 @@ dependencies = [
 [[package]]
 name = "typst"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "arrayvec",
  "comemo",
@@ -7499,6 +7500,7 @@ dependencies = [
 [[package]]
 name = "typst-ansi-hl"
 version = "0.5.0"
+source = "git+https://github.com/ParaN3xus/typst-ansi-hl.git?branch=nightly#185780f412331f26c2dddc1850bc084134434298"
 dependencies = [
  "ansi_colours",
  "syntect",
@@ -7525,6 +7527,7 @@ dependencies = [
 [[package]]
 name = "typst-eval"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "comemo",
  "ecow",
@@ -7543,6 +7546,7 @@ dependencies = [
 [[package]]
 name = "typst-html"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "az",
  "bumpalo",
@@ -7564,6 +7568,7 @@ dependencies = [
 [[package]]
 name = "typst-layout"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "az",
  "bumpalo",
@@ -7599,6 +7604,7 @@ dependencies = [
 [[package]]
 name = "typst-library"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "arrayvec",
  "az",
@@ -7665,6 +7671,7 @@ dependencies = [
 [[package]]
 name = "typst-macros"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -7675,6 +7682,7 @@ dependencies = [
 [[package]]
 name = "typst-pdf"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "az",
  "bytemuck",
@@ -7701,6 +7709,7 @@ dependencies = [
 [[package]]
 name = "typst-realize"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "arrayvec",
  "bumpalo",
@@ -7718,6 +7727,7 @@ dependencies = [
 [[package]]
 name = "typst-render"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "bytemuck",
  "comemo",
@@ -7749,6 +7759,7 @@ dependencies = [
 [[package]]
 name = "typst-svg"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "base64 0.22.1",
  "comemo",
@@ -7792,6 +7803,7 @@ dependencies = [
 [[package]]
 name = "typst-syntax"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "ecow",
  "rustc-hash 2.1.2",
@@ -7820,6 +7832,7 @@ dependencies = [
 [[package]]
 name = "typst-timing"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "parking_lot",
  "serde",
@@ -7843,6 +7856,7 @@ dependencies = [
 [[package]]
 name = "typst-utils"
 version = "0.15.0"
+source = "git+https://github.com/ParaN3xus/typst.git?branch=nightly#d95f4b695cb803885d997134dbf56f9d01b84971"
 dependencies = [
  "libm",
  "once_cell",
