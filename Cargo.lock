@@ -5113,6 +5113,7 @@ dependencies = [
 [[package]]
 name = "reflexo"
 version = "0.7.0"
+source = "git+https://github.com/ParaN3xus/typst.ts.git?branch=nightly#e6223c5c7f7f29baa43837c7028ca0a20727f6ba"
 dependencies = [
  "base64 0.22.1",
  "bitvec",
@@ -5138,6 +5139,7 @@ dependencies = [
 [[package]]
 name = "reflexo-typst"
 version = "0.7.0"
+source = "git+https://github.com/ParaN3xus/typst.ts.git?branch=nightly#e6223c5c7f7f29baa43837c7028ca0a20727f6ba"
 dependencies = [
  "codespan-reporting 0.11.1",
  "comemo",
@@ -5169,6 +5171,7 @@ dependencies = [
 [[package]]
 name = "reflexo-typst2vec"
 version = "0.7.0"
+source = "git+https://github.com/ParaN3xus/typst.ts.git?branch=nightly#e6223c5c7f7f29baa43837c7028ca0a20727f6ba"
 dependencies = [
  "bitvec",
  "comemo",
@@ -5196,6 +5199,7 @@ dependencies = [
 [[package]]
 name = "reflexo-vec2svg"
 version = "0.7.0"
+source = "git+https://github.com/ParaN3xus/typst.ts.git?branch=nightly#e6223c5c7f7f29baa43837c7028ca0a20727f6ba"
 dependencies = [
  "base64 0.22.1",
  "comemo",
@@ -7887,6 +7891,7 @@ dependencies = [
 [[package]]
 name = "typstyle-core"
 version = "0.14.4"
+source = "git+https://github.com/ParaN3xus/typstyle.git?branch=nightly#14cf2717f1ca925fbc884504f7531342ade86bc1"
 dependencies = [
  "ecow",
  "itertools 0.14.0",
