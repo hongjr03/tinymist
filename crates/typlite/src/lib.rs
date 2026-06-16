@@ -1,222 +1,78 @@
-//! # Typlite
+//! Minimal typlite rewrite shell.
+//!
+//! The old converter implementation has been removed as the first step of the
+//! rewrite. This crate intentionally keeps a small compatibility surface for
+//! workspace callers while the new implementation is built.
 
-// todo: remove me
-#![allow(missing_docs)]
-
-pub mod attributes;
 pub mod common;
-mod diagnostics;
-mod error;
-pub mod parser;
-pub mod tags;
-pub mod writer;
 
-use std::ops::Range;
 use std::path::PathBuf;
-use std::str::FromStr;
 use std::sync::Arc;
 
-pub use error::*;
-
-use cmark_writer::ast::Node;
-use tinymist_project::base::ShadowApi;
-use tinymist_project::vfs::WorkspaceResolver;
-use tinymist_project::{EntryReader, LspWorld, TaskInputs};
+use ecow::EcoString;
+use tinymist_project::LspWorld;
 use tinymist_std::error::prelude::*;
-use tinymist_std::typst_shim::syntax::{VirtualPathExt, resolve_path_from_id};
-use typst::World;
-use typst::WorldExt;
 use typst::diag::SourceDiagnostic;
-use typst::foundations::Bytes;
-use typst_html::HtmlDocument;
-use typst_syntax::{DiagSpan, LinkedNode, RootedPath, Source, Span, VirtualPath, VirtualRoot};
+use typst::syntax::FileId;
 
 pub use crate::common::Format;
-use crate::diagnostics::WarningCollector;
-use crate::parser::HtmlToAstParser;
-use crate::writer::WriterFactory;
-use typst_syntax::FileId;
-
-use crate::tinymist_std::typst::LazyHash;
-use crate::tinymist_std::typst::foundations::Value::Str;
+pub use tinymist_project::CompileOnceArgs;
 
 /// The result type for typlite.
-pub type Result<T, Err = Error> = std::result::Result<T, Err>;
+pub type Result<T> = tinymist_std::Result<T>;
 
-pub use cmark_writer::ast;
-pub use tinymist_project::CompileOnceArgs;
-pub use tinymist_std;
+const UNAVAILABLE: &str = "typlite conversion is unavailable while the crate is being rewritten";
 
-#[derive(Clone)]
-pub struct MarkdownDocument {
-    pub base: HtmlDocument,
-    world: Arc<LspWorld>,
-    feat: TypliteFeat,
-    ast: Option<Node>,
-    warnings: WarningCollector,
+fn unavailable<T>() -> Result<T> {
+    bail!("{}", UNAVAILABLE)
 }
+
+/// A placeholder conversion document.
+///
+/// This type remains so existing callers can keep compiling while the new
+/// converter pipeline is introduced.
+#[derive(Debug, Default, Clone)]
+pub struct MarkdownDocument;
 
 impl MarkdownDocument {
-    /// Create a new MarkdownDocument instance
-    pub fn new(base: HtmlDocument, world: Arc<LspWorld>, feat: TypliteFeat) -> Self {
-        Self {
-            base,
-            world,
-            feat,
-            ast: None,
-            warnings: WarningCollector::default(),
-        }
-    }
-
-    /// Create a MarkdownDocument instance with pre-parsed AST
-    pub fn with_ast(
-        base: HtmlDocument,
-        world: Arc<LspWorld>,
-        feat: TypliteFeat,
-        ast: Node,
-    ) -> Self {
-        Self {
-            base,
-            world,
-            feat,
-            ast: Some(ast),
-            warnings: WarningCollector::default(),
-        }
-    }
-
-    /// Replace the backing warning collector, preserving shared state with
-    /// other components of the pipeline.
-    pub(crate) fn with_warning_collector(mut self, collector: WarningCollector) -> Self {
-        self.warnings = collector;
-        self
-    }
-
-    /// Get a snapshot of all collected warnings so far.
+    /// Get collected conversion warnings.
     pub fn warnings(&self) -> Vec<SourceDiagnostic> {
-        let warnings = self.warnings.snapshot();
-        if let Some(info) = &self.feat.wrap_info {
-            warnings
-                .into_iter()
-                .filter_map(|diag| self.remap_diagnostic(diag, info))
-                .collect()
-        } else {
-            warnings
-        }
+        Vec::new()
     }
 
-    /// Internal accessor for sharing the collector with the parser.
-    fn warning_collector(&self) -> WarningCollector {
-        self.warnings.clone()
+    /// Convert the placeholder document to Markdown.
+    pub fn to_md_string(&self) -> Result<EcoString> {
+        unavailable()
     }
 
-    fn remap_diagnostic(
-        &self,
-        mut diagnostic: SourceDiagnostic,
-        info: &WrapInfo,
-    ) -> Option<SourceDiagnostic> {
-        if let Some(span) = info.remap_diag_span(self.world.as_ref(), diagnostic.span) {
-            diagnostic.span = span;
-        } else {
-            return None;
-        }
-
-        diagnostic.trace = diagnostic
-            .trace
-            .into_iter()
-            .filter_map(
-                |mut spanned| match info.remap_span(self.world.as_ref(), spanned.span) {
-                    Some(span) => {
-                        spanned.span = span;
-                        Some(spanned)
-                    }
-                    None => None,
-                },
-            )
-            .collect();
-
-        diagnostic.hints = diagnostic
-            .hints
-            .into_iter()
-            .filter_map(|mut spanned| {
-                match info.remap_diag_span(self.world.as_ref(), spanned.span) {
-                    Some(span) => {
-                        spanned.span = span;
-                        Some(spanned)
-                    }
-                    None => None,
-                }
-            })
-            .collect();
-
-        Some(diagnostic)
+    /// Convert the placeholder document to plain text.
+    pub fn to_text_string(&self) -> Result<EcoString> {
+        unavailable()
     }
 
-    /// Parse HTML document to AST
-    pub fn parse(&self) -> tinymist_std::Result<Node> {
-        if let Some(ast) = &self.ast {
-            return Ok(ast.clone());
-        }
-        let parser = HtmlToAstParser::new(self.feat.clone(), &self.world, self.warning_collector());
-        parser.parse(self.base.root()).context_ut("failed to parse")
+    /// Convert the placeholder document to LaTeX.
+    pub fn to_tex_string(&self) -> Result<EcoString> {
+        unavailable()
     }
 
-    /// Convert content to markdown string
-    pub fn to_md_string(&self) -> tinymist_std::Result<ecow::EcoString> {
-        let mut output = ecow::EcoString::new();
-        let ast = self.parse()?;
-
-        let mut writer = WriterFactory::create(Format::Md);
-        writer
-            .write_eco(&ast, &mut output)
-            .context_ut("failed to write")?;
-
-        Ok(output)
-    }
-
-    /// Convert content to plain text string
-    pub fn to_text_string(&self) -> tinymist_std::Result<ecow::EcoString> {
-        let mut output = ecow::EcoString::new();
-        let ast = self.parse()?;
-
-        let mut writer = WriterFactory::create(Format::Text);
-        writer
-            .write_eco(&ast, &mut output)
-            .context_ut("failed to write")?;
-
-        Ok(output)
-    }
-
-    /// Convert the content to a LaTeX string.
-    pub fn to_tex_string(&self) -> tinymist_std::Result<ecow::EcoString> {
-        let mut output = ecow::EcoString::new();
-        let ast = self.parse()?;
-
-        let mut writer = WriterFactory::create(Format::LaTeX);
-        writer
-            .write_eco(&ast, &mut output)
-            .context_ut("failed to write")?;
-
-        Ok(output)
-    }
-
-    /// Convert the content to a DOCX document
+    /// Convert the placeholder document to DOCX.
     #[cfg(feature = "docx")]
-    pub fn to_docx(&self) -> tinymist_std::Result<Vec<u8>> {
-        let ast = self.parse()?;
-
-        let mut writer = WriterFactory::create(Format::Docx);
-        writer.write_vec(&ast).context_ut("failed to write")
+    pub fn to_docx(&self) -> Result<Vec<u8>> {
+        unavailable()
     }
 }
 
-/// A color theme for rendering the content. The valid values can be checked in [color-scheme](https://developer.mozilla.org/en-US/docs/Web/CSS/color-scheme).
+/// A color theme for rendering conversion assets.
 #[derive(Debug, Default, Clone, Copy)]
 pub enum ColorTheme {
+    /// Light color theme.
     #[default]
     Light,
+    /// Dark color theme.
     Dark,
 }
 
+/// Source mapping information for a wrapped typlite compilation.
 #[derive(Debug, Clone)]
 pub struct WrapInfo {
     /// The synthetic wrapper file that hosts the original Typst source.
@@ -227,59 +83,7 @@ pub struct WrapInfo {
     pub prefix_len_bytes: usize,
 }
 
-impl WrapInfo {
-    /// Translate a diagnostic span from the wrapper file back into the original
-    /// file.
-    pub fn remap_diag_span(&self, world: &dyn typst::World, span: DiagSpan) -> Option<DiagSpan> {
-        if span.id() != Some(self.wrap_file_id) {
-            return Some(span);
-        }
-
-        let range = self.remap_range(world, world.range(span)?)?;
-        Some(DiagSpan::from_range(self.original_file_id, range))
-    }
-
-    /// Translate a span from the wrapper file back into the original file.
-    pub fn remap_span(&self, world: &dyn typst::World, span: Span) -> Option<Span> {
-        if span.id() != Some(self.wrap_file_id) {
-            return Some(span);
-        }
-
-        let range = self.remap_range(world, world.range(span)?)?;
-        let original_source = world.source(self.original_file_id).ok()?;
-        WrapInfo::span_covering_range(&original_source, range)
-    }
-
-    fn remap_range(&self, world: &dyn typst::World, range: Range<usize>) -> Option<Range<usize>> {
-        let start = range.start.checked_sub(self.prefix_len_bytes)?;
-        let end = range.end.checked_sub(self.prefix_len_bytes)?;
-
-        let original_source = world.source(self.original_file_id).ok()?;
-        let original_len = original_source.lines().len_bytes();
-
-        if start >= original_len || end > original_len {
-            return None;
-        }
-
-        Some(start..end)
-    }
-
-    fn span_covering_range(source: &Source, range: Range<usize>) -> Option<Span> {
-        fn inner(node: LinkedNode<'_>, range: &Range<usize>) -> Option<Span> {
-            let node_range = node.range();
-            if range.start < node_range.start || range.end > node_range.end {
-                return None;
-            }
-
-            node.children()
-                .find_map(|child| inner(child, range))
-                .or_else(|| Some(node.span()))
-        }
-
-        inner(LinkedNode::new(source.root()), &range)
-    }
-}
-
+/// Conversion feature flags accepted by the typlite shell.
 #[derive(Debug, Default, Clone)]
 pub struct TypliteFeat {
     /// The preferred color theme.
@@ -294,227 +98,82 @@ pub struct TypliteFeat {
     pub soft_error: bool,
     /// Remove HTML tags from the output.
     pub remove_html: bool,
-    /// The target to convert
+    /// The target to convert.
     pub target: Format,
-    /// Import context for code examples (e.g., "#import \"/path/to/file.typ\":
-    /// *")
+    /// Import context for code examples.
     pub import_context: Option<String>,
     /// Specifies the package to process markup.
-    ///
-    /// ## `article` function
-    ///
-    /// The article function is used to wrap the typst content during
-    /// compilation.
-    ///
-    /// typlite exactly uses the `#article` function to process the content as
-    /// follow:
-    ///
-    /// ```typst
-    /// #import "@local/processor": article
-    /// #article(include "the-processed-content.typ")
-    /// ```
-    ///
-    /// It resembles the regular typst show rule function, like `#show:
-    /// article`.
     pub processor: Option<String>,
     /// Optional mapping from the wrapper file back to the original source.
     pub wrap_info: Option<WrapInfo>,
 }
 
 impl TypliteFeat {
+    /// Prepare a world for conversion.
+    ///
+    /// The rewrite shell leaves the world unchanged and returns no wrap
+    /// information. A later implementation will rebuild the old preparation
+    /// behavior on top of the new pipeline.
     pub fn prepare_world(
         &self,
         world: &LspWorld,
-        format: Format,
-    ) -> tinymist_std::Result<(LspWorld, Option<WrapInfo>)> {
-        let entry = world.entry_state();
-        let main = entry.main();
-        let current = main.context("no main file in workspace")?;
-
-        if WorkspaceResolver::is_package_file(current) {
-            bail!("package file is not supported");
-        }
-
-        let wrap_main_id = resolve_path_from_id(current, "__wrap_md_main.typ")
-            .ok()
-            .context_ut("failed to resolve virtual path")?
-            .intern();
-
-        let (main_id, main_content) = match self.processor.as_ref() {
-            None => (wrap_main_id, None),
-            Some(processor) => {
-                let main_id = resolve_path_from_id(current, "__md_main.typ")
-                    .ok()
-                    .context_ut("failed to resolve virtual path")?
-                    .intern();
-                let content = format!(
-                    r#"#import {processor:?}: article
-#article(include "__wrap_md_main.typ")"#
-                );
-
-                (main_id, Some(Bytes::from_string(content)))
-            }
-        };
-
-        // Start with existing inputs from the world (CLI inputs)
-        let mut dict = (**world.inputs()).clone();
-
-        // Add typlite-specific inputs
-        dict.insert("x-target".into(), Str("md".into()));
-        if format == Format::Text || self.remove_html {
-            dict.insert("x-remove-html".into(), Str("true".into()));
-        }
-
-        let task_inputs = TaskInputs {
-            entry: Some(entry.select_in_workspace(main_id.vpath().as_rooted_path_compat())),
-            inputs: Some(Arc::new(LazyHash::new(dict))),
-        };
-
-        let mut world = world.task(task_inputs).html_task().into_owned();
-
-        let markdown_root = VirtualRoot::Package(
-            typst_syntax::package::PackageSpec::from_str("@local/_markdown:0.1.0")
-                .context_ut("failed to import markdown package")?,
-        );
-        let markdown_id = FileId::new(RootedPath::new(
-            markdown_root.clone(),
-            VirtualPath::new("lib.typ")
-                .ok()
-                .context_ut("failed to resolve markdown lib path")?,
-        ));
-
-        world
-            .map_shadow_by_id(
-                FileId::new(RootedPath::new(
-                    markdown_root,
-                    VirtualPath::new("typst.toml")
-                        .ok()
-                        .context_ut("failed to resolve markdown manifest path")?,
-                )),
-                Bytes::from_string(include_str!("markdown-typst.toml")),
-            )
-            .context_ut("cannot map markdown-typst.toml")?;
-        world
-            .map_shadow_by_id(
-                markdown_id,
-                Bytes::from_string(include_str!("markdown.typ")),
-            )
-            .context_ut("cannot map markdown.typ")?;
-        let original_source = world
-            .source(current)
-            .context_ut("cannot fetch main source")?
-            .text()
-            .to_owned();
-
-        const WRAP_PREFIX: &str =
-            "#import \"@local/_markdown:0.1.0\": md-doc, example; #show: md-doc\n";
-        let wrap_content = format!("{WRAP_PREFIX}{original_source}");
-
-        world
-            .map_shadow_by_id(wrap_main_id, Bytes::from_string(wrap_content))
-            .context_ut("cannot map source for main file")?;
-
-        if let Some(main_content) = main_content {
-            world
-                .map_shadow_by_id(main_id, main_content)
-                .context_ut("cannot map source for main file")?;
-        }
-
-        let wrap_info = Some(WrapInfo {
-            wrap_file_id: wrap_main_id,
-            original_file_id: current,
-            prefix_len_bytes: WRAP_PREFIX.len(),
-        });
-
-        Ok((world, wrap_info))
+        _format: Format,
+    ) -> Result<(LspWorld, Option<WrapInfo>)> {
+        Ok((world.clone(), None))
     }
 }
 
-/// Task builder for converting a typst document to Markdown.
+/// Task builder for converting a Typst document.
 pub struct Typlite {
-    /// The universe to use for the conversion.
-    world: Arc<LspWorld>,
-    /// Features for the conversion.
-    feat: TypliteFeat,
-    /// The format to use for the conversion.
-    format: Format,
+    _world: Arc<LspWorld>,
+    _feat: TypliteFeat,
+    _format: Format,
 }
 
 impl Typlite {
-    /// Creates a new Typlite instance from a [`World`].
+    /// Creates a new typlite conversion task.
     pub fn new(world: Arc<LspWorld>) -> Self {
         Self {
-            world,
-            feat: Default::default(),
-            format: Format::Md,
+            _world: world,
+            _feat: Default::default(),
+            _format: Format::Md,
         }
     }
 
-    /// Sets conversion features
+    /// Sets conversion features.
     pub fn with_feature(mut self, feat: TypliteFeat) -> Self {
-        self.feat = feat;
+        self._feat = feat;
         self
     }
 
+    /// Sets the output format.
     pub fn with_format(mut self, format: Format) -> Self {
-        self.format = format;
+        self._format = format;
         self
     }
 
-    /// Convert the content to a markdown string.
-    pub fn convert(self) -> tinymist_std::Result<ecow::EcoString> {
-        match self.format {
-            Format::Md => self.convert_doc(Format::Md)?.to_md_string(),
-            Format::LaTeX => self.convert_doc(Format::LaTeX)?.to_tex_string(),
-            Format::Text => self.convert_doc(Format::Text)?.to_text_string(),
-            #[cfg(feature = "docx")]
-            Format::Docx => bail!("docx format is not supported"),
-        }
+    /// Convert the content to a string.
+    pub fn convert(self) -> Result<EcoString> {
+        unavailable()
     }
 
-    /// Convert the content to a DOCX document
+    /// Convert the content to a DOCX document.
     #[cfg(feature = "docx")]
-    pub fn to_docx(self) -> tinymist_std::Result<Vec<u8>> {
-        if self.format != Format::Docx {
-            bail!("format is not DOCX");
-        }
-        self.convert_doc(Format::Docx)?.to_docx()
+    pub fn to_docx(self) -> Result<Vec<u8>> {
+        unavailable()
     }
 
-    /// Convert the content to a markdown document.
-    pub fn convert_doc(mut self, format: Format) -> tinymist_std::Result<MarkdownDocument> {
-        let (prepared_world, wrap_info) = self.feat.prepare_world(&self.world, format)?;
-        self.feat.wrap_info = wrap_info;
-        let feat = self.feat.clone();
-        let world = Arc::new(prepared_world);
-        Self::convert_doc_prepared(feat, format, world)
+    /// Convert the content to a placeholder document.
+    pub fn convert_doc(self, _format: Format) -> Result<MarkdownDocument> {
+        unavailable()
     }
 
-    /// Convert the content to a markdown document.
+    /// Convert a prepared world to a placeholder document.
     pub fn convert_doc_prepared(
-        feat: TypliteFeat,
-        format: Format,
-        world: Arc<LspWorld>,
-    ) -> tinymist_std::Result<MarkdownDocument> {
-        // this is not affected by syntax-only mode (typst_shim::compile_opt)
-        let compiled = typst::compile(&world);
-        let collector = WarningCollector::default();
-        collector.extend(
-            compiled
-                .warnings
-                .iter()
-                .filter(|&diag| {
-                    diag.message.as_str()
-                        != "html export is under active development and incomplete"
-                })
-                .cloned(),
-        );
-        let base = compiled.output?;
-        let mut feat = feat;
-        feat.target = format;
-        Ok(MarkdownDocument::new(base, world.clone(), feat).with_warning_collector(collector))
+        _feat: TypliteFeat,
+        _format: Format,
+        _world: Arc<LspWorld>,
+    ) -> Result<MarkdownDocument> {
+        unavailable()
     }
 }
-
-#[cfg(test)]
-mod tests;

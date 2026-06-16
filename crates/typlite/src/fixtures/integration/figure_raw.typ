@@ -1,5 +1,0 @@
-#figure(
-  ```md
-  markdown
-  ```,
-)

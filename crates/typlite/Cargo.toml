@@ -21,41 +21,21 @@ bench = false
 doc = false
 
 [dependencies]
-base64.workspace = true
 clap = { workspace = true, optional = true }
-cmark-writer.workspace = true
-comemo.workspace = true
 ecow.workspace = true
 env_logger = { workspace = true, optional = true }
-log.workspace = true
-regex.workspace = true
-tinymist-std.workspace = true
-tinymist-derive.workspace = true
 tinymist-project = { workspace = true, features = ["lsp"] }
+tinymist-std.workspace = true
 typst.workspace = true
-typst-svg.workspace = true
-typst-syntax.workspace = true
-typst-html.workspace = true
-
-# Feature: docx
-docx-rs = { workspace = true, optional = true }
-image = { workspace = true, optional = true }
-resvg = { workspace = true, optional = true }
-
-[dev-dependencies]
-insta.workspace = true
-regex.workspace = true
-tinymist-tests.workspace = true
 
 [features]
 default = ["no-content-hint", "cli"]
 clap = ["dep:clap"]
 # Note: this is the feature for typlite as a CLI, not for others.
-# `docx` is enabled in CLI mode, but not in library mode.
 # `fonts` is enabled in CLI mode.
-cli = ["clap", "clap/wrap_help", "docx", "env_logger", "fonts", "system"]
+cli = ["clap", "clap/wrap_help", "env_logger", "fonts", "system"]
 no-content-hint = ["tinymist-project/no-content-hint"]
-docx = ["docx-rs", "image", "resvg"]
+docx = []
 
 system = ["tinymist-project/system"]
 web = ["tinymist-project/web"]
